@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spike0/paginas/pagina02.dart';
+import 'package:spike0/paginas/precioluz.dart';
 
 
 void main()=>runApp(const MiApp()); //Llama al primer widget
@@ -49,7 +50,7 @@ class Inicio extends StatefulWidget{
           
          body: ListView( //Ctrl+ . Y wrap with column y cambiar el nombre por ListView, sino no deja hacer scroll
           children:<Widget> [
-                const Text("Home"),
+             
             ElevatedButton(onPressed:()=>{
               
             Navigator.push(
@@ -57,7 +58,18 @@ class Inicio extends StatefulWidget{
               MaterialPageRoute(builder: (context)=>const Pagina02()) //
 
 
-            )} , child: const Text("a otra pagina"))
+            )} , child: const Text("Pagina ejemplo")),
+            
+            const SizedBox(height: 50), 
+            
+            ElevatedButton(onPressed:()=>{
+              
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context)=>const PrecioLuz()) //
+
+
+            )} , child: const Text("Pagina precio Luz"))
           
 
 
