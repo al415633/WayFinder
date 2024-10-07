@@ -21,8 +21,7 @@ class _PrecioCarburanteState extends State<PrecioCarburante> {
 
   Future<void> fetchPrecioCarburante(String municipio) async {
     try {
-      print("Hago la llamada a la API...");
-
+      
       // Llamada a la API
       final response = await http.get(
         Uri.parse(
