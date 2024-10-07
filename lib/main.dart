@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:spike0/paginas/iniciosesion.dart';
 import 'package:spike0/paginas/pagina02.dart';
+import 'package:spike0/paginas/preciocarburante.dart';
 import 'package:spike0/paginas/precioluz.dart';
 
 
@@ -58,7 +60,7 @@ class Inicio extends StatefulWidget{
               MaterialPageRoute(builder: (context)=>const Pagina02()) //
 
 
-            )} , child: const Text("Pagina ejemplo")),
+            )} , child: const Text("Página ejemplo")),
             
             const SizedBox(height: 50), 
             
@@ -69,9 +71,29 @@ class Inicio extends StatefulWidget{
               MaterialPageRoute(builder: (context)=>const PrecioLuz()) //
 
 
-            )} , child: const Text("Pagina precio Luz"))
+            )} , child: const Text("Página precio luz")),
           
+            const SizedBox(height: 50), 
+            
+            ElevatedButton(onPressed:()=>{
+              
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context)=>const PrecioCarburante()) //
 
+
+            )} , child: const Text("Página precio carburante")),
+
+            const SizedBox(height: 50), 
+            
+            ElevatedButton(onPressed:()=>{
+              
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context)=>const InicioSesion()) //
+
+
+            )} , child: const Text("Página inicio sesión")),
 
        ])
        );
