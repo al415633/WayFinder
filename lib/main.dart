@@ -3,16 +3,38 @@ import 'package:spike0/paginas/iniciosesion.dart';
 import 'package:spike0/paginas/pagina02.dart';
 import 'package:spike0/paginas/preciocarburante.dart';
 import 'package:spike0/paginas/precioluz.dart';
+import 'package:spike0/paginas/registrarusuario.dart';
 
+// IMPORT PARA LA BBDD CON FIREBASE
+import 'package:firebase_core/firebase_core.dart';
 
-void main()=>runApp(const MiApp()); //Llama al primer widget
+import 'package:flutter/material.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Asegúrate de pasar las opciones específicas de Firebase
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+      authDomain: "wayfinder-df8eb.firebaseapp.com",
+      projectId: "wayfinder-df8eb",
+      storageBucket: "wayfinder-df8eb.appspot.com",
+      messagingSenderId: "571791500413",
+      appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+      measurementId: "G-TZLW8P5J8V", // Esto es opcional, depende de si usas Analytics
+    ),
+  );
+
+  runApp(MiApp());
+}
 
 class MiApp extends StatelessWidget{
   const MiApp ({super.key}); //const significa que es inmutable
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return const MaterialApp(
       title: "Titulo",
       home: Inicio(),
@@ -76,7 +98,7 @@ class Inicio extends StatefulWidget{
             const SizedBox(height: 50), 
             
             ElevatedButton(onPressed:()=>{
-              
+    
             Navigator.push(
               context, 
               MaterialPageRoute(builder: (context)=>const PrecioCarburante()) //
@@ -94,6 +116,16 @@ class Inicio extends StatefulWidget{
 
 
             )} , child: const Text("Página inicio sesión")),
+            const SizedBox(height: 50), 
+            
+            ElevatedButton(onPressed:()=>{
+              
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context)=>const RegistroUsuario()) //
+
+
+            )} , child: const Text("Página registro nuevo usuario")),
 
        ])
        );

@@ -33,6 +33,27 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+    
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+      authDomain: "wayfinder-df8eb.firebaseapp.com",
+      projectId: "wayfinder-df8eb",
+      storageBucket: "wayfinder-df8eb.appspot.com",
+      messagingSenderId: "571791500413",
+      appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+      measurementId: "G-TZLW8P5J8V"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+  
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

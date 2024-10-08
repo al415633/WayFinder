@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 //IMPORT PARA LA BASE DE DATOS
-import 'package:spike0/servicios/database_service.dart';
-//IMPORT PARA ENCRIPTAR
-import 'package:bcrypt/bcrypt.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:spike0/paginas/errorpage.dart';
+import 'package:spike0/paginas/exitopage.dart';
+
+
 
 class InicioSesion extends StatefulWidget {
   const InicioSesion({super.key});
@@ -24,7 +26,7 @@ class _InicioSesionState extends State<InicioSesion> {
   }
 
   @override
-  void dispose() {
+  void dispose() { 
     // Libera los controladores cuando ya no se necesiten
     _usuarioController.dispose();
     _passwordController.dispose();
@@ -120,48 +122,39 @@ class _InicioSesionState extends State<InicioSesion> {
   }
 
 
+// Iniciar sesión con Firebase en Flutter Web
+void _login() async {
+  String email = _usuarioController.text;
+  String password = _passwordController.text;
 
-  void _login() async {
-
-    print("Botón presionado");
-    DatabaseService db = DatabaseService();
-
-    // Conectar a la base de datos
-    await db.connect();
-    print("Conexión establecida con la base de datos.");
-
-    // Obtener usuario y contraseña de los controladores
-    String usuario = _usuarioController.text;
-    String password = _passwordController.text;
-
-    // Mostrar los valores en consola
-    print("Usuario: $usuario");
-    print("Contraseña: $password");
-
-    // Limpiar los campos de texto, para que quede mas bonitoooo
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    print("Inicio de sesión exitoso: ${userCredential.user?.email}");
+    
+    // Limpiar los campos de usuario y contraseña después del inicio de sesión exitoso
     _usuarioController.clear();
     _passwordController.clear();
-
-    // Obtener el hash almacenado de la base de datos
-    String? hashedPassword = await db.obtenerHash(usuario); // se pone un ? porque puede devolver null
-
-
-    print("Hash de contraseña obtenido: $hashedPassword");
-
-    // PIDO AL SERVICIO DE BBDD QUE ME DIGA SI LAS CREDENCIALES SON CORRECTAS
-    if (hashedPassword != null) {
-    // Verificar si la contraseña ingresada coincide con el hash
-    bool esCorrecto = BCrypt.checkpw(password, hashedPassword);
-
-    if (esCorrecto) {
-      print("Contraseña correcta. Inicio de sesión exitoso.");
-    } else {
-      print("Contraseña incorrecta.");
-      }
-    } else {
-      print("Usuario no encontrado.");
+    
+    // Navegar a la página de éxito
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ExitoPage()),
+    );
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      // Si las credenciales son incorrectas, navegar a la página de error
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ErrorPage()), // Cambia a la página de error
+      );
     }
   }
+}
+
+
 
 
 }
