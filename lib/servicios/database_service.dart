@@ -11,8 +11,8 @@ class DatabaseService {
       'localhost', // Dirección del servidor PostgreSQL
       5432,        // Puerto de PostgreSQL
       'al415615_wayfinder', // Nombre de tu base de datos
-      username: 'al415615', // Usuario de la base de datos
-      password: '30704764V', // Contraseña de la base de datos
+      username: '...', // Usuario de la base de datos
+      password: '...', // Contraseña de la base de datos
     );
 
     await connection.open();
@@ -75,3 +75,8 @@ class DatabaseService {
   //usu VARCHAR(50) NOT NULL,
   //contra VARCHAR(255) NOT NULL
 //);
+
+
+//PARA LA PRUEBA, HE INSERTADO EL USUARIO hola Y CONTRA adios, que esta hasheada (encriptada), cuando inicies sesion deberás de escribir 'hola' y 'adios'
+//INSERT INTO usuarios (usu, contra)
+//VALUES ('hola', '$2a$10$e0MYzXyjpJS7Pd0RVvHwHeFxDAwB1W9wheWZWvFMeXa42wdJqoFiW');
