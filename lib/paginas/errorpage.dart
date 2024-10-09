@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:spike0/titulos/titulo1.dart';
 
 class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

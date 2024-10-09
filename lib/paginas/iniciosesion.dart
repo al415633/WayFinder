@@ -146,11 +146,13 @@ void _login() async {
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found' || e.code == 'wrong-password') {
       // Si las credenciales son incorrectas, navegar a la página de error
+      print('Credenciales incorrectas.');
+    }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ErrorPage()), // Cambia a la página de error
       );
-    }
+    
   }
 }
 

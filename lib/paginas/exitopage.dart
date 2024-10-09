@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../titulos/titulo1.dart';
 
 class ExitoPage extends StatelessWidget {
+  const ExitoPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -8,7 +8,6 @@ import 'package:spike0/paginas/registrarusuario.dart';
 // IMPORT PARA LA BBDD CON FIREBASE
 import 'package:firebase_core/firebase_core.dart';
 
-import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
