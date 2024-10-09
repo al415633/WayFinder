@@ -13,11 +13,14 @@ class RegistroUsuario extends StatefulWidget {
 class _RegistroUsuarioState extends State<RegistroUsuario> {
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  String _errorMessage = '';
 
   @override
   void dispose() {
     _usuarioController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -38,7 +41,13 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
             campoUsuario(),
             contrasena(),
             campoContrasena(),
+            repetirContrasena(),
+            confirmarContrasena(),
             const SizedBox(height: 15),
+            Text(
+              _errorMessage,
+              style: const TextStyle(color: Colors.red), // Mensaje de error
+            ),
             botonRegistrar()
           ],
         ),
@@ -89,6 +98,28 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
     );
   }
 
+  Widget repetirContrasena() {
+      return const Text(
+        "Por favor confirma la contraseña",
+        style: TextStyle(color: Colors.black, fontSize: 35.0, fontWeight: FontWeight.bold),
+      );
+    }
+
+     Widget confirmarContrasena() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      child: TextField(
+        controller: _confirmPasswordController,
+        obscureText: true,
+        decoration: const InputDecoration(
+          hintText: "Password",
+          fillColor: Colors.white,
+          filled: true,
+        ),
+      ),
+    );
+  }
+
   Widget botonRegistrar() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -110,6 +141,14 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
   void _register() async {
     String email = _usuarioController.text;
     String password = _passwordController.text;
+    String confirmPassword = _confirmPasswordController.text;
+
+    if (password != confirmPassword) {
+      setState(() {
+        _errorMessage = 'Las contraseñas no coinciden'; // Actualizar el mensaje de error
+      });
+      return; // Salir de la función si las contraseñas no coinciden
+    }
 
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -121,6 +160,7 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
       // Limpiar los campos de usuario y contraseña
       _usuarioController.clear();
       _passwordController.clear();
+      _confirmPasswordController.clear();
       
       // Navegar a la página de éxito
       Navigator.push(

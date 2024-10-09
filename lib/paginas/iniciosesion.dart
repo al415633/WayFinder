@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spike0/paginas/errorpage.dart';
 import 'package:spike0/paginas/exitopage.dart';
+import 'package:spike0/paginas/registrarusuario.dart';
 
 
 
@@ -52,7 +53,11 @@ class _InicioSesionState extends State<InicioSesion> {
             contrasena(),
             campoContraena(),
             const SizedBox(height: 15), // separacion para que quede bonito
-            botonEntrar()
+            botonEntrar(),
+            const SizedBox(height: 15), // separacion para que quede bonito
+
+            nuevaCuenta(),
+
           ],
         ),
       ),
@@ -120,6 +125,19 @@ class _InicioSesionState extends State<InicioSesion> {
       ),
     );
   }
+
+
+ Widget nuevaCuenta() {
+  return ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RegistroUsuario()),
+      );
+    },
+    child: const Text("No tienes cuenta?, ¡Clica aquí para hacerte una!"),
+  );
+}
 
 
 // Iniciar sesión con Firebase en Flutter Web
