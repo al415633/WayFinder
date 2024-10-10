@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -15,23 +14,39 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   List listOfPoints = [];
-
   List<LatLng> points = [];
+  String selectedMode = 'car'; // default mode
 
-  //openrouteservice api key
+  @override
+  void initState() {
+    super.initState();
+    getCoordinates();
+  }
+
+  void _onModeChanged(String mode) {
+    setState(() {
+      selectedMode = mode;
+      getCoordinates();
+    });
+  }
+
   getCoordinates() async {
-    var response =
-        await http.get(getCarRouteUrl('-0.04935,39.98567', '0.0200804,39.9811'));
+    var ini = '-0.04935, 39.98567';
+    var fin = '0.0200804, 39.9811';
+    var response;
+    if (selectedMode == 'car') {
+      response = await http.get(getCarRouteUrl(ini, fin));
+    } else if (selectedMode == 'walk') {
+      response = await http.get(getWalkRouteUrl(ini, fin));
+    } else if (selectedMode == 'bike') {
+      response = await http.get(getBikeRouteUrl(ini, fin));
+    }
 
     setState(() {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        //las coordenadas intermedias de un punto a otro
         listOfPoints = data['features'][0]['geometry']['coordinates'];
-        //las coordenadas en el formato longitud, latitud que necesita el openrouteservice
-        points = listOfPoints
-            .map((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
-            .toList();
+        points = listOfPoints.map((p) => LatLng(p[1].toDouble(), p[0].toDouble())).toList();
       }
     });
   }
@@ -39,6 +54,32 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Map Screen'),
+        actions: [
+          ToggleButtons(
+            children: const <Widget>[
+              Icon(Icons.directions_car),
+              Icon(Icons.directions_walk),
+              Icon(Icons.directions_bike),
+            ],
+            isSelected: [
+              selectedMode == 'car',
+              selectedMode == 'walk',
+              selectedMode == 'bike',
+            ],
+            onPressed: (int index) {
+              if (index == 0) {
+                _onModeChanged('car');
+              } else if (index == 1) {
+                _onModeChanged('walk');
+              } else if (index == 2) {
+                _onModeChanged('bike');
+              }
+            },
+          ),
+        ],
+      ),
       body: FlutterMap(
         options: MapOptions(
           initialCenter: LatLng(39.98567, -0.04935),
@@ -51,46 +92,40 @@ class _MapScreenState extends State<MapScreen> {
           ),
           MarkerLayer(
             markers: [
-              //primer marcador
               Marker(
-                  point: LatLng(39.98567, -0.04935),
-                  width: 80,
-                  height: 80,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.location_on),
-                    color: Colors.green,
-                    iconSize: 45.0,
-                  )),
-              //segundo marcador
+                point: LatLng(39.98567, -0.04935),
+                width: 80,
+                height: 80,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.location_on),
+                  color: Colors.green,
+                  iconSize: 45.0,
+                ),
+              ),
               Marker(
-                  point: LatLng(39.9811, 0.0200804),
-                  width: 80,
-                  height: 80,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.location_on),
-                    color: Colors.red,
-                    iconSize: 45.0,
-                  )),
+                point: LatLng(39.9811, 0.0200804),
+                width: 80,
+                height: 80,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.location_on),
+                  color: Colors.red,
+                  iconSize: 45.0,
+                ),
+              ),
             ],
           ),
-          // polyline layer, muestra la ruta calculada por ops
           PolylineLayer(
             polylines: [
               Polyline(
-                points: points, //los que hemos creado antes para el ops
+                points: points,
                 color: Colors.blue,
-                strokeWidth: 4.0
+                strokeWidth: 4.0,
               ),
             ],
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
-        onPressed: () => getCoordinates(),
-        child: const Icon(Icons.add),
       ),
     );
   }
