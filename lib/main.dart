@@ -56,7 +56,7 @@ class _InicioState extends State<Inicio> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Titulo AppBar"),
+          title: const Text("Spike 0"),
         ),
         body: ListView(
             //Ctrl+ . Y wrap with column y cambiar el nombre por ListView, sino no deja hacer scroll
