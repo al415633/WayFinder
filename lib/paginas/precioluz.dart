@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // Paquete necesario para formatear fechas
 
 class PrecioLuz extends StatefulWidget {
   const PrecioLuz({super.key});
@@ -15,13 +16,18 @@ class _PrecioLuzState extends State<PrecioLuz> {
   bool isLoading = true;
   String? precioActualLuz; // Variable para almacenar el precio actual
 
-
   @override
   void initState() {
     super.initState();
     fetchPrecioActual();
-  
     fetchPrecioLuz();
+  }
+
+  // Función para obtener la fecha actual en el formato necesario
+  String getFechaHoy() {
+    final ahora = DateTime.now();
+    final formatter = DateFormat('yyyy-MM-dd'); 
+    return formatter.format(ahora); 
   }
 
   // Función para obtener el precio actual de la luz
@@ -29,8 +35,11 @@ class _PrecioLuzState extends State<PrecioLuz> {
     try {
       print("Hago la llamada para el precio actual");
 
+      String fechaHoy = getFechaHoy(); // Obtenemos la fecha de hoy
       final response = await http.get(
-        Uri.parse('https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=2024-10-11T00:00&end_date=2024-10-11T23:59&time_trunc=hour'),
+        Uri.parse(
+          'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${fechaHoy}T00:00&end_date=${fechaHoy}T23:59&time_trunc=hour',
+        ),
       );
 
       print("Vuelvo sin excepciones - Precio Actual");
@@ -66,8 +75,11 @@ class _PrecioLuzState extends State<PrecioLuz> {
     try {
       print("Hago la llamada para los precios por hora");
 
+      String fechaHoy = getFechaHoy(); // Obtenemos la fecha de hoy
       final response = await http.get(
-        Uri.parse('https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=2024-10-11T00:00&end_date=2024-10-11T23:59&time_trunc=hour'),
+        Uri.parse(
+          'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${fechaHoy}T00:00&end_date=${fechaHoy}T23:59&time_trunc=hour',
+        ),
       );
 
       print("Vuelvo sin excepciones - Precios por hora");
@@ -106,8 +118,6 @@ class _PrecioLuzState extends State<PrecioLuz> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,7 +141,7 @@ class _PrecioLuzState extends State<PrecioLuz> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                 
+
                   // Mostrar la lista de precios por hora
                   Expanded(
                     child: preciosLuz.isEmpty
