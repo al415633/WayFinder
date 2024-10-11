@@ -33,7 +33,7 @@ class _MapScreenState extends State<MapScreen> {
   getCoordinates() async {
     var ini = '-0.04935, 39.98567';
     var fin = '0.0200804, 39.9811';
-    var response;
+    http.Response? response;
     if (selectedMode == 'car') {
       response = await http.get(getCarRouteUrl(ini, fin));
     } else if (selectedMode == 'walk') {
@@ -43,8 +43,8 @@ class _MapScreenState extends State<MapScreen> {
     }
 
     setState(() {
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
+      if (response?.statusCode == 200) {
+        var data = jsonDecode(response!.body);
         listOfPoints = data['features'][0]['geometry']['coordinates'];
         points = listOfPoints.map((p) => LatLng(p[1].toDouble(), p[0].toDouble())).toList();
       }
@@ -58,11 +58,6 @@ class _MapScreenState extends State<MapScreen> {
         title: const Text('Map Screen'),
         actions: [
           ToggleButtons(
-            children: const <Widget>[
-              Icon(Icons.directions_car),
-              Icon(Icons.directions_walk),
-              Icon(Icons.directions_bike),
-            ],
             isSelected: [
               selectedMode == 'car',
               selectedMode == 'walk',
@@ -77,6 +72,11 @@ class _MapScreenState extends State<MapScreen> {
                 _onModeChanged('bike');
               }
             },
+            children: const <Widget>[
+              Icon(Icons.directions_car),
+              Icon(Icons.directions_walk),
+              Icon(Icons.directions_bike),
+            ],
           ),
         ],
       ),
