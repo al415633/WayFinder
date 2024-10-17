@@ -1,10 +1,10 @@
 <img src="./assets/logo.png" alt="Wayfinder Logo" width="50" align="left">
 
-# Wayfinder - Spike 0
+# Wayfinder 
 
 ![Flutter Version](https://img.shields.io/badge/flutter-v3.24.3-blue) ![Dart Version](https://img.shields.io/badge/dart-v2.18.2-blue)
 
-Este proyecto forma parte del desarrollo del **Spike 0** de la aplicación **Wayfinder**, un sistema de movilidad que calcula rutas optimizadas entre diferentes puntos de interés utilizando varios métodos de transporte. Este Spike tiene como objetivo investigar y probar tecnologías clave antes del desarrollo completo.
+Este proyecto forma parte del desarrollo de la aplicación **Wayfinder**, un sistema de movilidad que calcula rutas optimizadas entre diferentes puntos de interés utilizando varios métodos de transporte. Este Spike tiene como objetivo investigar y probar tecnologías clave antes del desarrollo completo.
 
 ## Autores de la aplicación
 
@@ -20,9 +20,9 @@ Este proyecto forma parte del desarrollo del **Spike 0** de la aplicación **Way
 
 
 
-## Objetivo del Spike
+## Objetivo de la aplicación
 
-El Spike 0 está diseñado para explorar y validar las tecnologías necesarias para el desarrollo de la aplicación. El propósito es asegurarse de que las APIs seleccionadas, herramientas de mapas y frameworks funcionan según lo esperado, sin centrarse en la funcionalidad final.
+El objetivo del proyecto es desarrollar una aplicación de movilidad que permita calcular rutas entre dos puntos, considerando diferentes modos de transporte (vehículo, bicicleta, a pie) y mostrando información como duración, tipo de ruta y coste (combustible, electricidad o calorías). La interfaz gráfica incluirá un mapa interactivo para seleccionar los puntos de inicio y fin, y la aplicación se conectará a APIs abiertas para obtener datos de rutas y costes. Se usará la metodología ágil ATDD para garantizar iteraciones pequeñas y colaborativas en el desarrollo del proyecto.
 
 ### Funcionalidades Exploradas
 
