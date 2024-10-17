@@ -2,14 +2,23 @@
 
 # Wayfinder - Spike 0
 
+![Flutter Version](https://img.shields.io/badge/flutter-v3.24.3-blue) ![Dart Version](https://img.shields.io/badge/dart-v2.18.2-blue)
+
 Este proyecto forma parte del desarrollo del **Spike 0** de la aplicación **Wayfinder**, un sistema de movilidad que calcula rutas optimizadas entre diferentes puntos de interés utilizando varios métodos de transporte. Este Spike tiene como objetivo investigar y probar tecnologías clave antes del desarrollo completo.
 
 ## Autores de la aplicación
 
-- **Miembro 1** - Ángela Ausina Sánchez
-- **Miembro 2** - Andrea Belen Cretu Toma
-- **Miembro 3** - Miriam Llorens Montañés
-- **Miembro 4** - Alejandro Tendero Ferrandis
+| Miembro 1 - Ángela Ausina Sánchez       | Miembro 2 - Andrea Belen Cretu Toma    | Miembro 3 - Miriam Llorens Montañés    | Miembro 4 - Alejandro Tendero Ferrandis  |
+|----------------------------------------|----------------------------------------|----------------------------------------|-------------------------------------------|
+| <img src="https://avatars.githubusercontent.com/u/95291485?v=4" alt="Ángela Ausina Sánchez" width="120"/>| <img src="https://avatars.githubusercontent.com/u/95291876?v=4" alt="Andrea Belen Cretu Toma" width="120"/> | <img src="https://avatars.githubusercontent.com/u/99995694?v=4" alt="Miriam Llorens Montañés" width="120"/> | <img src="https://avatars.githubusercontent.com/u/114917263?v=4" alt="Alejandro Tendero Ferrandis" width="120"/> |
+
+## Profesorado calificador
+
+|            Miguel Matey Sanz           |
+|----------------------------------------|
+| <img src="https://avatars3.githubusercontent.com/u/25453537?s=120" alt="Miguel Matey Sanz" width="120"/>|
+
+
 
 ## Objetivo del Spike
 
@@ -18,7 +27,7 @@ El Spike 0 está diseñado para explorar y validar las tecnologías necesarias p
 ### Funcionalidades Exploradas
 
 - **Cálculo de rutas**: Conexión inicial con la API de **OpenRouteService** para calcular rutas entre dos puntos dados.
-- **Visualización de mapas**: Uso de **Leaflet.js** para mostrar mapas interactivas con las rutas generadas.
+- **Visualización de mapas**: Uso de **Leaflet.js** y **Flutter Map** para mostrar mapas interactivas con las rutas generadas.
 - **Geocoding**: Obtención de coordenadas a partir de nombres de lugares utilizando la API de geocoding.
 - **Persistencia de datos**: Exploración de bases de datos utilizando **PostgreSQL** para almacenar rutas y lugares de interés.
 - **Coste asociado**: Cálculo básico del coste del trayecto según el método de transporte (combustible, electricidad, calorías).
@@ -29,11 +38,18 @@ El Spike 0 está diseñado para explorar y validar las tecnologías necesarias p
 - **API Externas**:
   - [OpenRouteService](https://openrouteservice.org/): Para el cálculo de rutas y geocoding.
   - [Datos.gob.es](https://datos.gob.es/es/catalogo/e05068001-precio-de-carburantes-en-las-gasolineras-espanolas): Para obtener precios de carburantes en España.
-  - [Preciodelaluz.org](https://api.preciodelaluz.org): Para obtener precios de la electricidad en España.
+  - [Red Eléctrica](https://www.ree.es/es/apidatos): Para obtener precios de la electricidad en España.
 - **Persistencia**: Base de datos **PostgreSQL** para almacenar rutas, usuarios y configuraciones.
-- **Integración de Mapas**: Uso de **Leaflet.js** para mostrar mapas interactivos en el frontend.
+- **Integración de Mapas**: Uso de **Leaflet.js** y **Flutter Map** para mostrar mapas interactivos en el frontend.
+
+> [!NOTE]
+> Finalmente no hemos usado la API de preciodeluz.org ya que daba problemas para mantener la proxy activa en Flutter, es por esto que finalmente hemos usado https://www.ree.es/es/apidatos referente a la red eléctrica.
+
 
 ## Contribuir al Proyecto
+
+> [!TIP]
+> Recomendamos usar Visual Studio Code para utilizar el código.
 
 En este proyecto utilizamos una metodología basada en **Gitflow** para trabajar de forma colaborativa y organizada. A continuación te explicamos cómo contribuir correctamente.
 
@@ -41,7 +57,7 @@ En este proyecto utilizamos una metodología basada en **Gitflow** para trabajar
 Seguimos el formato de **Conventional Commits** para que todos los mensajes de commit sean claros y consistentes. El formato a seguir es:
 
 ```bash
-<type>(<scope>): <description>
+   <type>(<scope>): <description>
 ```
 
 - **type**: Tipo de cambio, puede ser uno de los siguientes:
@@ -88,10 +104,12 @@ Seguimos el formato de **Conventional Commits** para que todos los mensajes de c
 ## Estructura del Proyecto
 
 ```bash
-├── src
-│   ├── frontend    # Lógica de la interfaz de usuario y la integración con Flutter
-│   ├── backend     # Lógica de negocio y conexión con APIs externas
-│   └── tests       # Pruebas automatizadas ATDD
+├── lib
+│   ├── paginas     # Las diferentes tecnologías que hemos probado
+│   ├── titulos     # Carpeta con los títulos que hemos creado para unificar estilos
+│   └── main        # Página principal en la que mostramos un menú con las diferentes páginas
 └── README.md
 ```
 
+## Agradecimientos
+Darle las gracias a todos los profesores de las asignaturas que han hecho posible este último empujoncito de cara a nuestra vida laboral. 

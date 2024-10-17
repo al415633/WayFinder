@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:spike0/paginas/listamunicipios.dart';
 import 'package:spike0/paginas/map_screen.dart';
+import 'package:spike0/paginas/preciocarburanteIndice.dart';
+import 'package:spike0/paginas/swatchpage.dart';
 import 'paginas/iniciosesion.dart';
 import 'paginas/pagina02.dart';
 import 'paginas/preciocarburante.dart';
@@ -8,6 +11,9 @@ import 'paginas/registrarusuario.dart';
 
 // IMPORT PARA LA BBDD CON FIREBASE
 import 'package:firebase_core/firebase_core.dart';
+
+// IMPORT PARA EL THEME UTILIZADO
+import 'themes/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +40,12 @@ class MiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: "Titulo",
-      home: Inicio(),
+    return MaterialApp(
+      title: "WayFinder",
+      theme: AppTheme.lightTheme, // Aplica el tema definido, se aplica sobre la pagina principal para poder usarlo en las demás!!!
+      home: const Inicio(),
+      debugShowCheckedModeBanner: false,  // Oculta la dichosa etiqueta que pone "DEBUG"
+
     ); //Patron de diseño de Googe para crrear apps
   }
 }
@@ -56,76 +65,172 @@ class _InicioState extends State<Inicio> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Spike 0"),
+          title: Text("Spike 0"),
         ),
         body: ListView(
             //Ctrl+ . Y wrap with column y cambiar el nombre por ListView, sino no deja hacer scroll
             children: <Widget>[
-              ElevatedButton(
-                  onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Pagina02()) //
-
-                            )
-                      },
-                  child: const Text("Página ejemplo")),
               const SizedBox(height: 50),
-              ElevatedButton(
-                  onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const PrecioLuz()) //
 
-                            )
-                      },
-                  child: const Text("Página precio luz")),
-              const SizedBox(height: 50),
-              ElevatedButton(
+              SizedBox(
+                width: 50,  // ancho del botón aquí
+                child: ElevatedButton(
                   onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const PrecioCarburante()) //
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Pagina02(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página ejemplo "),  // El texto del botón
+                ),
+              ),
 
-                            )
-                      },
-                  child: const Text("Página precio carburante")),
-              const SizedBox(height: 50),
-              ElevatedButton(
-                  onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const InicioSesion()) //
 
-                            )
-                      },
-                  child: const Text("Página inicio sesión")),
               const SizedBox(height: 50),
-              ElevatedButton(
-                  onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const RegistroUsuario()) //
 
-                            )
-                      },
-                  child: const Text("Página registro nuevo usuario")),
-              const SizedBox(height: 50),
-              ElevatedButton(
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
                   onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MapScreen()))
-                      },
-                  child: const Text("Mapa")),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExamplePage(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página ejemplo de los estilos"),  // El texto del botón
+                ),
+              ),
+
+              const SizedBox(height: 50),
+              
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PrecioLuz(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página precio luz"),  // El texto del botón
+                ),
+              ),
+
+              const SizedBox(height: 50),
+
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PrecioCarburante(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página precio carburante"),  // El texto del botón
+                ),
+              ),
+
+
+              const SizedBox(height: 50),
+               
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ListaMunicipiosPage(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página listado de municipios para precios carburante"),  // El texto del botón
+                ),
+              ),
+
+
+              const SizedBox(height: 50),
+               
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PreciosMunicipioIndicePage(idMunicipio: '1842', nombreMunicipio: 'Castellón de la Plana/Castelló de la Plana') // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página precio carburante buscado por índice"),  // El texto del botón
+                ),
+              ),
+
+              const SizedBox(height: 50),
+
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InicioSesion(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página inicio de sesión"),  // El texto del botón
+                ),
+              ),
+
+
+              const SizedBox(height: 50),
+
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegistroUsuario(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página registro nuevo usuario"),  // El texto del botón
+                ),
+              ),
+
+
+              const SizedBox(height: 50),
+               
+              SizedBox(
+                width: 250,  // ancho del botón aquí
+                child: ElevatedButton(
+                  onPressed: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapScreen(), // Página a la que navegas
+                      ),
+                    )
+                  },
+                  child: Text("Página mapa"),  // El texto del botón
+                ),
+              ),
+        
+
+
+                  
             ]));
   }
 }

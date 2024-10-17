@@ -37,6 +37,9 @@ class _InicioSesionState extends State<InicioSesion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Inicio de sesión'),
+      ),
       body: login(),
     );
   }
@@ -50,9 +53,12 @@ class _InicioSesionState extends State<InicioSesion> {
           children: <Widget>[
             nombre(),
             campoUsuario(),
+            const SizedBox(height: 15), // separacion para que quede bonito
+
             contrasena(),
             campoContraena(),
             const SizedBox(height: 15), // separacion para que quede bonito
+            
             botonEntrar(),
             const SizedBox(height: 15), // separacion para que quede bonito
 
@@ -65,9 +71,9 @@ class _InicioSesionState extends State<InicioSesion> {
   }
 
   Widget nombre() {
-    return const Text(
-      "Sign in",
-      style: TextStyle(color: Colors.black, fontSize: 35.0, fontWeight: FontWeight.bold),
+    return Text(
+      "Usuario",
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
     );
   }
 
@@ -77,7 +83,7 @@ class _InicioSesionState extends State<InicioSesion> {
       child: TextField(
         controller: _usuarioController, // Asignar el controlador al campo de usuario
         decoration: const InputDecoration(
-          hintText: "User",
+          hintText: "Email",
           fillColor: Colors.white,
           filled: true,
         ),
@@ -86,9 +92,9 @@ class _InicioSesionState extends State<InicioSesion> {
   }
 
   Widget contrasena() {
-    return const Text(
+    return  Text(
       "Contraseña",
-      style: TextStyle(color: Colors.black, fontSize: 35.0, fontWeight: FontWeight.bold),
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
     );
   }
 
@@ -99,7 +105,7 @@ class _InicioSesionState extends State<InicioSesion> {
         controller: _passwordController, // Asignar el controlador al campo de contraseña
         obscureText: true, // Ocultar el texto para la contraseña
         decoration: const InputDecoration(
-          hintText: "Password",
+          hintText: "Contraseña",
           fillColor: Colors.white,
           filled: true,
         ),

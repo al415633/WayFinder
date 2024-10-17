@@ -15,6 +15,14 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   String _errorMessage = '';
+  Map<String, bool> _passwordValidation = {
+    "length": false,
+    "uppercase": false,
+    "numeric": false,
+    "special": false,
+  };
+  bool _showPasswordValidation = false; // Nueva variable para controlar cuándo mostrar los requisitos
+
 
   @override
   void dispose() {
@@ -27,6 +35,9 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Registro nuevo usuario'),
+      ),
       body: registro(),
     );
   }
@@ -39,11 +50,17 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
           children: <Widget>[
             nombre(),
             campoUsuario(),
+            const SizedBox(height: 15), // separacion para que quede bonito
+
             contrasena(),
             campoContrasena(),
+            if (_showPasswordValidation) validarContrasena(), // Mostrar validación solo si es necesario
+            const SizedBox(height: 15), // separacion para que quede bonito
+
             repetirContrasena(),
             confirmarContrasena(),
             const SizedBox(height: 15),
+            
             Text(
               _errorMessage,
               style: const TextStyle(color: Colors.red), // Mensaje de error
@@ -56,9 +73,9 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
   }
 
   Widget nombre() {
-    return const Text(
+    return  Text(
       "Registrar",
-      style: TextStyle(color: Colors.black, fontSize: 35.0, fontWeight: FontWeight.bold),
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
     );
   }
 
@@ -77,9 +94,9 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
   }
 
   Widget contrasena() {
-    return const Text(
+    return  Text(
       "Contraseña",
-      style: TextStyle(color: Colors.black, fontSize: 35.0, fontWeight: FontWeight.bold),
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
     );
   }
 
@@ -89,8 +106,9 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
       child: TextField(
         controller: _passwordController,
         obscureText: true,
+        onChanged: _validatePassword,  // Validar la contraseña en tiempo real
         decoration: const InputDecoration(
-          hintText: "Password",
+          hintText: "Contraseña",
           fillColor: Colors.white,
           filled: true,
         ),
@@ -98,10 +116,47 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
     );
   }
 
+  // Mensajes de validación de la contraseña
+  Widget validarContrasena() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        validacionTexto("Al menos 8 caracteres", _passwordValidation["length"]!),
+        validacionTexto("Al menos una mayúscula", _passwordValidation["uppercase"]!),
+        validacionTexto("Al menos un número", _passwordValidation["numeric"]!),
+        validacionTexto("Al menos un carácter especial", _passwordValidation["special"]!),
+      ],
+    );
+  }
+
+  // Formato para mostrar la validación en verde o rojo, dependiendo de los reuisitos que sí cumple y los que no
+  Widget validacionTexto(String texto, bool valido) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3.0),
+      child: Row(
+        children: [
+          Icon(
+            valido ? Icons.check_circle : Icons.cancel,
+            color: valido ? Colors.green : Colors.red,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            texto,
+            style: TextStyle(
+              color: valido ? Colors.green : Colors.red,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget repetirContrasena() {
-      return const Text(
+      return  Text(
         "Por favor confirma la contraseña",
-        style: TextStyle(color: Colors.black, fontSize: 35.0, fontWeight: FontWeight.bold),
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
       );
     }
 
@@ -137,17 +192,45 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
     );
   }
 
+
+  // FUNCIONES NECESARIAS
+
+  // Valida si la contraseña cumple con los requisitos
+  bool _validatePassword(String password) {
+    setState(() {
+      _passwordValidation["length"] = password.length >= 8;
+      _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
+      _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
+      _passwordValidation["special"] = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    });
+
+    // Verificar si todos los requisitos son verdaderos
+    return !_passwordValidation.containsValue(false);
+}
+
   // Registro de un nuevo usuario con Firebase
+    // Registro de un nuevo usuario con Firebase
   void _register() async {
     String email = _usuarioController.text;
     String password = _passwordController.text;
     String confirmPassword = _confirmPasswordController.text;
 
+    // Verificar que las contraseñas coincidan y que la contraseña cumpla con los requisitos
     if (password != confirmPassword) {
       setState(() {
-        _errorMessage = 'Las contraseñas no coinciden'; // Actualizar el mensaje de error
+        _errorMessage = 'Las contraseñas no coinciden';
+        _showPasswordValidation = false;
       });
-      return; // Salir de la función si las contraseñas no coinciden
+      return;
+    }
+
+    if (!_validatePassword(password)) {
+      // Si la contraseña no es válida, mostrar los mensajes de validación
+      setState(() {
+        _showPasswordValidation = true;
+        _errorMessage = 'La contraseña no cumple con los requisitos.';
+      });
+      return;
     }
 
     try {
@@ -180,4 +263,5 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
       );
     }
   }
+
 }
