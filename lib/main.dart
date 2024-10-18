@@ -9,16 +9,14 @@ import 'paginas/preciocarburante.dart';
 import 'paginas/precioluz.dart';
 import 'paginas/registrarusuario.dart';
 
-// IMPORT PARA LA BBDD CON FIREBASE
+// IMPORT PARA LA BASE DE DATOS
 import 'package:firebase_core/firebase_core.dart';
 
-// IMPORT PARA EL THEME UTILIZADO
+//IMPORT DE LA PLANTILLA
 import 'themes/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Asegúrate de pasar las opciones específicas de Firebase
   await Firebase.initializeApp(
     options: FirebaseOptions(
       apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
@@ -27,210 +25,88 @@ void main() async {
       storageBucket: "wayfinder-df8eb.appspot.com",
       messagingSenderId: "571791500413",
       appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-      measurementId:
-          "G-TZLW8P5J8V", // Esto es opcional, depende de si usas Analytics
+      measurementId: "G-TZLW8P5J8V",
     ),
   );
-
   runApp(MiApp());
 }
 
 class MiApp extends StatelessWidget {
-  const MiApp({super.key}); //const significa que es inmutable
+  const MiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "WayFinder",
-      theme: AppTheme.lightTheme, // Aplica el tema definido, se aplica sobre la pagina principal para poder usarlo en las demás!!!
+      theme: AppTheme.lightTheme,
       home: const Inicio(),
-      debugShowCheckedModeBanner: false,  // Oculta la dichosa etiqueta que pone "DEBUG"
-
-    ); //Patron de diseño de Googe para crrear apps
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
 
 class Inicio extends StatefulWidget {
-  const Inicio({super.key}); //? significa que acepta nulos
+  const Inicio({super.key});
 
   @override
   _InicioState createState() => _InicioState();
 }
 
-//Cuando estas haciendo la parte del front casi todo funciona con comas
-//Cuando te pones ha codificar funciones... Cada vez que escribes una linea al final ;
 
 class _InicioState extends State<Inicio> {
+  // creo un metodo para que me establezca un boton y no tenga codigo repetido
+  Widget buildButton(String text, Widget nextPage) {
+    return Center(
+      child: SizedBox(
+        width: 550,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => nextPage),
+            );
+          },
+          child: Text(text),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Spike 0"),
-        ),
-        body: ListView(
-            //Ctrl+ . Y wrap with column y cambiar el nombre por ListView, sino no deja hacer scroll
-            children: <Widget>[
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 50,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Pagina02(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página ejemplo "),  // El texto del botón
-                ),
-              ),
-
-
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ExamplePage(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página ejemplo de los estilos"),  // El texto del botón
-                ),
-              ),
-
-              const SizedBox(height: 50),
-              
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PrecioLuz(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página precio luz"),  // El texto del botón
-                ),
-              ),
-
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PrecioCarburante(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página precio carburante"),  // El texto del botón
-                ),
-              ),
-
-
-              const SizedBox(height: 50),
-               
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ListaMunicipiosPage(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página listado de municipios para precios carburante"),  // El texto del botón
-                ),
-              ),
-
-
-              const SizedBox(height: 50),
-               
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PreciosMunicipioIndicePage(idMunicipio: '1842', nombreMunicipio: 'Castellón de la Plana/Castelló de la Plana') // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página precio carburante buscado por índice"),  // El texto del botón
-                ),
-              ),
-
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => InicioSesion(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página inicio de sesión"),  // El texto del botón
-                ),
-              ),
-
-
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegistroUsuario(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página registro nuevo usuario"),  // El texto del botón
-                ),
-              ),
-
-
-              const SizedBox(height: 50),
-               
-              SizedBox(
-                width: 250,  // ancho del botón aquí
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapScreen(), // Página a la que navegas
-                      ),
-                    )
-                  },
-                  child: Text("Página mapa"),  // El texto del botón
-                ),
-              ),
-        
-
-
-                  
-            ]));
+      appBar: AppBar(
+        title: Text("Spike 0"),
+      ),
+      body: ListView(
+        children: [
+          const SizedBox(height: 50),
+          buildButton("Página ejemplo", Pagina02()),
+          const SizedBox(height: 50),
+          buildButton("Página ejemplo de los estilos", ExamplePage()),
+          const SizedBox(height: 50),
+          buildButton("Página precio luz", PrecioLuz()),
+          const SizedBox(height: 50),
+          buildButton("Página precio carburante", PrecioCarburante()),
+          const SizedBox(height: 50),
+          buildButton("Página listado de municipios para precios carburante", ListaMunicipiosPage()),
+          const SizedBox(height: 50),
+          buildButton(
+            "Página precio carburante buscado por índice",
+            PreciosMunicipioIndicePage(
+              idMunicipio: '1842',
+              nombreMunicipio: 'Castellón de la Plana/Castelló de la Plana',
+            ),
+          ),
+          const SizedBox(height: 50),
+          buildButton("Página inicio de sesión", InicioSesion()),
+          const SizedBox(height: 50),
+          buildButton("Página registro nuevo usuario", RegistroUsuario()),
+          const SizedBox(height: 50),
+          buildButton("Página mapa", MapScreen()),
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
   }
 }
