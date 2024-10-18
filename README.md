@@ -107,8 +107,9 @@ Seguimos el formato de **Conventional Commits** para que todos los mensajes de c
 ├── lib
 │   ├── paginas     # Las diferentes tecnologías que hemos probado
 │   ├── titulos     # Carpeta con los títulos que hemos creado para unificar estilos
-│   └── main        # Página principal en la que mostramos un menú con las diferentes páginas
+│   └── main.dart   # Página principal en la que mostramos un menú con las diferentes páginas
 └── README.md
+└── test            # Carpeta referente a los tests
 ```
 
 ## Agradecimientos
