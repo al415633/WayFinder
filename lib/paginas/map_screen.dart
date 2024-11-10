@@ -15,7 +15,11 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   List listOfPoints = [];
   List<LatLng> points = [];
-  String selectedMode = 'car'; // default mode
+  String selectedMode = 'car'; // por defecto
+  LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
+  LatLng destination = LatLng(39.9811, 0.0200804); // por defecto
+  bool selectInitialPoint = false;
+  bool selectDestination = false;
 
   @override
   void initState() {
@@ -31,8 +35,8 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   getCoordinates() async {
-    var ini = '-0.04935, 39.98567';
-    var fin = '0.0200804, 39.9811';
+    var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
+    var fin = '${destination.longitude}, ${destination.latitude}';
     http.Response? response;
     if (selectedMode == 'car') {
       response = await http.get(getCarRouteUrl(ini, fin));
@@ -51,13 +55,58 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  void _onMapTap(LatLng latlng) {
+    setState(() {
+      if (selectInitialPoint) {
+        initialPoint = latlng;
+        selectInitialPoint = false;
+      } else if (selectDestination) {
+        destination = latlng;
+        selectDestination = false;
+      }
+      getCoordinates();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map Screen'),
+        title: const Text('Mapa'),
         actions: [
-          ToggleButtons(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ToggleButtons(
+              isSelected: [
+                selectInitialPoint,
+                selectDestination,
+              ],
+              onPressed: (int index) {
+                setState(() {
+                  if (index == 0) {
+                    selectInitialPoint = !selectInitialPoint;
+                    if (selectInitialPoint) selectDestination = false;
+                  } else if (index == 1) {
+                    selectDestination = !selectDestination;
+                    if (selectDestination) selectInitialPoint = false;
+                  }
+                });
+              },
+              children: const <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text('Selecciona Origen'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text('Selecciona Destino'),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ToggleButtons(
             isSelected: [
               selectedMode == 'car',
               selectedMode == 'walk',
@@ -78,52 +127,60 @@ class _MapScreenState extends State<MapScreen> {
               Icon(Icons.directions_bike),
             ],
           ),
+          ),
         ],
       ),
-      body: FlutterMap(
-        options: MapOptions(
-          initialCenter: LatLng(39.98567, -0.04935),
-          initialZoom: 13.0,
-        ),
+      body: Column(
         children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-          ),
-          MarkerLayer(
-            markers: [
-              Marker(
-                point: LatLng(39.98567, -0.04935),
-                width: 80,
-                height: 80,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.location_on),
-                  color: Colors.green,
-                  iconSize: 45.0,
+          Expanded(
+            child: FlutterMap(
+              options: MapOptions(
+                initialCenter: initialPoint,
+                initialZoom: 13.0,
+                onTap: (tapPosition, point) => _onMapTap(point),
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                 ),
-              ),
-              Marker(
-                point: LatLng(39.9811, 0.0200804),
-                width: 80,
-                height: 80,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.location_on),
-                  color: Colors.red,
-                  iconSize: 45.0,
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: initialPoint,
+                      width: 80,
+                      height: 80,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.green,
+                        iconSize: 45.0,
+                      ),
+                    ),
+                    Marker(
+                      point: destination,
+                      width: 80,
+                      height: 80,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.location_on),
+                        color: Colors.red,
+                        iconSize: 45.0,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: points,
-                color: Colors.blue,
-                strokeWidth: 4.0,
-              ),
-            ],
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: points,
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),

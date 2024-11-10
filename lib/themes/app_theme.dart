@@ -107,6 +107,14 @@ import 'package:flutter/material.dart';
           elevation: 5,
         ),
       ),
+
+      // ToggleButtons
+      toggleButtonsTheme: ToggleButtonsThemeData(
+        color: Color(0xFF33373C),
+        selectedColor: Colors.white,
+        fillColor: Color(0xFF99D2E5),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
     );
   }
 }

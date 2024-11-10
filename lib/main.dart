@@ -3,11 +3,11 @@ import 'package:spike0/paginas/listamunicipios.dart';
 import 'package:spike0/paginas/map_screen.dart';
 import 'package:spike0/paginas/preciocarburanteIndice.dart';
 import 'package:spike0/paginas/swatchpage.dart';
-import 'package:spike0/paginas/iniciosesion.dart';
-import 'package:spike0/paginas/pagina02.dart';
-import 'package:spike0/paginas/preciocarburante.dart';
-import 'package:spike0/paginas/precioluz.dart';
-import 'package:spike0/paginas/registrarusuario.dart';
+import 'paginas/iniciosesion.dart';
+import 'paginas/pagina02.dart';
+import 'paginas/preciocarburante.dart';
+import 'paginas/precioluz.dart';
+import 'paginas/registrarusuario.dart';
 
 // IMPORT PARA LA BASE DE DATOS
 import 'package:firebase_core/firebase_core.dart';
