@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
-import '../lib/main.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:convert';
-import '../lib/paginas/precioluz.dart'; // Asegúrate de que la ruta sea correcta
+import 'precio_luz_integration_test.mocks.dart';
+import 'precio_luz_service.dart'; // Asegúrate de que la ruta sea correcta
 
 
 @GenerateMocks([http.Client])
 void main() {
-  /*
+  
   // Definimos el grupo de pruebas
   group('PrecioLuz API Integration Test', () {
     late MockClient mockClient;
@@ -41,15 +41,13 @@ void main() {
 );
 
       // Instancia el objeto que vas a probar (PrecioLuz)
-      final precioLuz = PrecioLuz();
-      final precioLuzState = precioLuz.createState();
+      final service = PrecioLuzService();
 
-      // Ejecuta la función que queremos probar
-      await precioLuzState.fetchPrecioActual();
+      final actualPrecioLuz = await service.fetchPrecioActual(mockClient); 
 
       // Verificamos el valor actualizado
-      expect(precioLuzState.precioActualLuz, 102.5); // Comparar con un double
+      expect(actualPrecioLuz, '102.5'); // Comparar con un double
     });
   });
-  */
 }
+
