@@ -5,9 +5,9 @@ on:
     branches:
       - main  
 
-  push:
-    branches:
-      - main
+  # push:
+  # branches:
+  #  - main
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
           channel: stable
           version: 3.24.3
 
-    #  - name: Install Dependencies
-    #   run: flutter pub get
-    #  - name: Run Tests
-    #   run: flutter test  # Ejecuta las pruebas
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Run Tests
+        run: flutter test  # Ejecuta las pruebas
