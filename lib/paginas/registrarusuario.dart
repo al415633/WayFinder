@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:spike0/paginas/errorpage.dart';
-import 'package:spike0/paginas/exitopage.dart';
+import 'package:WayFinder/paginas/errorpage.dart';
+import 'package:WayFinder/paginas/exitopage.dart';
 
 class RegistroUsuario extends StatefulWidget {
   const RegistroUsuario({super.key});

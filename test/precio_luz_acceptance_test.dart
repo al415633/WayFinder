@@ -1,6 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import './precio_luz_service.dart'; // Asegúrate de que la ruta sea correcta
+import './precio_luz_service.dart'; 
 
 void main() {
   group('PrecioLuz API Acceptance Test', () {

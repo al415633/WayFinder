@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 //IMPORT PARA LA BASE DE DATOS
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:spike0/paginas/errorpage.dart';
-import 'package:spike0/paginas/exitopage.dart';
-import 'package:spike0/paginas/registrarusuario.dart';
+import 'package:WayFinder/paginas/errorpage.dart';
+import 'package:WayFinder/paginas/exitopage.dart';
+import 'package:WayFinder/paginas/registrarusuario.dart';
 
 
 

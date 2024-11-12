@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spike0/titulos/titulo1.dart';
+import 'package:WayFinder/titulos/titulo1.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage({super.key});

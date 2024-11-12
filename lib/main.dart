@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spike0/paginas/listamunicipios.dart';
-import 'package:spike0/paginas/map_screen.dart';
-import 'package:spike0/paginas/preciocarburanteIndice.dart';
-import 'package:spike0/paginas/swatchpage.dart';
+import 'package:WayFinder/paginas/listamunicipios.dart';
+import 'package:WayFinder/paginas/map_screen.dart';
+import 'package:WayFinder/paginas/preciocarburanteIndice.dart';
+import 'package:WayFinder/paginas/swatchpage.dart';
 import 'paginas/iniciosesion.dart';
 import 'paginas/pagina02.dart';
 import 'paginas/preciocarburante.dart';
