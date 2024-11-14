@@ -15,9 +15,13 @@ void main() {
     late DbAdapter adapter;
     late ControladorLugar controladorLugar;
 
+    
+
     setUpAll(() async {
       // Inicializar el entorno de pruebas
-      WidgetsFlutterBinding.ensureInitialized();
+
+      // no se si hace falta el test delante
+      TestWidgetsFlutterBinding.ensureInitialized();
 
       // Cargar la configuración desde firebase_config.json
 
@@ -116,13 +120,61 @@ void main() {
     });
 
 
-    test('H7', () async {
-      // Llamada real a la API
-      //final precioActual = await precioLuzService.fetchPrecioActual();
+    test('H7-EV', () async {
+       //GIVEN
 
-      // Verificamos que el precio actual se haya recuperado
-      //expect(precioActual, isNotNull);
-      //print('El precio actual de la luz es: $precioActual €/MWh');
+      //Loguear usuario
+      //controladorUsuario.login(usuarioPruebas)
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.4935;
+      final String apodo1 = "Castellon";
+
+      await controladorLugar.crearLugarPorCoord(lat1, long1, apodo1);
+
+      final String topo2 = "mi casa";
+      final String apodo2 = "Burriana";
+
+      await controladorLugar.crearLugarPorTopo(topo2, apodo2);
+
+      //WHEN
+
+      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
+
+      //THEN
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final listaLugares = lugares.toList();
+      
+      // Acceder al primer objeto en la lista
+      final primerLugar = listaLugares[0];
+      final segundoLugar = listaLugares[1];
+
+      // Verificar que los valores del primer lugar son los esperados
+      expect(primerLugar.getCoordenada(), equals(Coordenada(lat1, long1))); // Verifica las coordenadas
+      expect(primerLugar.getToponimo(), equals("Castelló de la Plana")); // Verifica el toponimo
+      expect(primerLugar.getApodo(), equals("castellon")); // Verifica el apodo
+
+
+      // Verificar que los valores del segundo lugar son los esperados
+      expect(primerLugar.getToponimo(), equals("Burriana")); // Verifica el toponimo
+      expect(primerLugar.getApodo(), equals("mi casa")); // Verifica el apodo
+
+    });
+
+
+    test('H7-EI', () async {
+       //GIVEN
+
+      //Loguear usuario
+      //controladorUsuario.login(usuarioPruebas)
+
+      //WHEN Y THEN
+
+      expect(() {
+      controladorLugar.getListaLugares();
+    }, throwsException);
+
     });
 
 
