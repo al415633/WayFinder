@@ -11,15 +11,15 @@ late double lon;
   Coordenada(double lat, double long) {
     coordenada = LatLng(lat, long);
     this.lat = lat;
-    this.lon = lon;
+    lon = lon;
   }
 
   double getLat(){
-    return this.lat;
+    return lat;
   }
 
   double getLon(){
-    return this.lon;
+    return lon;
   }
 
 }

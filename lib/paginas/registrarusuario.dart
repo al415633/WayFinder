@@ -15,7 +15,7 @@ class _RegistroUsuarioState extends State<RegistroUsuario> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   String _errorMessage = '';
-  Map<String, bool> _passwordValidation = {
+  final Map<String, bool> _passwordValidation = {
     "length": false,
     "uppercase": false,
     "numeric": false,

@@ -19,7 +19,7 @@ class ControladorRuta {
  }
 
  Set<Ruta> getListaRutas(){
-  return this.listaRutas;
+  return listaRutas;
  }
 
 bool crearRuta(Lugar inicio, Lugar fin, double distancia, List<LatLng> points, String modoTransporte, String modoRuta){
