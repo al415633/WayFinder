@@ -22,8 +22,10 @@ class ControladorRuta {
   return this.listaRutas;
  }
 
-bool crearRuta(Lugar inicio, Lugar fin, double distancia, List<LatLng> points, String modoTransporte, String modoRuta){
-  listaRutas.add(Ruta(inicio, fin, distancia, points, modoTransporte, modoRuta) );
+bool crearRuta(Lugar inicio, Lugar fin, List<Coordenada> points, String modoTransporte, String modoRuta){
+
+  Ruta ruta = Ruta(inicio, fin, getDistancia(inicio, fin), getPoints(inicio, fin), modoTransporte, modoRuta) 
+  listaRutas.add(ruta);
   return true;
 }
 
