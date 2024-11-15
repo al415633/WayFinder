@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '/services/municipios_service.dart';  // Importamos el servicio que creamos para obtener los municipios
 
 class ListaMunicipiosPage extends StatefulWidget {
+  const ListaMunicipiosPage({super.key});
+
   @override
   _ListaMunicipiosPageState createState() => _ListaMunicipiosPageState();
 }
@@ -30,9 +32,9 @@ class _ListaMunicipiosPageState extends State<ListaMunicipiosPage> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             // Imprime los municipios y sus IDs en la terminal para verlos y poder hacer Ctrl+F
-            snapshot.data!.forEach((municipio) {
+            for (var municipio in snapshot.data!) {
               print('Municipio: ${municipio.nombre}, ID: ${municipio.id}');
-            });
+            }
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {

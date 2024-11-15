@@ -16,16 +16,16 @@ late bool fav;
   // Constructor
   Lugar(double lat, double long, String apodo) {
     coordenada = Coordenada(lat, long);
-    this.toponimo = traduceCoordATop(coordenada) as String;
+    toponimo = traduceCoordATop(coordenada) as String;
     this.apodo = apodo;
-    this.fav = false;
+    fav = false;
   }
 
   Lugar.fromTopnimo(String toponimo, String apodo) {
     this.toponimo = toponimo;
-    this.coordenada = traduceTopACoord(toponimo) as Coordenada;
+    coordenada = traduceTopACoord(toponimo) as Coordenada;
     this.apodo = apodo;
-    this.fav = false;
+    fav = false;
   }
 
   // Método para pasar de Coordenadas a toponimo

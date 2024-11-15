@@ -17,7 +17,7 @@ class ControladorLugar {
  }
 
  Set<Lugar> getListaLugares(){
-  return this.listaLugares;
+  return listaLugares;
  }
 
 bool crearLugarPorCoord(double lat, double long, String apodo){

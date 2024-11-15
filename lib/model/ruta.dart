@@ -25,7 +25,7 @@ late String modoRuta;
     this.fin = fin;
     this.distancia = distancia;
     this.points = [];
-    this.fav = false;
+    fav = false;
     this.modoTransporte = modoTransporte;
     this.modoRuta = modoRuta;
   }
@@ -37,8 +37,8 @@ late String modoRuta;
   }
 
   double calcularCosteKCal(){
-   double consumo_medio = 55;
-    return distancia * consumo_medio;
+   double consumoMedio = 55;
+    return distancia * consumoMedio;
   }
      
 }

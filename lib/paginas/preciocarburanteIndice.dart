@@ -6,7 +6,7 @@ class PreciosMunicipioIndicePage extends StatefulWidget {
   final String idMunicipio;
   final String nombreMunicipio;
 
-  PreciosMunicipioIndicePage({required this.idMunicipio, required this.nombreMunicipio});
+  const PreciosMunicipioIndicePage({super.key, required this.idMunicipio, required this.nombreMunicipio});
 
   @override
   _PreciosMunicipioIndicePageState createState() => _PreciosMunicipioIndicePageState();
