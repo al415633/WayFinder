@@ -55,7 +55,18 @@ late bool fav;
   return topo;
   }
 
+  Coordenada getCoordenada(){
+    return this.coordenada;
+  }
 
+  String getToponimo() {
+    return this.toponimo;
+  }
+
+
+  String getApodo() {
+    return this.apodo;
+  }
 
   // Método para pasar de  toponimo a Coordenadas
   //TO DO: Revisar los nulos y que en vez de eso mande excepción 
@@ -78,6 +89,16 @@ late bool fav;
       print('Error en la solicitud: ${response.statusCode}');
       return null;
     }
+  }
+
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'coord': coordenada,
+      'toponimo': toponimo,
+      'apodo': apodo,
+    };
   }
     
 }

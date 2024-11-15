@@ -8,6 +8,10 @@ import 'paginas/pagina02.dart';
 import 'paginas/preciocarburante.dart';
 import 'paginas/precioluz.dart';
 import 'paginas/registrarusuario.dart';
+import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
 import 'package:firebase_core/firebase_core.dart';
@@ -16,18 +20,25 @@ import 'package:firebase_core/firebase_core.dart';
 import 'themes/app_theme.dart';
 
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Cargar la configuración desde firebase_config.json
+  final response = await http.get(Uri.parse('/firebase_config.json'));
+  final config = json.decode(response.body);
+
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-      authDomain: "wayfinder-df8eb.firebaseapp.com",
-      projectId: "wayfinder-df8eb",
-      storageBucket: "wayfinder-df8eb.appspot.com",
-      messagingSenderId: "571791500413",
-      appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-      measurementId: "G-TZLW8P5J8V",
+      apiKey: config['apiKey'],
+      authDomain: config['authDomain'],
+      projectId: config['projectId'],
+      storageBucket: config['storageBucket'],
+      messagingSenderId: config['messagingSenderId'],
+      appId: config['appId'],
+      measurementId: config['measurementId'],
     ),
   );
+
   runApp(MiApp());
 }
 
