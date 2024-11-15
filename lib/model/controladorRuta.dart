@@ -24,7 +24,7 @@ final DbAdapter _dbAdapter;
   return this.listaRutas;
  }
 
-bool crearRuta(Lugar inicio, Lugar fin, double distancia, List<LatLng> points, String modoTransporte, String modoRuta){
+bool crearRuta(Lugar inicio, Lugar fin, double distancia, List<Coordenada> points, String modoTransporte, String modoRuta){
 
   Ruta ruta = Ruta(inicio, fin, distancia, points, modoTransporte, modoRuta) ;
   _dbAdapter.crearRuta(ruta);
