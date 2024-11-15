@@ -40,5 +40,19 @@ late String modoRuta;
    double consumo_medio = 55;
     return distancia * consumo_medio;
   }
+
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'inicio': inicio.toMap(),
+      'fin': fin.toMap(),
+      'distancia': distancia,
+      'points': points,
+      'fav' : fav,
+      'modoTransporte' : modoTransporte,
+      'modoRuta': modoRuta,
+    };
+  }
      
 }

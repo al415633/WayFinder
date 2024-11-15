@@ -8,8 +8,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:integration_test/integration_test.dart';
+
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R2: Gestión de lugares de interés', () {
 
     late DbAdapter adapter;
@@ -40,6 +43,7 @@ void main() {
         ),
       );
     });
+    
 
     setUp(() async {
       adapter = FirestoreAdapter(collectionName: "testCollection");
