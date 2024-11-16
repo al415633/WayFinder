@@ -1,10 +1,9 @@
 import 'dart:convert';
 
 import 'package:WayFinder/model/lugar.dart';
-import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/paginas/api_ops.dart';
+
 
 class Ruta {
   // Propiedades

@@ -70,7 +70,7 @@ void main() {
 
       //THEN
 
-      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
+      final Set<Lugar> lugares = controladorLugar.getListaLugares();
 
       // Convertir el set a una lista para acceder al primer elemento
       final listaLugares = lugares.toList();

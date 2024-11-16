@@ -56,16 +56,16 @@ late bool fav;
   }
 
   Coordenada getCoordenada(){
-    return this.coordenada;
+    return coordenada;
   }
 
   String getToponimo() {
-    return this.toponimo;
+    return toponimo;
   }
 
 
   String getApodo() {
-    return this.apodo;
+    return apodo;
   }
 
   bool getFav() {
