@@ -8,14 +8,14 @@ class Ruta {
 late Lugar inicio;
 late Lugar fin;
 late double distancia;
-late List<LatLng> points;
+late List<Coordenada> points;
 late bool fav;
 late String modoTransporte;
 late String modoRuta;
 
 
   // Constructor
-  Ruta(Lugar inicio, Lugar fin, double distancia, List<LatLng> points, String modoTransporte, String modoRuta){
+  Ruta(Lugar inicio, Lugar fin, double distancia, List<Coordenada> points, String modoTransporte, String modoRuta){
     this.inicio = inicio;
     this.fin = fin;
     this.distancia = distancia;
@@ -34,6 +34,48 @@ late String modoRuta;
   double calcularCosteKCal(){
    double consumoMedio = 55;
     return distancia * consumoMedio;
+  }
+
+
+  Lugar getInicio(){
+      return inicio;
+  }
+
+
+  Lugar getFin(){
+    return fin;
+  }
+
+  double getDistancia(){
+    return distancia;
+  }
+
+  List<Coordenada> getPoints(){
+    return points;
+  }
+
+  String getModoTransporte(){
+    return modoTransporte;
+  }
+
+
+  String getModoRuta(){
+    return modoRuta;
+  }
+
+
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'inicio': inicio.toMap(),
+      'fin': fin.toMap(),
+      'distancia': distancia,
+      'points': points,
+      'fav' : fav,
+      'modoTransporte' : modoTransporte,
+      'modoRuta': modoRuta,
+    };
   }
      
 }
