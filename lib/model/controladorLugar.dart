@@ -41,10 +41,8 @@ class ControladorLugar {
       Lugar lugar = Lugar(lat, long, apodo);
 
 
- Set<Lugar> getListaLugares(){
-  return listaLugares;
- }
-      bool success =  await _dbAdapter.crearLugarPorCoord(lugar);
+ 
+      bool success =  await this._dbAdapter.crearLugarPorCoord(lugar);
       
       if (success){
         listaLugares.add(lugar);
@@ -86,7 +84,6 @@ class ControladorLugar {
 
         return success;
     }
-
 
 
 

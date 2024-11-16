@@ -2,10 +2,12 @@
 import 'package:WayFinder/model/lugar.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/coordenada.dart';
-
-
 import 'package:WayFinder/model/ruta.dart';
+
+import 'package:WayFinder/paginas/api_ops.dart';
 
 
 
