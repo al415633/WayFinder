@@ -40,5 +40,47 @@ late String modoRuta;
    double consumo_medio = 55;
     return distancia * consumo_medio;
   }
+
+
+  Lugar getInicio(){
+      return inicio;
+  }
+
+
+  Lugar getFin(){
+    return fin;
+  }
+
+  double getDistancia(){
+    return distancia;
+  }
+
+  List<Coordenada> getPoints(){
+    return points;
+  }
+
+  String getModoTransporte(){
+    return modoTransporte;
+  }
+
+
+  String getModoRuta(){
+    return modoRuta;
+  }
+
+
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'inicio': inicio.toMap(),
+      'fin': fin.toMap(),
+      'distancia': distancia,
+      'points': points,
+      'fav' : fav,
+      'modoTransporte' : modoTransporte,
+      'modoRuta': modoRuta,
+    };
+  }
      
 }

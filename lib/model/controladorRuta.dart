@@ -14,7 +14,7 @@ class ControladorRuta {
   // Propiedades
  late Set<Ruta> listaRutas;
 
- final DbAdapter _dbAdapter;
+ final DbAdapterRuta _dbAdapter;
 
   ControladorRuta(this._dbAdapter) : listaRutas = _dbAdapter.getListaRutas();
 
@@ -23,7 +23,7 @@ class ControladorRuta {
   return this.listaRutas;
  }
 
-bool crearRuta(Lugar inicio, Lugar fin, List<Coordenada> points, String modoTransporte, String modoRuta){
+bool crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta){
 
   Ruta ruta = Ruta(inicio, fin, getDistancia(inicio, fin), getPoints(inicio, fin), modoTransporte, modoRuta); 
   
@@ -42,11 +42,11 @@ bool crearRuta(Lugar inicio, Lugar fin, List<Coordenada> points, String modoTran
 }
 
 
-class FirestoreAdapter implements DbAdapter {
+class FirestoreAdapterRuta implements DbAdapterRuta {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  FirestoreAdapter({String collectionName = "production"}) : _collectionName = collectionName;
+  FirestoreAdapterRuta({String collectionName = "production"}) : _collectionName = collectionName;
 
   @override
   Set<Ruta> getListaRutas(){
@@ -72,7 +72,7 @@ class FirestoreAdapter implements DbAdapter {
 
 
 
-abstract class DbAdapter {
+abstract class DbAdapterRuta {
   Future<bool> crearRuta(Ruta ruta);
   Set<Ruta> getListaRutas();
 }

@@ -5,6 +5,7 @@ import 'package:WayFinder/model/controladorLugar.dart';
 import 'package:WayFinder/model/controladorRuta.dart';
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
+import 'package:WayFinder/model/ruta.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R4: Gestión de rutas', () {
 
-    late DbAdapter adapter;
+    late DbAdapterRuta adapter;
     late ControladorRuta controladorRuta;
 
    setUpAll(() async {
@@ -44,7 +45,7 @@ void main() {
     });
 
     setUp(() async {
-      adapter = FirestoreAdapter(collectionName: "testCollection");
+      adapter = FirestoreAdapterRuta(collectionName: "testCollection");
       controladorRuta = ControladorRuta(adapter);
 
     });
@@ -109,7 +110,7 @@ void main() {
       
     });
    
-    test('H18', () async {
+    test('H18-EV', () async {
 
       //GIVEN
 
@@ -129,7 +130,7 @@ void main() {
       Lugar ini = Lugar(lat1, long1, apodo1);
       Lugar fin = Lugar(lat2, long2, apodo2);
 
-      await controladorRuta.crearRuta(lat, long, apodo);
+      await controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
 
 
       //THEN
@@ -143,9 +144,49 @@ void main() {
       final primeraRuta = listaRutas[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(primeraRuta.getCoordenada(), equals(Coordenada(lat, long))); // Verifica la latitud
-      expect(primerLugar.getToponimo(), equals("Castelló de la Plana")); // Verifica la longitud
-      expect(primerLugar.getApodo(), equals("prueba 1")); // Verifica el apodo
+      expect(primeraRuta.getInicio(), equals(ini)); // Verifica el Lugar inicial
+      expect(primeraRuta.getFin, equals(fin)); // Verifica el Lugar final
+      expect(primeraRuta.getDistancia(), equals(0)); // Verifica la distancia calculada
+      expect(primeraRuta.getPoints(), equals(List<Coordenada>)); // Verifica la lista de puntos
+      expect(primeraRuta.getModoTransporte(), equals("a pie")); // Verifica el modo de Transporte
+      expect(primeraRuta.getModoRuta(), equals("rápida")); // Verifica el modo de Transporte
+
+
+
+      
+    });
+
+
+    test('H18-EI', () async {
+
+      //GIVEN
+
+      //Loguear usuario
+      //controladorUsuario.login(usuarioPruebas)
+
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Lugar ini = Lugar(lat1, long1, apodo1);
+      Lugar fin = Lugar(lat2, long2, apodo2);
+
+      await controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+
+
+      //THEN
+     expect(() {
+      controladorRuta.getListaRutas();
+    }, throwsException);
+
+
+
 
       
     });
