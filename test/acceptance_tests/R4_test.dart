@@ -17,7 +17,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R4: Gestión de rutas', () {
 
-    late DbAdapterRuta adapter;
+    late DbAdapterRuta adapterRuta;
     late ControladorRuta controladorRuta;
 
    setUpAll(() async {
@@ -45,8 +45,9 @@ void main() {
     });
 
     setUp(() async {
-      adapter = FirestoreAdapterRuta(collectionName: "testCollection");
-      controladorRuta = ControladorRuta(adapter);
+      adapterRuta = FirestoreAdapterRuta(collectionName: "testCollection");
+      controladorRuta = ControladorRuta(adapterRuta);
+      
 
     });
 
