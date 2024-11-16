@@ -1,4 +1,6 @@
+
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
+
 import 'package:WayFinder/viewModel/UserService.dart';
 import 'package:WayFinder/model/User.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,8 +29,10 @@ void main() {
       );
     });
 
+
     setUp(() {
       adapter = FirestoreAdapter(collectionName: "testCollection");
+
       userService = UserService(adapter);
     });
 

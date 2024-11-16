@@ -2,7 +2,9 @@
 import 'package:WayFinder/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class UserService implements DbAdapterUser{
+
   // Propiedad privada
   final DbAdapterUser repository;
 
@@ -16,6 +18,7 @@ class UserService implements DbAdapterUser{
     throw UnimplementedError("Method not implemented");
    
    }
+
 
    @override
    User? logIn(User user)  {
@@ -41,11 +44,13 @@ class UserService implements DbAdapterUser{
 }
 
 class FirestoreAdapter implements DbAdapterUser {
+
  
  final  String _collectionName;
  final FirebaseFirestore db= FirebaseFirestore.instance;
 
  FirestoreAdapter({String collectionName="production"}):_collectionName=collectionName;
+
 
 
   @override
@@ -60,12 +65,14 @@ class FirestoreAdapter implements DbAdapterUser {
     throw UnimplementedError("Method not implemented");
 
   }
+
   
   @override
   User? logInCredenciales(String email, String password) {
     // TODO: implement logInCredenciales
     throw UnimplementedError();
   }
+
 
 
   }
@@ -75,6 +82,7 @@ class FirestoreAdapter implements DbAdapterUser {
 abstract class DbAdapterUser {
   User? createUser(String email, String password);
   User? logIn(User user);
+
   User? logInCredenciales(String email, String password);
 
 

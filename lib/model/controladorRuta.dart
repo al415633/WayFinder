@@ -7,15 +7,20 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:WayFinder/model/ruta.dart';
 
+import 'package:WayFinder/paginas/api_ops.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
+
 
 class ControladorRuta {
   
   // Propiedades
  late Set<Ruta> listaRutas;
+final DbAdapterRuta _dbAdapter;
 
- final DbAdapterRuta _dbAdapter;
+    ControladorRuta(this._dbAdapter) : listaRutas = _dbAdapter.getListaRutas();
 
-  ControladorRuta(this._dbAdapter) : listaRutas = _dbAdapter.getListaRutas();
 
 
  Set<Ruta> getListaRutas(){
@@ -24,8 +29,8 @@ class ControladorRuta {
 
 bool crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta){
 
-  Ruta ruta = Ruta(inicio, fin, getDistancia(inicio, fin), getPoints(inicio, fin), modoTransporte, modoRuta); 
-  
+  Ruta ruta = Ruta(inicio, fin, getDistancia(inicio, fin), getPoints(inicio, fin), modoTransporte, modoRuta) ;
+  _dbAdapter.crearRuta(ruta);
   listaRutas.add(ruta);
   return true;
 }
@@ -75,3 +80,5 @@ abstract class DbAdapterRuta {
   Future<bool> crearRuta(Ruta ruta);
   Set<Ruta> getListaRutas();
 }
+
+
