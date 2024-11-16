@@ -13,7 +13,7 @@ import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R2: Gestión de lugares de interés', () {
+  group('R3: Gestión de vehículos', () {
 
     late DbAdapterVehiculo adapter;
     late Controladorvehiculo controladorVehiculo;
@@ -113,20 +113,50 @@ void main() {
 
       // THEN
       expect(action, throwsA(isA<Notvalidvehicleexception>()));
-    });
+
       expect(controladorVehiculo.getVehicleList(), isEmpty); // Verifica consumo
 
+      });
+
+
+    test('H10-EV', () async {
+      //GIVEN
+      //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
+      //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
+      //Loguear usuario
+      //controladorUsuario.login(usuarioPruebas)
+
+
+      //WHEN
+      Set<Vehicle> vehicleList = controladorVehiculo.getVehicleList();
+
+      //THEN
+
+      expect(vehicleList.first.consumption, equals(24.3));
+      expect(vehicleList.first.name, equals("Coche Ana"));
+      expect(vehicleList.first.fuelType, equals("Gasolina"));
+      expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
     });
 
 
     test('H10-EV', () async {
-      
-    });
+       //GIVEN
+
+      //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
+      //No tiene vehiculos
+      //Loguear usuario
+      //controladorUsuario.login(usuarioPruebas)
 
 
-    test('H10-EV', () async {
-       
+      //WHEN
+
+      Set<Vehicle> vehicleList = controladorVehiculo.getVehicleList();
+
+
+      //THEN
+
+      expect(vehicleList, isEmpty);
     });
 
 
