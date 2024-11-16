@@ -19,7 +19,7 @@ class ControladorLugar {
 
 
     Set<Lugar> getListaLugares(){ 
-      return this.listaLugares;
+      return listaLugares;
     }
 
     Future<bool> crearLugarPorCoord(double lat, double long, String apodo) async{
@@ -44,10 +44,10 @@ class ControladorLugar {
  Set<Lugar> getListaLugares(){
   return listaLugares;
  }
-      bool success =  await this._dbAdapter.crearLugarPorCoord(lugar);
+      bool success =  await _dbAdapter.crearLugarPorCoord(lugar);
       
       if (success){
-        this.listaLugares.add(lugar);
+        listaLugares.add(lugar);
       }
 
 
@@ -58,10 +58,10 @@ class ControladorLugar {
 
       Lugar lugar = Lugar.fromTopnimo(topo, apodo);
 
-      bool success = await this._dbAdapter.crearLugarPorTopo(lugar);
+      bool success = await _dbAdapter.crearLugarPorTopo(lugar);
 
       if (success){
-        this.listaLugares.add(lugar);
+        listaLugares.add(lugar);
       }
 
       return success;

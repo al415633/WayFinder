@@ -2,7 +2,9 @@
 import 'package:WayFinder/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserService {
+
+class UserService implements DbAdapterUser{
+
   // Propiedad privada
   final DbAdapterUser repository;
 
@@ -17,21 +19,38 @@ class UserService {
    
    }
 
-  User? logIn(User user) {
+
+   @override
+   User? logIn(User user)  {
      //REGLAS DE NEGOCIO
-     //CONECION AL REPOSITORIO 
+     //CONECION AL REPOSITORIO para ver la conexion a la BBDD
     throw UnimplementedError("Method not implemented");
-  }
+   
+   }
+
+
+  User? logInCredenciales(String email, String password)  {
+     //REGLAS DE NEGOCIO
+     //entrar en el REPOSITORIO 
+     //Comporbar que estan ese email, pass en la Bbdd
+    throw UnimplementedError("Method not implemented");
+   
+   }
+
+
+
 
 
 }
 
-class FirestoreAdapterUser implements DbAdapterUser {
+class FirestoreAdapter implements DbAdapterUser {
+
  
  final  String _collectionName;
  final FirebaseFirestore db= FirebaseFirestore.instance;
 
- FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
+ FirestoreAdapter({String collectionName="production"}):_collectionName=collectionName;
+
 
 
   @override
@@ -47,6 +66,14 @@ class FirestoreAdapterUser implements DbAdapterUser {
 
   }
 
+  
+  @override
+  User? logInCredenciales(String email, String password) {
+    // TODO: implement logInCredenciales
+    throw UnimplementedError();
+  }
+
+
 
   }
 
@@ -55,5 +82,8 @@ class FirestoreAdapterUser implements DbAdapterUser {
 abstract class DbAdapterUser {
   User? createUser(String email, String password);
   User? logIn(User user);
+
+  User? logInCredenciales(String email, String password);
+
 
 }

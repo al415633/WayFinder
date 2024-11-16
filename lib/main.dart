@@ -10,11 +10,9 @@ import 'paginas/precioluz.dart';
 import 'paginas/registrarusuario.dart';
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
-import 'package:firebase_core/firebase_core.dart';
 
 //IMPORT DE LA PLANTILLA
 import 'themes/app_theme.dart';
