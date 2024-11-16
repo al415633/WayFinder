@@ -13,7 +13,7 @@ import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R3: Gestión de vehículos', () {
+  group('R2: Gestión de lugares de interés', () {
 
     late DbAdapterVehiculo adapter;
     late Controladorvehiculo controladorVehiculo;
@@ -113,10 +113,10 @@ void main() {
 
       // THEN
       expect(action, throwsA(isA<Notvalidvehicleexception>()));
-
       expect(controladorVehiculo.getVehicleList(), isEmpty); // Verifica consumo
 
-      });
+      
+    });
 
 
     test('H10-EV', () async {
@@ -141,6 +141,7 @@ void main() {
 
 
     test('H10-EV', () async {
+       
        //GIVEN
 
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
@@ -172,4 +173,5 @@ void main() {
 
 
   });
-}
+  
+  }
