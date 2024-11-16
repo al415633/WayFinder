@@ -31,7 +31,7 @@ void main() {
 
 
     setUp(() {
-      adapter = FirestoreAdapter(collectionName: "testCollection");
+      adapter = FirestoreAdapterUser(collectionName: "testCollection");
 
       userService = UserService(adapter);
     });

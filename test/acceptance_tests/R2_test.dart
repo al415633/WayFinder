@@ -143,7 +143,7 @@ void main() {
 
       //WHEN
 
-      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
+      final Set<Lugar> lugares = controladorLugar.getListaLugares();
 
       //THEN
 

@@ -12,7 +12,8 @@ class UserService implements DbAdapterUser{
   UserService(this.repository);
 
  
-   User? createUser(String email, String password)  {
+   @override
+  User? createUser(String email, String password)  {
      //REGLAS DE NEGOCIO
      //CONECION AL REPOSITORIO 
     throw UnimplementedError("Method not implemented");
@@ -29,6 +30,7 @@ class UserService implements DbAdapterUser{
    }
 
 
+  @override
   User? logInCredenciales(String email, String password)  {
      //REGLAS DE NEGOCIO
      //entrar en el REPOSITORIO 
@@ -43,13 +45,13 @@ class UserService implements DbAdapterUser{
 
 }
 
-class FirestoreAdapter implements DbAdapterUser {
+class FirestoreAdapterUser implements DbAdapterUser {
 
  
  final  String _collectionName;
  final FirebaseFirestore db= FirebaseFirestore.instance;
 
- FirestoreAdapter({String collectionName="production"}):_collectionName=collectionName;
+ FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
 
 
 

@@ -1,6 +1,6 @@
 
 import 'package:WayFinder/model/lugar.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:WayFinder/model/coordenada.dart';
 
 class Ruta {
   // Propiedades

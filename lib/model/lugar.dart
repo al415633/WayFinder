@@ -69,7 +69,7 @@ late bool fav;
   }
 
   bool getFav() {
-    return this.fav;
+    return fav;
   }
 
   // Método para pasar de  toponimo a Coordenadas

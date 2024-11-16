@@ -72,7 +72,7 @@ class ControladorLugar {
 
       // habra que modificar tmb la lista que esta siendo actualmente usada
 
-        bool success = await this._dbAdapter.ponerFav(topo, apodo);
+        bool success = await _dbAdapter.ponerFav(topo, apodo);
 
         return success;
     }
@@ -82,7 +82,7 @@ class ControladorLugar {
       // habra que modificar tmb la lista que esta siendo actualmente usada
 
 
-        bool success = await this._dbAdapter.quitarFav(topo, apodo);
+        bool success = await _dbAdapter.quitarFav(topo, apodo);
 
         return success;
     }

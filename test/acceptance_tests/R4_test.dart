@@ -131,12 +131,12 @@ void main() {
       Lugar ini = Lugar(lat1, long1, apodo1);
       Lugar fin = Lugar(lat2, long2, apodo2);
 
-      await controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+      controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
 
 
       //THEN
 
-      final Set<Ruta> rutas = await controladorRuta.getListaRutas();
+      final Set<Ruta> rutas = controladorRuta.getListaRutas();
 
       // Convertir el set a una lista para acceder al primer elemento
       final listaRutas = rutas.toList();
@@ -178,7 +178,7 @@ void main() {
       Lugar ini = Lugar(lat1, long1, apodo1);
       Lugar fin = Lugar(lat2, long2, apodo2);
 
-      await controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+      controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
 
 
       //THEN
