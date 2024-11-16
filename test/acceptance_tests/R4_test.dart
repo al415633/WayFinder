@@ -1,11 +1,13 @@
 // precio_luz_service_acceptance_test.dart
 import 'dart:convert';
-
-import 'package:WayFinder/model/controladorLugar.dart';
-import 'package:WayFinder/model/controladorRuta.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/User.dart';
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 import 'package:WayFinder/model/ruta.dart';
+import 'package:WayFinder/viewModel/UserService.dart';
+import 'package:WayFinder/viewModel/controladorLugar.dart';
+import 'package:WayFinder/viewModel/controladorRuta.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +22,10 @@ void main() {
     late DbAdapterRuta adapterRuta;
     late ControladorRuta controladorRuta;
 
+
+    late DbAdapterUser adapterUser;
+    late UserService userService;
+    
    setUpAll(() async {
       // Inicializar el entorno de pruebas
 
@@ -29,7 +35,9 @@ void main() {
       // Cargar la configuración desde firebase_config.json
 
       //google serviceds
-      
+       adapterUser = FirestoreAdapterUser(collectionName: "testCollection");
+
+      userService = UserService(adapterUser);
 
       await Firebase.initializeApp(
         options: FirebaseOptions(
@@ -107,10 +115,94 @@ void main() {
     });
    
 
-    test('H17', () async {
+    test('H17E1-Almacenar Ruta', () async {
+          //GIVEN
+      DbAdapterLugar adapterLugar = FirestoreAdapterLugar(collectionName: "testCollection");
+      ControladorLugar controladorLugar=new ControladorLugar(adapterLugar);
       
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userService.createUser(email, password);
+      userService.logIn(user!);
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "Museo Nacional Prado";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "Plaza Mayor Madrid";
+      
+    
+      //WHEN
+
+    controladorLugar.crearLugarPorCoord(lat1,long1, apodo1);
+    controladorLugar.crearLugarPorCoord(lat2,long2, apodo1);
+    Lugar source = Lugar(lat1, long1, apodo1);
+    Lugar target = Lugar(lat2, long2, apodo2);
+    controladorRuta.crearRuta(source, target, "a pie", "rápida");
+    
+    
+    final Set<Ruta> rutas = controladorRuta.getListaRutas();
+    final listaRutas = rutas.toList();
+    final primeraRuta = listaRutas[0];
+
+
+      // THEN
+      expect(controladorLugar.leerBbddLugar(apodo1), source);
+      expect(controladorLugar.leerBbddLugar(apodo2), target);
+      expect(primeraRuta,equals(apodo1));
+      expect(primeraRuta.getFin, equals(apodo2)); // Verifica el Lugar final
+
+
     });
    
+
+
+
+    test('H17E2-Almacenar Ruta Invalido', () async {
+          //GIVEN
+      DbAdapterLugar adapterLugar = FirestoreAdapterLugar(collectionName: "error");
+      ControladorLugar controladorLugar=new ControladorLugar(adapterLugar);
+      
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userService.createUser(email, password);
+      userService.logIn(user!);
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "Museo Nacional Prado";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "Plaza Mayor Madrid";
+      
+    
+      //WHEN
+      void action() {
+    controladorLugar.crearLugarPorCoord(lat1,long1, apodo1);
+    controladorLugar.crearLugarPorCoord(lat2,long2, apodo1);
+    Lugar source = Lugar(lat1, long1, apodo1);
+    Lugar target = Lugar(lat2, long2, apodo2);
+    controladorRuta.crearRuta(source, target, "a pie", "rápida");
+    
+    
+    final Set<Ruta> rutas = controladorRuta.getListaRutas();
+    final listaRutas = rutas.toList();
+    final primeraRuta = listaRutas[0];
+
+    }
+      // THEN
+      expect(controladorLugar.leerBbddLugar(apodo1), isNull);
+      expect(controladorLugar.leerBbddLugar(apodo2), isNull);
+      expect(action, throwsA(isA<ConnectionBBDDException>()));
+
+
+    });
+
+
+
     test('H18-EV', () async {
 
       //GIVEN
@@ -119,7 +211,7 @@ void main() {
       //controladorUsuario.login(usuarioPruebas)
 
 
-      //WHEN
+ //WHEN
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;

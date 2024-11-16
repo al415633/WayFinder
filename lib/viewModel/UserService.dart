@@ -38,6 +38,14 @@ class UserService implements DbAdapterUser{
     throw UnimplementedError("Method not implemented");
    
    }
+   
+     @override
+     User? logOut(User user) {
+    // TODO: implement logOut
+
+    //Comporbar que hay acceso a la BBDD
+    throw UnimplementedError("Method not implemented");
+     }
 
 
 
@@ -72,7 +80,13 @@ class FirestoreAdapterUser implements DbAdapterUser {
   @override
   User? logInCredenciales(String email, String password) {
     // TODO: implement logInCredenciales
-    throw UnimplementedError();
+    throw UnimplementedError("Method not implemented");
+  }
+  
+  @override
+  User? logOut(User user) {
+    // TODO: implement logOut
+    throw UnimplementedError("Method not implemented");
   }
 
 
@@ -86,6 +100,8 @@ abstract class DbAdapterUser {
   User? logIn(User user);
 
   User? logInCredenciales(String email, String password);
+  User? logOut(User user);
+
 
 
 }
