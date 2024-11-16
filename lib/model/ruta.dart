@@ -82,5 +82,19 @@ late String modoRuta;
       'modoRuta': modoRuta,
     };
   }
+
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'inicio': inicio.toMap(),
+      'fin': fin.toMap(),
+      'distancia': distancia,
+      'points': points,
+      'fav' : fav,
+      'modoTransporte' : modoTransporte,
+      'modoRuta': modoRuta,
+    };
+  }
      
 }
