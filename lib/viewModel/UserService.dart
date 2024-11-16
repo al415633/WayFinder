@@ -2,7 +2,7 @@
 import 'package:WayFinder/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserService implements DbAdapterUser{
+class UserService {
   // Propiedad privada
   final DbAdapterUser repository;
 
@@ -17,16 +17,11 @@ class UserService implements DbAdapterUser{
    
    }
 
-   @override
-   User? logIn(User user)  {
+  User? logIn(User user) {
      //REGLAS DE NEGOCIO
-     //CONECION AL REPOSITORIO para ver la conexion a la BBDD
+     //CONECION AL REPOSITORIO 
     throw UnimplementedError("Method not implemented");
-   
-   }
-
-
-
+  }
 
 
 }

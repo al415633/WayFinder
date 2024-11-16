@@ -1,4 +1,4 @@
-import 'package:WayFinder/model/viewModel/UserService.dart';
+import 'package:WayFinder/viewModel/UserService.dart';
 import 'package:WayFinder/model/User.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,7 +6,7 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('UserService Test', () {
-    late DbAdapter adapter;
+    late DbAdapterUser adapter;
     late UserService userService;
 
     
@@ -36,7 +36,7 @@ void main() {
     });
 
     setUp(() async {
-      adapter = FirestoreAdapter(collectionName: "testCollection");
+      adapter = FirestoreAdapterUser(collectionName: "testCollection");
       userService = UserService(adapter);
 
     });

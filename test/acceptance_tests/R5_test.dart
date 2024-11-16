@@ -1,13 +1,14 @@
 // precio_luz_service_acceptance_test.dart
 import 'dart:convert';
 
+import 'package:WayFinder/model/User.dart';
 import 'package:WayFinder/model/controladorLugar.dart';
 import 'package:WayFinder/model/controladorRuta.dart';
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 import 'package:WayFinder/model/ruta.dart';
-import 'package:WayFinder/model/user.dart';
-import 'package:WayFinder/model/userService.dart';
+import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/viewModel/UserService.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
