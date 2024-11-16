@@ -1,3 +1,3 @@
 class IncorrectPasswordException implements Exception {
-  //ToDO
+  //TODO
 }

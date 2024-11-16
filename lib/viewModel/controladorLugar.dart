@@ -13,7 +13,7 @@ class ControladorLugar {
   // Propiedades
 
     late Set<Lugar> listaLugares;
-    final DbAdapter _dbAdapter;
+    final DbAdapterLugar _dbAdapter;
 
     ControladorLugar(this._dbAdapter) : listaLugares = _dbAdapter.getListaLugares();
 
@@ -86,6 +86,12 @@ class ControladorLugar {
     }
 
 
+  @override
+  Lugar leerBbddLugar(String apodo) {
+    // TODO: implement leerBbddLugar
+    throw UnimplementedError();
+  }
+
 
     
 }
@@ -107,11 +113,11 @@ bool tieneMaximoSeisDecimales(double valor) {
 
 
 
-class FirestoreAdapter implements DbAdapter {
+class FirestoreAdapterLugar implements DbAdapterLugar {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  FirestoreAdapter({String collectionName = "production"}) : _collectionName = collectionName;
+  FirestoreAdapterLugar({String collectionName = "production"}) : _collectionName = collectionName;
 
   @override
   Set<Lugar> getListaLugares(){
@@ -154,14 +160,21 @@ class FirestoreAdapter implements DbAdapter {
     // TODO: implement quitarFav
     throw UnimplementedError();
   }
+  
+  @override
+  Lugar leerBbddLugar(String apodo) {
+    // TODO: implement leerBbddLugar
+    throw UnimplementedError();
+  }
 }
 
 
 
-abstract class DbAdapter {
+abstract class DbAdapterLugar {
   Future<bool> crearLugarPorCoord(Lugar lugar);
   Future<bool> crearLugarPorTopo(Lugar lugar);
   Set<Lugar> getListaLugares();
   Future<bool> ponerFav(String topo, String apodo);
   Future<bool> quitarFav(String topo, String apodo);
+  Lugar leerBbddLugar(String apodo);
 }

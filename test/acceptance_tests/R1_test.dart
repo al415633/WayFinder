@@ -1,5 +1,8 @@
 
+import 'dart:ffi';
+
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 
 import 'package:WayFinder/viewModel/UserService.dart';
 import 'package:WayFinder/model/User.dart';
@@ -36,7 +39,7 @@ void main() {
       userService = UserService(adapter);
     });
 
-    // Test H1E1: Guardar Datos Usuario
+   
     test('H1E1 - Guardar Datos Usuario', () {
       // GIVEN
       String email = "ana@gmail.com";
@@ -50,7 +53,9 @@ void main() {
       expect(user?.email, equals(email));
     });
 
-    // Test H1E2: Password no cumple reglas de negocio
+
+
+
     test('H1E2 - Password no cumple reglas de negocio', () {
       // GIVEN
       String email = "ana@gmail.com";
@@ -65,7 +70,10 @@ void main() {
       expect(action, throwsA(isA<IncorrectPasswordException>()));
     });
 
-    // Test H2E2: Permite Iniciar Sesión
+
+
+
+
     test('H2E2 - Permite Iniciar Sesión', () {
       // GIVEN
       String email = "ana@gmail.com";
@@ -80,7 +88,10 @@ void main() {
       expect(user?.email, equals(email));
     });
 
-    // Test H2E3: No permite Iniciar Sesión por password inválido
+
+
+
+
     test('H2E3 - No permite Iniciar Sesión por password inválido', () {
       // GIVEN
       String email = "ana@gmail.com";
@@ -89,11 +100,54 @@ void main() {
 
       // WHEN
       void action() {
-        userService.logInCredenciales(email, "incorrectPassword");
+        userService.logInCredenciales(email, "aaaaaaaaaaaa");
       }
 
       // THEN
       expect(action, throwsA(isA<IncorrectPasswordException>()));
     });
+
+
+
+    test('H3E1 - Cerrar sesion valido', () {
+      // GIVEN
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userService.createUser(email, password);
+      userService.logIn(user!);
+
+      // WHEN
+    
+      User? cerrado= userService.logOut(user) ;
+      
+
+      // THEN
+      expect(cerrado, isNotNull);
+    });
+
+
+    test('H3E4 - Cerrar sesion sin conexion a la BBDD', () {
+      // GIVEN
+       adapter = FirestoreAdapterUser(collectionName: "No conexion");
+      userService = UserService(adapter);
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userService.createUser(email, password);
+      userService.logIn(user!);
+
+      // WHEN
+      
+      User? cerrado;
+      void action() {
+      cerrado= userService.logOut(user) ;
+      }
+
+      // THEN
+      expect(cerrado, isNull);
+      expect(action, throwsA(isA<ConnectionBBDDException>()));
+    });
+
+
+
   });
 }
