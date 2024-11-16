@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:WayFinder/model/lugar.dart';
 import 'package:http/http.dart' as http;
