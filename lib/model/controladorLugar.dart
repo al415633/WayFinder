@@ -62,6 +62,29 @@ class ControladorLugar {
       return success;
     }
 
+
+    Future<bool> ponerFav(String topo, String apodo) async{
+
+      // habra que modificar tmb la lista que esta siendo actualmente usada
+
+        bool success = await this._dbAdapter.ponerFav(topo, apodo);
+
+        return success;
+    }
+
+    Future<bool> quitarFav(String topo, String apodo) async{
+
+      // habra que modificar tmb la lista que esta siendo actualmente usada
+
+
+        bool success = await this._dbAdapter.quitarFav(topo, apodo);
+
+        return success;
+    }
+
+
+
+
     
 }
 
@@ -117,6 +140,18 @@ class FirestoreAdapter implements DbAdapter {
       return false;
     }
   }
+  
+  @override
+  Future<bool> ponerFav(String topo, String apodo) {
+    // TODO: implement ponerFav
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<bool> quitarFav(String topo, String apodo) {
+    // TODO: implement quitarFav
+    throw UnimplementedError();
+  }
 }
 
 
@@ -125,4 +160,6 @@ abstract class DbAdapter {
   Future<bool> crearLugarPorCoord(Lugar lugar);
   Future<bool> crearLugarPorTopo(Lugar lugar);
   Set<Lugar> getListaLugares();
+  Future<bool> ponerFav(String topo, String apodo);
+  Future<bool> quitarFav(String topo, String apodo);
 }

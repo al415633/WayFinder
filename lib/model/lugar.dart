@@ -68,6 +68,10 @@ late bool fav;
     return this.apodo;
   }
 
+  bool getFav() {
+    return this.fav;
+  }
+
   // Método para pasar de  toponimo a Coordenadas
   //TO DO: Revisar los nulos y que en vez de eso mande excepción 
   Future<Coordenada?> traduceTopACoord(String topo)  async {
@@ -100,5 +104,7 @@ late bool fav;
       'apodo': apodo,
     };
   }
+
+
     
 }
