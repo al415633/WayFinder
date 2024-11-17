@@ -1,6 +1,4 @@
 
-import 'dart:ffi';
-
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 

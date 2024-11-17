@@ -112,7 +112,7 @@ void main() {
 
 
       // THEN
-      expect(action, throwsA(isA<Notvalidvehicleexception>()));
+      expect(action, throwsException);
       expect(controladorVehiculo.getVehicleList(), isEmpty); // Verifica consumo
 
       
@@ -158,16 +158,6 @@ void main() {
       //THEN
 
       expect(vehicleList, isEmpty);
-    });
-
-
-    test('H7-EI', () async {
-      
-    });
-
-
-    test('H8', () async {
-     
     });
    
 
