@@ -3,12 +3,14 @@ import 'dart:convert';
 
 import 'package:WayFinder/model/User.dart';
 
+import 'package:WayFinder/viewModel/controladorLugar.dart';
+import 'package:WayFinder/viewModel/controladorRuta.dart';
+
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 import 'package:WayFinder/model/ruta.dart';
 import 'package:WayFinder/model/User.dart';
 import 'package:WayFinder/viewModel/UserService.dart';
-import 'package:WayFinder/viewModel/controladorLugar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,7 +88,7 @@ void main() {
 
       //THEN
 
-      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
+      final Set<Lugar> lugares = controladorLugar.getListaLugares();
 
       // Convertir el set a una lista para acceder al primer elemento
       final listaLugares = lugares.toList();

@@ -1,17 +1,14 @@
 // precio_luz_service_acceptance_test.dart
-import 'dart:convert';
+
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/viewModel/UserService.dart';
+import 'package:WayFinder/viewModel/controladorRuta.dart';
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 import 'package:WayFinder/model/ruta.dart';
-import 'package:WayFinder/viewModel/UserService.dart';
-import 'package:WayFinder/viewModel/controladorLugar.dart';
-import 'package:WayFinder/viewModel/controladorRuta.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
@@ -22,10 +19,6 @@ void main() {
     late DbAdapterRuta adapterRuta;
     late ControladorRuta controladorRuta;
 
-
-    late DbAdapterUser adapterUser;
-    late UserService userService;
-    
    setUpAll(() async {
       // Inicializar el entorno de pruebas
 
@@ -35,9 +28,7 @@ void main() {
       // Cargar la configuración desde firebase_config.json
 
       //google serviceds
-       adapterUser = FirestoreAdapterUser(collectionName: "testCollection");
-
-      userService = UserService(adapterUser);
+      
 
       await Firebase.initializeApp(
         options: FirebaseOptions(
@@ -114,6 +105,7 @@ void main() {
       
     });
    
+
     test('H17E1', () async {
       //GIVEN 
       String email = "ana@gmail.com";
@@ -157,7 +149,6 @@ void main() {
       User? user = userService.createUser(email, password);
       user = userService.logIn(user!);
 
-
     //WHEN 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
@@ -192,53 +183,6 @@ void main() {
 
 
       //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Lugar ini = Lugar(lat1, long1, apodo1);
-      Lugar fin = Lugar(lat2, long2, apodo2);
-
-      controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-
-      final Set<Ruta> rutas = controladorRuta.getListaRutas();
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final listaRutas = rutas.toList();
-      
-      // Acceder al primer objeto en la lista
-      final primeraRuta = listaRutas[0];
-
-      // Verificar que los valores del primer lugar son los esperados
-      expect(primeraRuta.getInicio(), equals(ini)); // Verifica el Lugar inicial
-      expect(primeraRuta.getFin, equals(fin)); // Verifica el Lugar final
-      expect(primeraRuta.getDistancia(), equals(0)); // Verifica la distancia calculada
-      expect(primeraRuta.getPoints(), equals(List<Coordenada>)); // Verifica la lista de puntos
-      expect(primeraRuta.getModoTransporte(), equals("a pie")); // Verifica el modo de Transporte
-      expect(primeraRuta.getModoRuta(), equals("rápida")); // Verifica el modo de Transporte
-
-
-
-      
-    });
-
-
-    test('H18-EV', () async {
-
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
- //WHEN
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;

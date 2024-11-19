@@ -3,13 +3,9 @@ import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:latlong2/latlong.dart';
 import 'package:WayFinder/model/ruta.dart';
 
-import 'package:WayFinder/paginas/api_ops.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 
@@ -45,10 +41,12 @@ Ruta? crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta)
     throw UnimplementedError("Method not implemented");
   }
 
+
   Future<bool> guardarRuta(Ruta ruta) {
     // TODO: implement guardarRuta
     throw UnimplementedError("Method not implemented");
   }
+
 }
 
 
@@ -75,6 +73,7 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
     } catch (e) {
       print("Error al crear lugar: $e");
       return null;
+
     }
   }
   
@@ -91,7 +90,9 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
 abstract class DbAdapterRuta {
   Future<Ruta?> crearRuta(Ruta ruta);
   Set<Ruta> getListaRutas();
+
     Future<bool> guardarRuta(Ruta ruta);
+
 
 }
 
