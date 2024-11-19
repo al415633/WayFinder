@@ -10,7 +10,7 @@ late double lon;
   // Constructor
   Coordenada(double lat, double long) {
     coordenada = LatLng(lat, long);
-    this.lat = lat;
+    lat = lat;
     lon = lon;
   }
 

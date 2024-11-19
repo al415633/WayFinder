@@ -126,7 +126,7 @@ void main() {
 
     test('H3E4 - Cerrar sesion sin conexion a la BBDD', () {
       // GIVEN
-       adapter = FirestoreAdapterUser(collectionName: "No conexion");
+      adapter = FirestoreAdapterUser(collectionName: "No conexion");
       userService = UserService(adapter);
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";

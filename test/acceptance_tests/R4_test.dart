@@ -1,15 +1,14 @@
 // precio_luz_service_acceptance_test.dart
-import 'dart:convert';
 
-import 'package:WayFinder/viewModel/controladorLugar.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/viewModel/UserService.dart';
 import 'package:WayFinder/viewModel/controladorRuta.dart';
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 import 'package:WayFinder/model/ruta.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
@@ -107,8 +106,73 @@ void main() {
     });
    
 
-    test('H17', () async {
+    test('H17E1', () async {
+      //GIVEN 
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+
+      DbAdapterUser adapter = FirestoreAdapterUser(collectionName: "testCollection");
+      UserService userService=UserService(adapter);
+      User? user = userService.createUser(email, password);
+      user = userService.logIn(user!);
+
+
+    //WHEN 
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Lugar ini = Lugar(lat1, long1, apodo1);
+      Lugar fin = Lugar(lat2, long2, apodo2);
+
+      Ruta? ruta = controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+      Future<bool> guardado = controladorRuta.guardarRuta(ruta!);
+
+      expect(ruta.getInicio(), equals(ini)); // Verifica el Lugar inicial
+      expect(ruta.getFin, equals(fin)); // Verifica el Lugar final
+      expect(guardado, true);
+
+    });
+
+
+      test('H17E2', () async {
+      //GIVEN 
+      adapterRuta = FirestoreAdapterRuta(collectionName: "No conexion") ;
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+
+      DbAdapterUser adapter = FirestoreAdapterUser(collectionName: "No conexion");
+      UserService userService=UserService(adapter);
+      User? user = userService.createUser(email, password);
+      user = userService.logIn(user!);
+
+
+    //WHEN 
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Lugar ini = Lugar(lat1, long1, apodo1);
+      Lugar fin = Lugar(lat2, long2, apodo2);
+    
+      Ruta? ruta;
+      bool guardado=false;
+     void action() {
+      ruta = controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+      guardado = controladorRuta.guardarRuta(ruta!) as bool;
+     }
       
+      expect(action, throwsA(isA<ConnectionBBDDException>()));
+      expect(ruta?.getInicio(), isNull); 
+      expect(ruta?.getFin, isNull); 
+      expect(guardado, false);
+
     });
    
     test('H18-EV', () async {

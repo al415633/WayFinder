@@ -13,7 +13,7 @@ late bool fav;
     this.consumption = consumption;
     this.numberPlate = numberPlate;
     this.name = name;
-    this.fav = false;
+    fav = false;
   }
 
   String getFuelType(){

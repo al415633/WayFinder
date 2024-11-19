@@ -3,13 +3,9 @@ import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:latlong2/latlong.dart';
 import 'package:WayFinder/model/ruta.dart';
 
-import 'package:WayFinder/paginas/api_ops.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 
@@ -28,12 +24,12 @@ final DbAdapterRuta _dbAdapter;
   return listaRutas;
  }
 
-bool crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta){
+Ruta? crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta){
 
   Ruta ruta = Ruta(inicio, fin, getDistancia(inicio, fin), getPoints(inicio, fin), modoTransporte, modoRuta) ;
   _dbAdapter.crearRuta(ruta);
   listaRutas.add(ruta);
-  return true;
+  return null;
 }
 
   double getDistancia(Lugar inicio, Lugar fin) {
@@ -44,6 +40,14 @@ bool crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta){
   List<Coordenada> getPoints(Lugar inicio, Lugar fin) {
     throw UnimplementedError("Method not implemented");
   }
+
+
+    @override
+  Future<bool> guardarRuta(Ruta ruta) {
+    // TODO: implement guardarRuta
+    throw UnimplementedError("Method not implemented");
+  }
+  
 }
 
 
@@ -63,14 +67,20 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
   }
 
   @override
-  Future<bool> crearRuta(Ruta ruta) async {
+  Future<Ruta?> crearRuta(Ruta ruta) async {
     try {
       await db.collection(_collectionName).add(ruta.toMap());
-      return true;
+      return null;
     } catch (e) {
       print("Error al crear lugar: $e");
-      return false;
+     return null;
     }
+  }
+  
+  @override
+  Future<bool> guardarRuta(Ruta ruta) {
+    // TODO: implement guardarRuta
+    throw UnimplementedError();
   }
   
 }
@@ -78,8 +88,9 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
 
 
 abstract class DbAdapterRuta {
-  Future<bool> crearRuta(Ruta ruta);
+  Future<Ruta?> crearRuta(Ruta ruta);
   Set<Ruta> getListaRutas();
+  Future<bool> guardarRuta(Ruta ruta);
 }
 
 
