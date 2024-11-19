@@ -12,7 +12,9 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R2: Gestión de lugares de interés', () {
 
+
     late DbAdapterLugar adapterLugar;
+
     late ControladorLugar controladorLugar;
 
     
@@ -43,8 +45,10 @@ void main() {
     
 
     setUp(() async {
+
       adapterLugar = FirestoreAdapterLugar(collectionName: "testCollection");
       controladorLugar = ControladorLugar(adapterLugar);
+
 
     });
 

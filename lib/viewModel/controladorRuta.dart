@@ -42,12 +42,11 @@ Ruta? crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta)
   }
 
 
-    @override
   Future<bool> guardarRuta(Ruta ruta) {
     // TODO: implement guardarRuta
     throw UnimplementedError("Method not implemented");
   }
-  
+
 }
 
 
@@ -73,7 +72,8 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
       return null;
     } catch (e) {
       print("Error al crear lugar: $e");
-     return null;
+      return null;
+
     }
   }
   
@@ -90,7 +90,10 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
 abstract class DbAdapterRuta {
   Future<Ruta?> crearRuta(Ruta ruta);
   Set<Ruta> getListaRutas();
-  Future<bool> guardarRuta(Ruta ruta);
+
+    Future<bool> guardarRuta(Ruta ruta);
+
+
 }
 
 

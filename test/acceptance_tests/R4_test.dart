@@ -149,7 +149,6 @@ void main() {
       User? user = userService.createUser(email, password);
       user = userService.logIn(user!);
 
-
     //WHEN 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
