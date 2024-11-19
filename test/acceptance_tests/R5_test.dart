@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/model/controladorRuta.dart';
+
 import 'package:WayFinder/model/coordenada.dart';
 import 'package:WayFinder/model/lugar.dart';
 import 'package:WayFinder/model/ruta.dart';
@@ -20,7 +20,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R5: Gestión de preferencias', () {
 
-    late DbAdapter adapterLugar;
+    late DbAdapterLugar adapterLugar;
     late ControladorLugar controladorLugar;
 
 
@@ -52,7 +52,7 @@ void main() {
     });
 
     setUp(() async {
-      adapterLugar = FirestoreAdapter(collectionName: "testCollection");
+      adapterLugar = FirestoreAdapterLugar(collectionName: "testCollection");
       controladorLugar = ControladorLugar(adapterLugar);
 
       adapterUser = FirestoreAdapterUser(collectionName: "testCollection");

@@ -114,93 +114,120 @@ void main() {
       
     });
    
-
-    test('H17E1-Almacenar Ruta', () async {
-          //GIVEN
-      DbAdapterLugar adapterLugar = FirestoreAdapterLugar(collectionName: "testCollection");
-      ControladorLugar controladorLugar=new ControladorLugar(adapterLugar);
-      
+    test('H17E1', () async {
+      //GIVEN 
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userService.createUser(email, password);
-      userService.logIn(user!);
 
+      DbAdapterUser adapter = FirestoreAdapterUser(collectionName: "testCollection");
+      UserService userService=UserService(adapter);
+      User? user = userService.createUser(email, password);
+      user = userService.logIn(user!);
+
+
+    //WHEN 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
-      final String apodo1 = "Museo Nacional Prado";
+      final String apodo1 = "castellon";
 
       final double lat2 = 39.8890;
       final double long2 = -0.08499;
-      final String apodo2 = "Plaza Mayor Madrid";
+      final String apodo2 = "burriana";
+      Lugar ini = Lugar(lat1, long1, apodo1);
+      Lugar fin = Lugar(lat2, long2, apodo2);
+
+      Ruta? ruta = controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+      Future<bool> guardado = controladorRuta.guardarRuta(ruta!);
+
+      expect(ruta.getInicio(), equals(ini)); // Verifica el Lugar inicial
+      expect(ruta.getFin, equals(fin)); // Verifica el Lugar final
+      expect(guardado, true);
+
+    });
+
+
+      test('H17E2', () async {
+      //GIVEN 
+      adapterRuta = FirestoreAdapterRuta(collectionName: "No conexion") ;
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+
+      DbAdapterUser adapter = FirestoreAdapterUser(collectionName: "No conexion");
+      UserService userService=UserService(adapter);
+      User? user = userService.createUser(email, password);
+      user = userService.logIn(user!);
+
+
+    //WHEN 
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Lugar ini = Lugar(lat1, long1, apodo1);
+      Lugar fin = Lugar(lat2, long2, apodo2);
+    
+      Ruta? ruta;
+      bool guardado=false;
+     void action() {
+      ruta = controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+      guardado = controladorRuta.guardarRuta(ruta!) as bool;
+     }
       
-    
-      //WHEN
-
-    controladorLugar.crearLugarPorCoord(lat1,long1, apodo1);
-    controladorLugar.crearLugarPorCoord(lat2,long2, apodo1);
-    Lugar source = Lugar(lat1, long1, apodo1);
-    Lugar target = Lugar(lat2, long2, apodo2);
-    controladorRuta.crearRuta(source, target, "a pie", "rápida");
-    
-    
-    final Set<Ruta> rutas = controladorRuta.getListaRutas();
-    final listaRutas = rutas.toList();
-    final primeraRuta = listaRutas[0];
-
-
-      // THEN
-      expect(controladorLugar.leerBbddLugar(apodo1), source);
-      expect(controladorLugar.leerBbddLugar(apodo2), target);
-      expect(primeraRuta,equals(apodo1));
-      expect(primeraRuta.getFin, equals(apodo2)); // Verifica el Lugar final
-
+      expect(action, throwsA(isA<ConnectionBBDDException>()));
+      expect(ruta?.getInicio(), isNull); 
+      expect(ruta?.getFin, isNull); 
+      expect(guardado, false);
 
     });
    
+    test('H18-EV', () async {
+
+      //GIVEN
+
+      //Loguear usuario
+      //controladorUsuario.login(usuarioPruebas)
 
 
-
-    test('H17E2-Almacenar Ruta Invalido', () async {
-          //GIVEN
-      DbAdapterLugar adapterLugar = FirestoreAdapterLugar(collectionName: "error");
-      ControladorLugar controladorLugar=new ControladorLugar(adapterLugar);
-      
-      String email = "ana@gmail.com";
-      String password = "Aaaaa,.8";
-      User? user = userService.createUser(email, password);
-      userService.logIn(user!);
+      //WHEN
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
-      final String apodo1 = "Museo Nacional Prado";
+      final String apodo1 = "castellon";
 
       final double lat2 = 39.8890;
       final double long2 = -0.08499;
-      final String apodo2 = "Plaza Mayor Madrid";
+      final String apodo2 = "burriana";
+      Lugar ini = Lugar(lat1, long1, apodo1);
+      Lugar fin = Lugar(lat2, long2, apodo2);
+
+      controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
+
+
+      //THEN
+
+      final Set<Ruta> rutas = controladorRuta.getListaRutas();
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final listaRutas = rutas.toList();
       
-    
-      //WHEN
-      void action() {
-    controladorLugar.crearLugarPorCoord(lat1,long1, apodo1);
-    controladorLugar.crearLugarPorCoord(lat2,long2, apodo1);
-    Lugar source = Lugar(lat1, long1, apodo1);
-    Lugar target = Lugar(lat2, long2, apodo2);
-    controladorRuta.crearRuta(source, target, "a pie", "rápida");
-    
-    
-    final Set<Ruta> rutas = controladorRuta.getListaRutas();
-    final listaRutas = rutas.toList();
-    final primeraRuta = listaRutas[0];
+      // Acceder al primer objeto en la lista
+      final primeraRuta = listaRutas[0];
 
-    }
-      // THEN
-      expect(controladorLugar.leerBbddLugar(apodo1), isNull);
-      expect(controladorLugar.leerBbddLugar(apodo2), isNull);
-      expect(action, throwsA(isA<ConnectionBBDDException>()));
+      // Verificar que los valores del primer lugar son los esperados
+      expect(primeraRuta.getInicio(), equals(ini)); // Verifica el Lugar inicial
+      expect(primeraRuta.getFin, equals(fin)); // Verifica el Lugar final
+      expect(primeraRuta.getDistancia(), equals(0)); // Verifica la distancia calculada
+      expect(primeraRuta.getPoints(), equals(List<Coordenada>)); // Verifica la lista de puntos
+      expect(primeraRuta.getModoTransporte(), equals("a pie")); // Verifica el modo de Transporte
+      expect(primeraRuta.getModoRuta(), equals("rápida")); // Verifica el modo de Transporte
 
 
+
+      
     });
-
 
 
     test('H18-EV', () async {
