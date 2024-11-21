@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/coordinate.dart';
-import 'package:WayFinder/paginas/apiConection.dart';
+import 'package:WayFinder/APIs/apiConection.dart';
 
 class Location {
   // Propiedades

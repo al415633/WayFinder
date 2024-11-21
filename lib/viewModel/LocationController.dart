@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 
-class ControladorLocation {
+class LocationController {
   // Propiedades
 
     late Set<Location> locationList;
     final DbAdapterLocation _dbAdapter;
 
-    ControladorLocation(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
+    LocationController(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
 
 
     Set<Location> getLocationList(){ 

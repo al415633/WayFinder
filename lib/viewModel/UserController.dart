@@ -54,10 +54,10 @@ class UserController implements DbAdapterUser{
 }
 
 class FirestoreAdapterUser implements DbAdapterUser {
- final  String _collectionName;
- final FirebaseFirestore db= FirebaseFirestore.instance;
+  final  String _collectionName;
+  final FirebaseFirestore db= FirebaseFirestore.instance;
 
- FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
+  FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
 
 
 
