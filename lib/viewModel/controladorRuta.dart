@@ -27,9 +27,8 @@ final DbAdapterRuta _dbAdapter;
 Ruta? crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta){
 
   Ruta ruta = Ruta(inicio, fin, getDistancia(inicio, fin), getPoints(inicio, fin), modoTransporte, modoRuta) ;
-  _dbAdapter.crearRuta(ruta);
-  listaRutas.add(ruta);
-  return null;
+ 
+  return ruta;
 }
 
   double getDistancia(Lugar inicio, Lugar fin) {
@@ -43,8 +42,9 @@ Ruta? crearRuta(Lugar inicio, Lugar fin, String modoTransporte, String modoRuta)
 
 
   Future<bool> guardarRuta(Ruta ruta) {
-    // TODO: implement guardarRuta
-    throw UnimplementedError("Method not implemented");
+     Future<bool> resultado = _dbAdapter.guardarRuta(ruta);
+    listaRutas.add(ruta);
+    return resultado;
   }
 
 }
@@ -67,20 +67,19 @@ class FirestoreAdapterRuta implements DbAdapterRuta {
 
   @override
   Future<Ruta?> crearRuta(Ruta ruta) async {
-    try {
-      await db.collection(_collectionName).add(ruta.toMap());
-      return null;
-    } catch (e) {
-      print("Error al crear lugar: $e");
-      return null;
-
-    }
+    throw UnimplementedError("Method not implemented");
   }
   
   @override
-  Future<bool> guardarRuta(Ruta ruta) {
-    // TODO: implement guardarRuta
-    throw UnimplementedError();
+  Future<bool> guardarRuta(Ruta ruta) async{
+    try {
+      await db.collection(_collectionName).add(ruta.toMap());
+      return true;
+    } catch (e) {
+      print("Error al crear lugar: $e");
+      return false;
+
+    }
   }
   
 }
