@@ -38,7 +38,7 @@ void main() {
     });
 
    
-    test('H1E1 - Guardar Datos Usuario', () {
+    test('H1-E1V - Guardar Datos Usuario', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
@@ -54,7 +54,7 @@ void main() {
 
 
 
-    test('H1E2 - Password no cumple reglas de negocio', () {
+    test('H1-E2I - Password no cumple reglas de negocio', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "1";
@@ -72,7 +72,7 @@ void main() {
 
 
 
-    test('H2E2 - Permite Iniciar Sesión', () {
+    test('H2-E2V - Permite Iniciar Sesión', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
@@ -90,7 +90,7 @@ void main() {
 
 
 
-    test('H2E3 - No permite Iniciar Sesión por password inválido', () {
+    test('H2-E3I - No permite Iniciar Sesión por password inválido', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
@@ -107,7 +107,7 @@ void main() {
 
 
 
-    test('H3E1 - Cerrar sesion valido', () {
+    test('H3-E1V - Cerrar sesion valido', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
@@ -124,7 +124,7 @@ void main() {
     });
 
 
-    test('H3E4 - Cerrar sesion sin conexion a la BBDD', () {
+    test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () {
       // GIVEN
       adapter = FirestoreAdapterUser(collectionName: "No conexion");
       userController = UserController(adapter);

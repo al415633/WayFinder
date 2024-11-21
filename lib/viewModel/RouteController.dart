@@ -13,7 +13,18 @@ class RouteController {
   late Set<Route> routeList;
   final DbAdapterRoute _dbAdapter;
 
-  RouteController(this._dbAdapter) : routeList = _dbAdapter.getRouteList();
+  // Constructor privado
+  RouteController._internal(this._dbAdapter) : routeList = _dbAdapter.getRouteList();
+
+
+  // Instancia única
+  static RouteController? _instance;
+  
+  factory RouteController(DbAdapterRoute dbAdapter) {
+      _instance ??= RouteController._internal(dbAdapter);
+      return _instance!;
+    }
+
 
  Set<Route> getRouteList(){
   return routeList;
@@ -21,8 +32,8 @@ class RouteController {
 
   Route? createRoute(Location start, Location end, String transportMode, String routeMode){
 
-    Route route = Route(start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
-    return route;
+       throw UnimplementedError("Method Not Implemented");
+
   }
 
   double getDistance(Location start, Location end) {
@@ -35,9 +46,8 @@ class RouteController {
 
 
   Future<bool> saveRoute(Route route) {
-     Future<bool> result = _dbAdapter.saveRoute(route);
-    routeList.add(route);
-    return result;
+          throw UnimplementedError("Method Not Implemented");
+
   }
 
 }
@@ -66,14 +76,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   
   @override
   Future<bool> saveRoute(Route routeRoute) async{
-    try {
-      await db.collection(_collectionName).add(routeRoute.toMap());
-      return true;
-    } catch (e) {
-      print("Error al crear Location: $e");
-      return false;
+         throw UnimplementedError("Method Not Implemented");
 
-    }
   }
   
 

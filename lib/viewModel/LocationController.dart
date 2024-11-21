@@ -4,12 +4,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class LocationController {
-  // Propiedades
+    // Propiedades
 
     late Set<Location> locationList;
     final DbAdapterLocation _dbAdapter;
 
-    LocationController(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
+    // Constructor privado
+  LocationController._internal(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
+
+
+    // Instancia única
+   static LocationController? _instance;
+
+
+    factory LocationController(DbAdapterLocation dbAdapter) {
+    
+    //SI NO EXISTE UNA INSTANCIA CREARLA
+    _instance ??= LocationController._internal(dbAdapter);
+    return _instance!;
+  }
+
+
+
 
 
     Set<Location> getLocationList(){ 
@@ -17,44 +33,12 @@ class LocationController {
     }
 
     Future<bool> createLocationFromCoord(double lat, double long, String alias) async{
-     if (lat > 90 || lat < -90) {
-    throw Exception("InvalidCoordinatesException: La latitud debe estar entre -90 y 90 grados.");
-    }
-    if (long > 180 || long < -180) {
-      throw Exception("InvalidCoordinatesException: La longitud debe estar entre -180 y 180 grados.");
-    }
-    if (!hasMaxSixDecimals(lat)) {
-      throw Exception("InvalidCoordinatesException: La latitud no debe tener más de 6 decimales.");
-    }
-    if (!hasMaxSixDecimals(long)) {
-      throw Exception("InvalidCoordinatesException: La longitud no debe tener más de 6 decimales.");
-    }
-
-      Location location = Location(lat, long, alias);
-
-
- 
-      bool success =  await this._dbAdapter.createLocationFromCoord(location);
-      
-      if (success){
-        locationList.add(location);
-      }
-
-
-      return success;
+      throw UnimplementedError("Method Not Implemented");
     }
 
     Future<bool> createLocationFromTopo(String topo, String alias) async{
 
-      Location location = Location.fromToponym(topo, alias);
-
-      bool success = await _dbAdapter.createLocationFromTopo(location);
-
-      if (success){
-        locationList.add(location);
-      }
-
-      return success;
+      throw UnimplementedError("Method Not Implemented");
     }
 
 
@@ -62,39 +46,21 @@ class LocationController {
 
       // habra que modificar tmb la lista que esta siendo actualmente usada
 
-        bool success = await _dbAdapter.addFav(topo, alias);
-
-        return success;
+      throw UnimplementedError("Method Not Implemented");
     }
 
     Future<bool> removeFav(String topo, String alias) async{
 
-      // habra que modificar tmb la lista que esta siendo actualmente usada
-
-
-        bool success = await _dbAdapter.removeFav(topo, alias);
-
-        return success;
-    }
-
-    Location readBbddLocation(String alias){
-      return _dbAdapter.readBbddLocation(alias);
+      throw UnimplementedError("Method Not Implemented");
     }    
 }
 
 
+
+
 bool hasMaxSixDecimals(double value) {
   // Convierte el número a String
-  String valueStr = value.toString();
-  
-  // Divide la cadena en parte entera y parte decimal
-  List<String> divisions = valueStr.split('.');
-  
-  // Si no hay parte decimal, cumple la regla
-  if (divisions.length < 2) return true;
-  
-  // Verifica que la parte decimal tenga 6 o menos caracteres
-  return divisions[1].length <= 6;
+  throw UnimplementedError("Method Not Implemented");
 }
 
 
@@ -116,23 +82,11 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
   @override
   Future<bool> createLocationFromCoord(Location location) async {
-    try {
-      await db.collection(_collectionName).add(location.toMap());
-      return true;
-    } catch (e) {
-      print("Error al crear el lugar: $e");
-      return false;
-    }
+    throw UnimplementedError("Method Not Implemented");
   }
   @override
   Future<bool> createLocationFromTopo(Location location) async {
-    try {
-      await db.collection(_collectionName).add(location.toMap());
-      return true;
-    } catch (e) {
-      print("Error al crear el lugar: $e");
-      return false;
-    }
+   throw UnimplementedError("Method Not Implemented");
   }
   
   @override

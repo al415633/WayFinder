@@ -3,13 +3,24 @@ import 'package:WayFinder/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-class UserController implements DbAdapterUser{
+class UserController{
 
   // Propiedad privada
   final DbAdapterUser repository;
 
-  // Constructor
-  UserController(this.repository);
+  // Constructor privado
+  UserController._internal(this.repository);
+
+
+  // Instancia única
+  static UserController? _instance;
+
+
+  factory UserController(DbAdapterUser repository) {
+    _instance ??= UserController._internal(repository);
+    return _instance!;
+  }
+
 
  
    @override

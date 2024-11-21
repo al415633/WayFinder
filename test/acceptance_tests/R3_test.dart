@@ -1,5 +1,7 @@
 // precio_luz_service_acceptance_test.dart
 
+import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/viewModel/UserController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/Vehicle.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,12 +11,15 @@ import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R2: Gestión de lugares de interés', () {
+  group('R3: Gestión de vehículos', () {
 
-    late DbAdapterVehiculo adapter;
+    late DbAdapterVehiculo vehicleAdapter;
     late VehicleController vehicleController;
 
-    
+
+    late DbAdapterUser userAdapter;
+    late UserController userController;
+
 
     setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -42,17 +47,23 @@ void main() {
     
 
     setUp(() async {
-      adapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
-      vehicleController = VehicleController(adapter);
+      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(vehicleAdapter);
+
+      userAdapter = FirestoreAdapterUser(collectionName: "testCollection");
+      userController = UserController(userAdapter);
 
     });
 
-    test('H9-EV', () async {
+    test('H9-E1V - Crear vehiculo', () async {
 
       //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
 
       //WHEN
@@ -85,11 +96,14 @@ void main() {
     });
 
 
-    test('H9-EI', () async {
-//GIVEN
+    test('H9-E3I - Crear vehículo inválido', () async {
+      //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+       String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
 
       //WHEN
@@ -115,12 +129,21 @@ void main() {
     });
 
 
-    test('H10-EV', () async {
+    test('H10-E1V - Listar vehículos válido', () async {
       //GIVEN
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
+       String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
       //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      final String name = "Coche Ana";
+      final double consumption = 24.3;
+      final String numberPlate = "DKR9087";
+      final String fuelType = "Gasolina";
+
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
+
 
 
       //WHEN
@@ -136,14 +159,17 @@ void main() {
     });
 
 
-    test('H10-EV', () async {
+    test('H10-E2V - Listar vehículos BBDD vacía', () async {
        
        //GIVEN
 
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
       //No tiene vehiculos
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+       String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
 
       //WHEN

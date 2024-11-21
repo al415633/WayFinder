@@ -1,8 +1,10 @@
 // precio_luz_service_acceptance_test.dart
 
+import 'package:WayFinder/model/User.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/UserController.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -16,6 +18,9 @@ void main() {
     late DbAdapterLocation locationAdapter;
 
     late LocationController locationController;
+
+    late DbAdapterUser userAdapter;
+    late UserController userController;
 
     setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -45,14 +50,21 @@ void main() {
     setUp(() async {
       locationAdapter = FirestoreAdapterLocation(collectionName: "testCollection");
       locationController = LocationController(locationAdapter);
+
+      userAdapter = FirestoreAdapterUser(collectionName: "testCollection");
+      userController = UserController(userAdapter);
     });
 
-    test('H5-EV', () async {
+    test('H5-E1V - Crear lugar', () async {
 
       //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+   
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
 
       //WHEN
@@ -83,12 +95,16 @@ void main() {
     });
 
 
-    test('H5-EI', () async {
+    test('H5-E3I - Coordenadas del Lugar incorrectas', () async {
 
       //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
 
       //WHEN
@@ -120,11 +136,15 @@ void main() {
     });
 
 
-    test('H7-EV', () async {
+    test('H7-E1V - Listar lugares', () async {
        //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
       final double lat1 = 39.98567;
       final double long1 = -0.4935;
@@ -163,11 +183,15 @@ void main() {
     });
 
 
-    test('H7-EI', () async {
+    test('H7-E4I - Listar lugares inválida porque no hay conexion BBDD', () async {
        //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      user = userController.logInCredenciales(email, password);
 
       //WHEN Y THEN
 

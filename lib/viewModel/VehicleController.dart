@@ -9,7 +9,18 @@ class VehicleController {
     late Set<Vehicle> vehicleList;
     final DbAdapterVehiculo _dbAdapter;
 
-    VehicleController(this._dbAdapter) : vehicleList = _dbAdapter.getVehicleList();
+    VehicleController._internal(this._dbAdapter) : vehicleList = _dbAdapter.getVehicleList();
+    static VehicleController? _instance;
+
+
+    factory VehicleController(DbAdapterVehiculo dbAdapter) {
+
+
+      _instance ??= VehicleController._internal(dbAdapter);
+      return _instance!;
+    }
+
+
 
 
     Set<Vehicle> getVehicleList(){ 
@@ -18,29 +29,8 @@ class VehicleController {
 
     Future<bool> createVehicle(String numberPlate, double consumption, String fuelType, String name) async{
 
-      if (!validNumberPlate(numberPlate)){
-        throw Exception("NotValidVehicleException: El formato de la matrícula no es correcta");
-      }
+           throw UnimplementedError("Method Not Implemented");
 
-      if (!threeDecimalPlacesMax(consumption)){
-        throw Exception("NotValidVehicleException: El formato del consumo no es correcto");
-      }
-
-      if(!validateFuelType(fuelType)){
-        throw Exception("NotValidVehicleException: El tipo de combustible no es válido");
-      }
-
-      Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
-
-  
-      bool success =  await _dbAdapter.createVehicle(vehicle);
-        
-      if (success){
-        vehicleList.add(vehicle);
-      }
-
-
-      return success;
     }
 
 
@@ -49,9 +39,8 @@ class VehicleController {
 
       // habra que modificar tmb la lista que esta siendo actualmente usada
 
-        bool success = await _dbAdapter.addFav(numberPlate, name);
+            throw UnimplementedError("Method Not Implemented");
 
-        return success;
     }
 
     Future<bool> removeFav(String numberPlate, String name) async{
@@ -59,43 +48,26 @@ class VehicleController {
       // habra que modificar tmb la lista que esta siendo actualmente usada
 
 
-        bool success = await _dbAdapter.removeFav(numberPlate, name);
+             throw UnimplementedError("Method Not Implemented");
 
-        return success;
     }
 
     bool validNumberPlate(String? numberPlate) {
-      if (numberPlate == null) return false;
+           throw UnimplementedError("Method Not Implemented");
 
-      final format1 = RegExp(r'^[A-Z]{3}\d{4}$');
-      final format2 = RegExp(r'^[A-Z]{1}\d{4}$');
-      final format3 = RegExp(r'^[A-Z]{1,2}\d{4}[A-Z]{2}$');
-
-      return format1.hasMatch(numberPlate) || format2.hasMatch(numberPlate) || format3.hasMatch(numberPlate);
     }
 
     bool validateFuelType(String? fuelType){
-      const validFuelTypes = ['Gasolina', 'Diésel', 'Eléctrico'];
+          throw UnimplementedError("Method Not Implemented");
 
-      if (fuelType == null) return false;
-
-      return validFuelTypes.contains(fuelType);
     }    
 }
 
 
 bool threeDecimalPlacesMax(double value) {
   // Convierte el número a String
-  String valueStr = value.toString();
-  
-  // Divide la cadena en parte entera y parte decimal
-  List<String> divisions = valueStr.split('.');
-  
-  // Si no hay parte decimal, cumple la regla
-  if (divisions.length < 2) return true;
-  
-  // Verifica que la parte decimal tenga 6 o menos caracteres
-  return divisions[1].length <= 3;
+       throw UnimplementedError("Method Not Implemented");
+
 }
 
 
@@ -114,13 +86,8 @@ class FirestoreAdapterVehiculo implements DbAdapterVehiculo {
 
   @override
   Future<bool> createVehicle(Vehicle vehicle) async {
-    try {
-      await db.collection(_collectionName).add(vehicle.toMap());
-      return true;
-    } catch (e) {
-      print("Error al crear vehículo: $e");
-      return false;
-    }
+          throw UnimplementedError("Method Not Implemented");
+
   }
   
   @override

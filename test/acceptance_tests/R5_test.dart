@@ -53,7 +53,7 @@ void main() {
 
     });
 
-    test('H20-EV', () async {
+    test('H20-E1V - Marcar como favorito un lugar', () async {
 
       //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
       //creamos cuenta al usuario
@@ -95,7 +95,7 @@ void main() {
     });
 
 
-    test('H20-EI', () async {
+    test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
           //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
       //creamos cuenta al usuario

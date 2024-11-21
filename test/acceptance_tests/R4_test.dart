@@ -19,6 +19,9 @@ void main() {
     late DbAdapterRoute adapterRoute;
     late RouteController routeController;
 
+    late DbAdapterUser userAdapter;
+    late UserController userController;
+
    setUpAll(() async {
       // Inicializar el entorno de pruebas
 
@@ -46,24 +49,45 @@ void main() {
     setUp(() async {
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       routeController = RouteController(adapterRoute);
+
+      userAdapter = FirestoreAdapterUser(collectionName: "testCollection");
+      userController = UserController(userAdapter);
       
 
     });
 
-    test('H13-EV', () async {
+    test('H13-E1V - Crear ruta', () async {
 
-      //GIVEN
+    //GIVEN
+     String email = "ana@gmail.com";
+     String password = "Aaaaa,.8";
 
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+
+     User? user = userController.createUser(email, password);
+     user = userController.logIn(user!);
 
 
       //WHEN
+      
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
 
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = Location(lat1, long1, apodo1);
+     Location fin = Location(lat2, long2, apodo2);
+
+
+     Route? route = routeController.createRoute(ini, fin, "a pie", "rápida");
   
 
 
       //THEN
+     expect(route?.getStart(), equals(ini)); // Verifica el Location inicial
+     expect(route?.getEnd(), equals(fin)); // Verifica el Location final
 
       
 
@@ -71,20 +95,45 @@ void main() {
     });
 
 
-    test('H13-EI', () async {
+    test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
 
       //GIVEN
+      userAdapter = FirestoreAdapterUser(collectionName: "No conexion");
+      userController = UserController(userAdapter);
+     String email = "ana@gmail.com";
+     String password = "Aaaaa,.8";
 
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+
+     User? user = userController.createUser(email, password);
+     user = userController.logIn(user!);
 
 
       //WHEN
-
       
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
 
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = Location(lat1, long1, apodo1);
+     Location fin = Location(lat2, long2, apodo2);
+
+
+    Route? route;
+      void action() {
+
+     route = routeController.createRoute(ini, fin, "a pie", "rápida");
+  
+      }
 
       //THEN
+     
+    expect(action, throwsA(isA<ConnectionBBDDException>()));
+      expect(route?.getStart(), equals(isNull)); // Verifica el Location inicial
+     expect(route?.getEnd(), equals(isNull)); // Verifica el Location final
 
      
 
@@ -106,150 +155,7 @@ void main() {
     });
    
 
-    test('H17E1', () async {
-      //GIVEN 
-      String email = "ana@gmail.com";
-      String password = "Aaaaa,.8";
 
-      DbAdapterUser adapter = FirestoreAdapterUser(collectionName: "testCollection");
-      UserController userController=UserController(adapter);
-      User? user = userController.createUser(email, password);
-      user = userController.logIn(user!);
-
-
-    //WHEN 
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Location ini = Location(lat1, long1, apodo1);
-      Location fin = Location(lat2, long2, apodo2);
-
-      Route? route = routeController.createRoute(ini, fin, "a pie", "rápida");
-      Future<bool> guardado = routeController.saveRoute(route!);
-
-      expect(route.getStart(), equals(ini)); // Verifica el Location inicial
-      expect(route.getEnd(), equals(fin)); // Verifica el Location final
-      expect(guardado, true);
-
-    });
-
-
-      test('H17E2', () async {
-      //GIVEN 
-      adapterRoute = FirestoreAdapterRoute(collectionName: "No conexion") ;
-      String email = "ana@gmail.com";
-      String password = "Aaaaa,.8";
-
-      DbAdapterUser adapter = FirestoreAdapterUser(collectionName: "No conexion");
-      UserController userController=UserController(adapter);
-      User? user = userController.createUser(email, password);
-      user = userController.logIn(user!);
-
-    //WHEN 
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Location ini = Location(lat1, long1, apodo1);
-      Location fin = Location(lat2, long2, apodo2);
-    
-      Route? route;
-      bool guardado=false;
-     void action() {
-      route = routeController.createRoute(ini, fin, "a pie", "rápida");
-      guardado = routeController.saveRoute(route!) as bool;
-     }
-      
-      expect(action, throwsA(isA<ConnectionBBDDException>()));
-      expect(route?.getStart(), isNull); 
-      expect(route?.getEnd, isNull); 
-      expect(guardado, false);
-
-    });
-   
-    test('H18-EV', () async {
-
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Location ini = Location(lat1, long1, apodo1);
-      Location fin = Location(lat2, long2, apodo2);
-
-      routeController.createRoute(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-
-      final Set<Route> route = routeController.getRouteList();
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final routeList = route.toList();
-      
-      // Acceder al primer objeto en la lista
-      final primeraRoute = routeList[0];
-
-      // Verificar que los valores del primer Location son los esperados
-      expect(primeraRoute.getStart(), equals(ini)); // Verifica el Location inicial
-      expect(primeraRoute.getEnd, equals(fin)); // Verifica el Location final
-      expect(primeraRoute.getDistance(), equals(0)); // Verifica la distancia calculada
-      expect(primeraRoute.getPoints(), equals(List<Coordinate>)); // Verifica la lista de puntos
-      expect(primeraRoute.getTransportMode(), equals("a pie")); // Verifica el modo de Transporte
-      expect(primeraRoute.getRouteMode(), equals("rápida")); // Verifica el modo de Transporte
-
-
-
-      
-    });
-
-
-    test('H18-EI', () async {
-
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Location ini = Location(lat1, long1, apodo1);
-      Location fin = Location(lat2, long2, apodo2);
-
-      routeController.createRoute(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-     expect(() {
-      routeController.getRouteList();
-    }, throwsException);
-
-    });
    
 
     test('H19', () async {
