@@ -1,4 +1,4 @@
-import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/model/Vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 

@@ -4,7 +4,7 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/User.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/Route.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserController.dart';
 import 'package:firebase_core/firebase_core.dart';

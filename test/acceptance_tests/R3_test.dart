@@ -1,7 +1,7 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/viewModel/VehicleController.dart';
-import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/model/Vehicle.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

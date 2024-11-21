@@ -4,7 +4,7 @@ import 'package:WayFinder/model/location.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/Route.dart';
 
 
 class RouteController {
