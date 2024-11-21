@@ -1,5 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/User.dart';
 import 'package:WayFinder/viewModel/UserController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
@@ -159,6 +160,32 @@ void main() {
     });
 
 
+    test('H10-E3I - Listar vehículos sin conexion a la BBDD', () async {
+       
+      // GIVEN
+      userAdapter = FirestoreAdapterUser(collectionName: "No conexion");
+      userController = UserController(userAdapter);
+      String email = "ana@gmail.com";
+      String password = "Aaaaa,.8";
+      User? user = userController.createUser(email, password);
+      userController.logIn(user!);
+
+
+    //WHEN
+      Set<Vehicle>? vehicles;
+      void action() {
+
+     vehicles = vehicleController.getVehicleList();
+  
+      }
+
+      //THEN
+     
+    expect(action, throwsA(isA<ConnectionBBDDException>()));
+    expect(vehicles, isEmpty);
+    });
+
+
     test('H10-E2V - Listar vehículos BBDD vacía', () async {
        
        //GIVEN
@@ -166,7 +193,7 @@ void main() {
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
       //No tiene vehiculos
       //Loguear usuario
-       String email = "ana@gmail.com";
+      String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
       User? user = userController.createUser(email, password);
       user = userController.logInCredenciales(email, password);
