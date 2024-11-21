@@ -1,6 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/viewModel/controladorVehiculo.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +12,7 @@ void main() {
   group('R2: Gestión de lugares de interés', () {
 
     late DbAdapterVehiculo adapter;
-    late Controladorvehiculo controladorVehiculo;
+    late VehicleController vehicleController;
 
     
 
@@ -43,7 +43,7 @@ void main() {
 
     setUp(() async {
       adapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
-      controladorVehiculo = Controladorvehiculo(adapter);
+      vehicleController = VehicleController(adapter);
 
     });
 
@@ -62,12 +62,12 @@ void main() {
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      await controladorVehiculo.createVehicle(numberPlate, consumption, fuelType, name);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
 
 
       //THEN
 
-      final Set<Vehicle> vehicles = controladorVehiculo.getVehicleList();
+      final Set<Vehicle> vehicles = vehicleController.getVehicleList();
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
@@ -103,13 +103,13 @@ void main() {
       //THEN
 
       void action() {
-        controladorVehiculo.createVehicle(numberPlate, consumption, fuelType, name);
+        vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
       }
 
 
       // THEN
       expect(action, throwsException);
-      expect(controladorVehiculo.getVehicleList(), isEmpty); // Verifica consumo
+      expect(vehicleController.getVehicleList(), isEmpty); // Verifica consumo
 
       
     });
@@ -124,7 +124,7 @@ void main() {
 
 
       //WHEN
-      Set<Vehicle> vehicleList = controladorVehiculo.getVehicleList();
+      Set<Vehicle> vehicleList = vehicleController.getVehicleList();
 
       //THEN
 
@@ -148,7 +148,7 @@ void main() {
 
       //WHEN
 
-      Set<Vehicle> vehicleList = controladorVehiculo.getVehicleList();
+      Set<Vehicle> vehicleList = vehicleController.getVehicleList();
 
 
       //THEN

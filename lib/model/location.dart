@@ -1,46 +1,44 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/paginas/api_ops.dart';
+import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/paginas/apiConection.dart';
 
-class Lugar {
+class Location {
   // Propiedades
 
-late Coordenada coordenada;
-late String toponimo;
-late String apodo;
+late Coordinate coordinate;
+late String toponym;
+late String alias;
 late bool fav;
 
   // Constructor
-  Lugar(double lat, double long, String apodo) {
-    coordenada = Coordenada(lat, long);
-    toponimo = traduceCoordATop(coordenada) as String;
-    this.apodo = apodo;
+  Location(double lat, double long, String alias) {
+    coordinate = Coordinate(lat, long);
+    toponym = CoordToToponym(coordinate) as String;
+    this.alias = alias;
     fav = false;
   }
 
-  Lugar.fromTopnimo(String toponimo, String apodo) {
-    this.toponimo = toponimo;
-    coordenada = traduceTopACoord(toponimo) as Coordenada;
-    this.apodo = apodo;
+  Location.fromToponym(String toponym, String alias) {
+    this.toponym = toponym;
+    coordinate = ToponymToCoord(toponym) as Coordinate;
+    this.alias = alias;
     fav = false;
   }
 
-  // Método para pasar de Coordenadas a toponimo
-  Future<String?> traduceCoordATop(Coordenada coord) async{
-    String topo = "";
-
+  // Método para pasar de coordinates a toponym
+  Future<String?> CoordToToponym(Coordinate coord) async{
     http.Response? response;
    
-    response = await http.get(getToponimoLugar(coord));
+    response = await http.get(getToponymLocation(coord));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
       if (data['features'].isNotEmpty) {
         final name = data['features'][0]['properties']['label'];
-        return name; // Retorna el nombre del lugar
+        return name; // Devuelve el nombre del lugar
       } else {
         print('No se encontró ningún lugar para las coordenadas dadas.');
         return null;
@@ -49,41 +47,38 @@ late bool fav;
       print('Error en la solicitud: ${response.statusCode}');
       return null;
     }
-
-
-  return topo;
   }
 
-  Coordenada getCoordenada(){
-    return coordenada;
+  Coordinate getCoordinate(){
+    return coordinate;
   }
 
-  String getToponimo() {
-    return toponimo;
+  String getToponym() {
+    return toponym;
   }
 
 
-  String getApodo() {
-    return apodo;
+  String getAlias() {
+    return alias;
   }
 
   bool getFav() {
     return fav;
   }
 
-  // Método para pasar de  toponimo a Coordenadas
+  // Método para pasar de  toponym a coordinates
   //TO DO: Revisar los nulos y que en vez de eso mande excepción 
-  Future<Coordenada?> traduceTopACoord(String topo)  async {
+  Future<Coordinate?> ToponymToCoord(String topo)  async {
     http.Response? response;
    
-    response = await http.get(getCoordenadasLugar(topo));
+    response = await http.get(getCoordinatesLocation(topo));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       
       if (data['features'].isNotEmpty) {
         final coords = data['features'][0]['geometry']['coordinates'];
-        return Coordenada(coords[1], coords[0]); // latitud y longitud
+        return Coordinate(coords[1], coords[0]); // latitud y longitud
       } else {
         print('No se encontró ningún resultado para el topónimo dado.');
         return null;
@@ -98,9 +93,9 @@ late bool fav;
 
   Map<String, dynamic> toMap() {
     return {
-      'coord': coordenada,
-      'toponimo': toponimo,
-      'apodo': apodo,
+      'coord': coordinate,
+      'toponym': toponym,
+      'alias': alias,
     };
   }
 

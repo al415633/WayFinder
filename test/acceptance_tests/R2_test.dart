@@ -1,8 +1,8 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/model/lugar.dart';
-import 'package:WayFinder/viewModel/controladorLugar.dart';
+import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -13,11 +13,9 @@ void main() {
   group('R2: Gestión de lugares de interés', () {
 
 
-    late DbAdapterLugar adapterLugar;
+    late DbAdapterLocation locationAdapter;
 
-    late ControladorLugar controladorLugar;
-
-    
+    late LocationController locationController;
 
     setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -45,11 +43,8 @@ void main() {
     
 
     setUp(() async {
-
-      adapterLugar = FirestoreAdapterLugar(collectionName: "testCollection");
-      controladorLugar = ControladorLugar(adapterLugar);
-
-
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(locationAdapter);
     });
 
     test('H5-EV', () async {
@@ -64,25 +59,25 @@ void main() {
 
       final double lat = 39.98567;
       final double long = -0.04935;
-      final String apodo = "prueba 1";
+      final String alias = "prueba 1";
 
-      await controladorLugar.crearLugarPorCoord(lat, long, apodo);
+      await locationController.createLocationFromCoord(lat, long, alias);
 
 
       //THEN
 
-      final Set<Lugar> lugares = controladorLugar.getListaLugares();
+      final Set<Location> location = locationController.getLocationList();
 
       // Convertir el set a una lista para acceder al primer elemento
-      final listaLugares = lugares.toList();
+      final locationList = location.toList();
       
       // Acceder al primer objeto en la lista
-      final primerLugar = listaLugares[0];
+      final firstLocation = locationList[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(primerLugar.getCoordenada(), equals(Coordenada(lat, long))); // Verifica la latitud
-      expect(primerLugar.getToponimo(), equals("Castelló de la Plana")); // Verifica la longitud
-      expect(primerLugar.getApodo(), equals("prueba 1")); // Verifica el apodo
+      expect(firstLocation.getCoordinate(), equals(Coordinate(lat, long))); // Verifica la latitud
+      expect(firstLocation.getToponym(), equals("Castelló de la Plana")); // Verifica la longitud
+      expect(firstLocation.getAlias(), equals("prueba 1")); // Verifica el alias
 
 
     });
@@ -100,15 +95,15 @@ void main() {
 
       final double lat = 91;
       final double long = 181;
-      final String apodo = "prueba 2";
+      final String alias = "prueba 2";
 
-      controladorLugar.crearLugarPorCoord(lat, long, apodo);
+      locationController.createLocationFromCoord(lat, long, alias);
 
 
       //THEN
 
       expect(() {
-      controladorLugar.crearLugarPorCoord(lat, long, apodo);
+      locationController.createLocationFromCoord(lat, long, alias);
     }, throwsException);
 
 
@@ -133,37 +128,37 @@ void main() {
 
       final double lat1 = 39.98567;
       final double long1 = -0.4935;
-      final String apodo1 = "Castellon";
+      final String alias1 = "Castellon";
 
-      await controladorLugar.crearLugarPorCoord(lat1, long1, apodo1);
+      await locationController.createLocationFromCoord(lat1, long1, alias1);
 
       final String topo2 = "mi casa";
-      final String apodo2 = "Burriana";
+      final String alias2 = "Burriana";
 
-      await controladorLugar.crearLugarPorTopo(topo2, apodo2);
+      await locationController.createLocationFromTopo(topo2, alias2);
 
       //WHEN
 
-      final Set<Lugar> lugares = controladorLugar.getListaLugares();
+      final Set<Location> location = locationController.getLocationList();
 
       //THEN
 
       // Convertir el set a una lista para acceder al primer elemento
-      final listaLugares = lugares.toList();
+      final locationList = location.toList();
       
       // Acceder al primer objeto en la lista
-      final primerLugar = listaLugares[0];
-      final segundoLugar = listaLugares[1];
+      final firstLocation = locationList[0];
+      final secondLocation = locationList[1];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(primerLugar.getCoordenada(), equals(Coordenada(lat1, long1))); // Verifica las coordenadas
-      expect(primerLugar.getToponimo(), equals("Castelló de la Plana")); // Verifica el toponimo
-      expect(primerLugar.getApodo(), equals("castellon")); // Verifica el apodo
+      expect(firstLocation.getCoordinate(), equals(Coordinate(lat1, long1))); // Verifica las coordenadas
+      expect(firstLocation.getToponym(), equals("Castelló de la Plana")); // Verifica el toponimo
+      expect(firstLocation.getAlias(), equals("castellon")); // Verifica el alias
 
 
       // Verificar que los valores del segundo lugar son los esperados
-      expect(primerLugar.getToponimo(), equals("Burriana")); // Verifica el toponimo
-      expect(primerLugar.getApodo(), equals("mi casa")); // Verifica el apodo
+      expect(secondLocation.getToponym(), equals("Burriana")); // Verifica el toponimo
+      expect(secondLocation.getAlias(), equals("mi casa")); // Verifica el alias
 
     });
 
@@ -177,7 +172,7 @@ void main() {
       //WHEN Y THEN
 
       expect(() {
-      controladorLugar.getListaLugares();
+      locationController.getLocationList();
     }, throwsException);
 
     });
