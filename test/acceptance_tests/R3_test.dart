@@ -1,8 +1,8 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/viewModel/UserController.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/Vehicle.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,8 +18,8 @@ void main() {
     late VehicleController vehicleController;
 
 
-    late DbAdapterUser userAdapter;
-    late UserController userController;
+    late DbAdapterUserApp userAppAdapter;
+    late UserAppController userAppController;
 
 
     setUpAll(() async {
@@ -51,8 +51,8 @@ void main() {
       vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
 
-      userAdapter = FirestoreAdapterUser(collectionName: "testCollection");
-      userController = UserController(userAdapter);
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppController = UserAppController(userAppAdapter);
 
     });
 
@@ -63,8 +63,8 @@ void main() {
       //Loguear usuario
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      user = userController.logInCredenciales(email, password);
+      UserApp? user = userAppController.createUser(email, password);
+      user = userAppController.logInCredenciales(email, password);
 
 
       //WHEN
@@ -103,8 +103,8 @@ void main() {
       //Loguear usuario
        String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      user = userController.logInCredenciales(email, password);
+      UserApp? user = userAppController.createUser(email, password);
+      user = userAppController.logInCredenciales(email, password);
 
 
       //WHEN
@@ -135,8 +135,8 @@ void main() {
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
        String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      user = userController.logInCredenciales(email, password);
+      UserApp? user = userAppController.createUser(email, password);
+      user = userAppController.logInCredenciales(email, password);
       //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
       final String name = "Coche Ana";
       final double consumption = 24.3;
@@ -163,12 +163,12 @@ void main() {
     test('H10-E3I - Listar vehículos sin conexion a la BBDD', () async {
        
       // GIVEN
-      userAdapter = FirestoreAdapterUser(collectionName: "No conexion");
-      userController = UserController(userAdapter);
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "No conexion");
+      userAppController = UserAppController(userAppAdapter);
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      userController.logIn(user!);
+      UserApp? user = userAppController.createUser(email, password);
+      userAppController.logIn(user!);
 
 
     //WHEN
@@ -195,8 +195,8 @@ void main() {
       //Loguear usuario
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      user = userController.logInCredenciales(email, password);
+      UserApp? user = userAppController.createUser(email, password);
+      user = userAppController.logInCredenciales(email, password);
 
 
       //WHEN
