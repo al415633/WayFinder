@@ -1,15 +1,15 @@
 import 'package:latlong2/latlong.dart';
 
-class Coordenada {
+class Coordinate {
   // Propiedades
 
-late LatLng coordenada;
+late LatLng coordinate;
 late double lat;
 late double lon;
 
   // Constructor
-  Coordenada(double lat, double long) {
-    coordenada = LatLng(lat, long);
+  Coordinate(double lat, double long) {
+    coordinate = LatLng(lat, long);
     lat = lat;
     lon = lon;
   }

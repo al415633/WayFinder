@@ -3,13 +3,24 @@ import 'package:WayFinder/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-class UserService implements DbAdapterUser{
+class UserController{
 
   // Propiedad privada
   final DbAdapterUser repository;
 
-  // Constructor
-  UserService(this.repository);
+  // Constructor privado
+  UserController._internal(this.repository);
+
+
+  // Instancia única
+  static UserController? _instance;
+
+
+  factory UserController(DbAdapterUser repository) {
+    _instance ??= UserController._internal(repository);
+    return _instance!;
+  }
+
 
  
    @override
@@ -54,12 +65,10 @@ class UserService implements DbAdapterUser{
 }
 
 class FirestoreAdapterUser implements DbAdapterUser {
+  final  String _collectionName;
+  final FirebaseFirestore db= FirebaseFirestore.instance;
 
- 
- final  String _collectionName;
- final FirebaseFirestore db= FirebaseFirestore.instance;
-
- FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
+  FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
 
 
 

@@ -2,7 +2,7 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 
-import 'package:WayFinder/viewModel/UserService.dart';
+import 'package:WayFinder/viewModel/UserController.dart';
 import 'package:WayFinder/model/User.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,9 +11,9 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('UserService Test', () {
+  group('UserController Test', () {
     late DbAdapterUser adapter;
-    late UserService userService;
+    late UserController userController;
 
     setUpAll(() async {
       // Inicializar Firebase
@@ -34,17 +34,17 @@ void main() {
     setUp(() {
       adapter = FirestoreAdapterUser(collectionName: "testCollection");
 
-      userService = UserService(adapter);
+      userController = UserController(adapter);
     });
 
    
-    test('H1E1 - Guardar Datos Usuario', () {
+    test('H1-E1V - Guardar Datos Usuario', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
 
       // WHEN
-      User? user = userService.createUser(email, password);
+      User? user = userController.createUser(email, password);
 
       // THEN
       expect(user, isNotNull);
@@ -54,14 +54,14 @@ void main() {
 
 
 
-    test('H1E2 - Password no cumple reglas de negocio', () {
+    test('H1-E2I - Password no cumple reglas de negocio', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "1";
 
       // WHEN
       void action() {
-        userService.createUser(email, password);
+        userController.createUser(email, password);
       }
 
       // THEN
@@ -72,14 +72,14 @@ void main() {
 
 
 
-    test('H2E2 - Permite Iniciar Sesión', () {
+    test('H2-E2V - Permite Iniciar Sesión', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userService.createUser(email, password);
+      User? user = userController.createUser(email, password);
 
       // WHEN
-      user = userService.logInCredenciales(email, password);
+      user = userController.logInCredenciales(email, password);
 
       // THEN
       expect(user, isNotNull);
@@ -90,15 +90,15 @@ void main() {
 
 
 
-    test('H2E3 - No permite Iniciar Sesión por password inválido', () {
+    test('H2-E3I - No permite Iniciar Sesión por password inválido', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userService.createUser(email, password);
+      userController.createUser(email, password);
 
       // WHEN
       void action() {
-        userService.logInCredenciales(email, "aaaaaaaaaaaa");
+        userController.logInCredenciales(email, "aaaaaaaaaaaa");
       }
 
       // THEN
@@ -107,16 +107,16 @@ void main() {
 
 
 
-    test('H3E1 - Cerrar sesion valido', () {
+    test('H3-E1V - Cerrar sesion valido', () {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userService.createUser(email, password);
-      userService.logIn(user!);
+      User? user = userController.createUser(email, password);
+      userController.logIn(user!);
 
       // WHEN
     
-      User? cerrado= userService.logOut(user) ;
+      User? cerrado= userController.logOut(user);
       
 
       // THEN
@@ -124,20 +124,20 @@ void main() {
     });
 
 
-    test('H3E4 - Cerrar sesion sin conexion a la BBDD', () {
+    test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () {
       // GIVEN
       adapter = FirestoreAdapterUser(collectionName: "No conexion");
-      userService = UserService(adapter);
+      userController = UserController(adapter);
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userService.createUser(email, password);
-      userService.logIn(user!);
+      User? user = userController.createUser(email, password);
+      userController.logIn(user!);
 
       // WHEN
       
       User? cerrado;
       void action() {
-      cerrado= userService.logOut(user) ;
+      cerrado= userController.logOut(user) ;
       }
 
       // THEN
