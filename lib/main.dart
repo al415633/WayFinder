@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:WayFinder/paginas/listamunicipios.dart';
-import 'package:WayFinder/paginas/map_screen.dart';
-import 'package:WayFinder/paginas/preciocarburanteIndice.dart';
-import 'package:WayFinder/paginas/swatchpage.dart';
-import 'paginas/iniciosesion.dart';
-import 'paginas/pagina02.dart';
-import 'paginas/preciocarburante.dart';
-import 'paginas/precioluz.dart';
-import 'paginas/registrarusuario.dart';
+import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
-import 'package:firebase_core/firebase_core.dart';
 
 //IMPORT DE LA PLANTILLA
 import 'themes/app_theme.dart';
 
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Cargar la configuración desde firebase_config.json
+  final response = await http.get(Uri.parse('/firebase_config.json'));
+  final config = json.decode(response.body);
+
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-      authDomain: "wayfinder-df8eb.firebaseapp.com",
-      projectId: "wayfinder-df8eb",
-      storageBucket: "wayfinder-df8eb.appspot.com",
-      messagingSenderId: "571791500413",
-      appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-      measurementId: "G-TZLW8P5J8V",
+      apiKey: config['apiKey'],
+      authDomain: config['authDomain'],
+      projectId: config['projectId'],
+      storageBucket: config['storageBucket'],
+      messagingSenderId: config['messagingSenderId'],
+      appId: config['appId'],
+      measurementId: config['measurementId'],
     ),
   );
+
   runApp(MiApp());
 }
 
@@ -75,38 +75,7 @@ class _InicioState extends State<Inicio> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Spike 0"),
-      ),
-      body: ListView(
-        children: [
-          const SizedBox(height: 50),
-          buildButton("Página ejemplo", Pagina02()),
-          const SizedBox(height: 50),
-          buildButton("Página ejemplo de los estilos", ExamplePage()),
-          const SizedBox(height: 50),
-          buildButton("Página precio luz", PrecioLuz()),
-          const SizedBox(height: 50),
-          buildButton("Página precio carburante", PrecioCarburante()),
-          const SizedBox(height: 50),
-          buildButton("Página listado de municipios para precios carburante", ListaMunicipiosPage()),
-          const SizedBox(height: 50),
-          buildButton(
-            "Página precio carburante buscado por índice",
-            PreciosMunicipioIndicePage(
-              idMunicipio: '1842',
-              nombreMunicipio: 'Castellón de la Plana/Castelló de la Plana',
-            ),
-          ),
-          const SizedBox(height: 50),
-          buildButton("Página inicio de sesión", InicioSesion()),
-          const SizedBox(height: 50),
-          buildButton("Página registro nuevo usuario", RegistroUsuario()),
-          const SizedBox(height: 50),
-          buildButton("Página mapa", MapScreen()),
-          const SizedBox(height: 50),
-        ],
-      ),
+
     );
   }
 }
