@@ -1,12 +1,11 @@
 // precio_luz_ContUserController_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/Route.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
-import 'package:WayFinder/viewModel/UserController.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -19,8 +18,8 @@ void main() {
     late DbAdapterRoute adapterRoute;
     late RouteController routeController;
 
-    late DbAdapterUser userAdapter;
-    late UserController userController;
+    late DbAdapterUserApp userAppAdapter;
+    late UserAppController userAppController;
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -50,8 +49,8 @@ void main() {
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       routeController = RouteController(adapterRoute);
 
-      userAdapter = FirestoreAdapterUser(collectionName: "testCollection");
-      userController = UserController(userAdapter);
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppController = UserAppController(userAppAdapter);
       
 
     });
@@ -63,8 +62,8 @@ void main() {
      String password = "Aaaaa,.8";
 
 
-     User? user = userController.createUser(email, password);
-     user = userController.logIn(user!);
+     UserApp? user = userAppController.createUser(email, password);
+     user = userAppController.logIn(user!);
 
 
       //WHEN
@@ -98,14 +97,14 @@ void main() {
     test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
 
       //GIVEN
-      userAdapter = FirestoreAdapterUser(collectionName: "No conexion");
-      userController = UserController(userAdapter);
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "No conexion");
+      userAppController = UserAppController(userAppAdapter);
      String email = "ana@gmail.com";
      String password = "Aaaaa,.8";
 
 
-     User? user = userController.createUser(email, password);
-     user = userController.logIn(user!);
+     UserApp? user = userAppController.createUser(email, password);
+     user = userAppController.logIn(user!);
 
 
       //WHEN
