@@ -1,18 +1,10 @@
 // precio_luz_service_acceptance_test.dart
-import 'dart:convert';
-
 import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/model/controladorLugar.dart';
-import 'package:WayFinder/model/controladorRuta.dart';
-import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/model/lugar.dart';
-import 'package:WayFinder/model/ruta.dart';
-import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/viewModel/UserService.dart';
+import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/viewModel/UserController.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
@@ -20,12 +12,12 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R5: Gestión de preferencias', () {
 
-    late DbAdapter adapterLugar;
-    late ControladorLugar controladorLugar;
+    late DbAdapterLocation adapterLocation;
+    late LocationController locationController;
 
 
     late DbAdapterUser adapterUser;
-    late UserService userService;
+    late UserController userController;
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -52,50 +44,85 @@ void main() {
     });
 
     setUp(() async {
-      adapterLugar = FirestoreAdapter(collectionName: "testCollection");
-      controladorLugar = ControladorLugar(adapterLugar);
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
 
       adapterUser = FirestoreAdapterUser(collectionName: "testCollection");
-      userService = UserService(adapterUser);
+      userController = UserController(adapterUser);
       
 
     });
 
-    test('H20-EV', () async {
+    test('H20-E1V - Marcar como favorito un lugar', () async {
 
-      //GIVEN
+      //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
+      //creamos cuenta al usuario
+      String email = "belen@gmail.com";
+      String password = "HolaAAAAA%1";
+      User? user =  userController.createUser(email, password);
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      userController.logIn(user!);
 
 
       //WHEN
 
-  
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+
+      await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      locationController.addFav("Castelló de la Plana", apodo1);
 
 
       //THEN
 
+      final Set<Location> locations = await locationController.getLocationList();
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final locationList = locations.toList();
+      
+      // Acceder al primer objeto en la lista
+      final primerLugar = locationList[0];
+
+      // Verificar que los valores del primer lugar son los esperados
+      expect(primerLugar.getFav(), equals(true)); // Verifica el Lugar inicial
+     
       
 
 
     });
 
 
-    test('H20-EI', () async {
+    test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
-      //GIVEN
+          //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
+      //creamos cuenta al usuario
+      String email = "belen@gmail.com";
+      String password = "HolaAAAAA%1";
+      User? user =  userController.createUser(email, password);
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      userController.logIn(user!);
+
 
 
       //WHEN
 
-      
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
 
+
+      await locationController.createLocationFromCoord(lat1, long1, apodo1);
 
       //THEN
+     
+     expect(() {
+      locationController.addFav("Castelló de la Plana", apodo1);
+    }, throwsException);
+
 
      
 
@@ -121,92 +148,7 @@ void main() {
       
     });
    
-    test('H18-EV', () async {
-
-      //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
-      //creamos cuenta al usuario
-      String email = "belen@gmail.com";
-      String password = "HolaAAAAA%1";
-      User? user =  userService.createUser(email, password);
-
-      //Loguear usuario
-      userService.logIn(user!);
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-
-      await controladorLugar.crearLugarPorCoord(lat1, long1, apodo1);
-
-
-      //THEN
-
-      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final listaLugares = lugares.toList();
-      
-      // Acceder al primer objeto en la lista
-      final primerLugar = listaLugares[0];
-
-      // Verificar que los valores del primer lugar son los esperados
-      expect(primerLugar.getFav(), equals(true)); // Verifica el Lugar inicial
-     
-
-
-      
-    });
-
-
-    test('H18-EI', () async {
-
-      //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
-      //creamos cuenta al usuario
-      String email = "belen@gmail.com";
-      String password = "HolaAAAAA%1";
-      User? user =  userService.createUser(email, password);
-
-      //Loguear usuario
-      userService.logIn(user!);
-
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-
-      await controladorLugar.crearLugarPorCoord(lat1, long1, apodo1);
-
-
-      //THEN
-
-      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final listaLugares = lugares.toList();
-      
-      // Acceder al primer objeto en la lista
-
-      // Esto creo que deberia de hacerse de otra forma, con un metodo que te busque en el set un sitio en especifico
-
-     expect(() {
-      listaLugares[0];
-    }, throwsException);
-
-      
-    });
-   
-
-    test('H19', () async {
-      
-    });
+    
    
   });
 }

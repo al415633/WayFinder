@@ -3,16 +3,28 @@ import 'package:WayFinder/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-class UserService implements DbAdapterUser{
+class UserController{
 
   // Propiedad privada
   final DbAdapterUser repository;
 
-  // Constructor
-  UserService(this.repository);
+  // Constructor privado
+  UserController._internal(this.repository);
+
+
+  // Instancia única
+  static UserController? _instance;
+
+
+  factory UserController(DbAdapterUser repository) {
+    _instance ??= UserController._internal(repository);
+    return _instance!;
+  }
+
 
  
-   User? createUser(String email, String password)  {
+   @override
+  User? createUser(String email, String password)  {
      //REGLAS DE NEGOCIO
      //CONECION AL REPOSITORIO 
     throw UnimplementedError("Method not implemented");
@@ -29,6 +41,7 @@ class UserService implements DbAdapterUser{
    }
 
 
+  @override
   User? logInCredenciales(String email, String password)  {
      //REGLAS DE NEGOCIO
      //entrar en el REPOSITORIO 
@@ -36,6 +49,14 @@ class UserService implements DbAdapterUser{
     throw UnimplementedError("Method not implemented");
    
    }
+   
+     @override
+     User? logOut(User user) {
+    // TODO: implement logOut
+
+    //Comporbar que hay acceso a la BBDD
+    throw UnimplementedError("Method not implemented");
+     }
 
 
 
@@ -43,13 +64,11 @@ class UserService implements DbAdapterUser{
 
 }
 
-class FirestoreAdapter implements DbAdapterUser {
+class FirestoreAdapterUser implements DbAdapterUser {
+  final  String _collectionName;
+  final FirebaseFirestore db= FirebaseFirestore.instance;
 
- 
- final  String _collectionName;
- final FirebaseFirestore db= FirebaseFirestore.instance;
-
- FirestoreAdapter({String collectionName="production"}):_collectionName=collectionName;
+  FirestoreAdapterUser({String collectionName="production"}):_collectionName=collectionName;
 
 
 
@@ -70,7 +89,13 @@ class FirestoreAdapter implements DbAdapterUser {
   @override
   User? logInCredenciales(String email, String password) {
     // TODO: implement logInCredenciales
-    throw UnimplementedError();
+    throw UnimplementedError("Method not implemented");
+  }
+  
+  @override
+  User? logOut(User user) {
+    // TODO: implement logOut
+    throw UnimplementedError("Method not implemented");
   }
 
 
@@ -84,6 +109,8 @@ abstract class DbAdapterUser {
   User? logIn(User user);
 
   User? logInCredenciales(String email, String password);
+  User? logOut(User user);
+
 
 
 }
