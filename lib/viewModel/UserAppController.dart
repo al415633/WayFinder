@@ -52,13 +52,13 @@ class UserAppController{
     }
 
      //CONECION AL REPOSITORIO 
-     repository.createAppUserApp(email, password);
+     repository.createUser(email, password);
    
    }
 
 
    @override
-   UserApp? logIn(UserApp AppUserApp)  {
+   UserApp? logIn(UserApp UserApp)  {
      //REGLAS DE NEGOCIO
      //CONECION AL REPOSITORIO para ver la conexion a la BBDD
     throw UnimplementedError("Method not implemented");
@@ -76,7 +76,7 @@ class UserAppController{
    }
    
      @override
-     UserApp? logOut(UserApp AppUserApp) {
+     UserApp? logOut(UserApp UserApp) {
     // TODO: implement logOut
 
     //Comporbar que hay acceso a la BBDD
@@ -94,50 +94,18 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   final FirebaseFirestore db= FirebaseFirestore.instance;
 
   FirestoreAdapterUserApp({String collectionName="production"}):_collectionName=collectionName;
+  
 
 
 
   @override
   Future<UserApp?> createUser(String email, String password)  async {
-    //Conexion a Firebase que cree el usuario
-   try {
-      // Verificar si el usuario ya existe en Firebase Auth
-      var existingAppUserApp = await auth.fetchSignInMethodsForEmail(email);
-      if (existingAppUserApp.isNotEmpty) {
-        // Si el usuario ya existe, lanzar un error
-        throw Exception('El usuario ya existe');
-      }
-
-
-      // Crear el usuario en Firebase Authentication
-      UserCredential UserCredential = await auth.createAppUserAppWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-     
-      // Obtener el usuario recién creado
-      UserApp? AppUserApp = UserAppCredential.AppUserApp;
-     
-      // Si es necesario, también puedes guardar más información en Firestore
-      if (AppUserApp != null) {
-        await db.collection(_collectionName).doc(AppUserApp.uid).set({
-          'email': email,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      }
-     
-      // Retornar el usuario creado
-      return AppUserApp;
-    } catch (e) {
-      // Manejo de errores
-      print('Error al crear el usuario: $e');
-      return null;
-    }
+      throw UnimplementedError("Method not implemented");
 
   }
   
   @override
-  UserApp? logIn(UserApp AppUserApp)  {
+  UserApp? logIn(UserApp UserApp)  {
       //Conexion a Firebase que inicie sesion
     throw UnimplementedError("Method not implemented");
 
@@ -151,7 +119,7 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   }
   
   @override
-  UserApp? logOut(UserApp AppUserApp) {
+  UserApp? logOut(UserApp UserApp) {
     // TODO: implement logOut
     throw UnimplementedError("Method not implemented");
   }
@@ -164,10 +132,10 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
 
 abstract class DbAdapterUserApp {
   Future<UserApp?> createUser(String email, String password);
-  UserApp? logIn(UserApp AppUserApp);
+  UserApp? logIn(UserApp UserApp);
 
   UserApp? logInCredenciales(String email, String password);
-  UserApp? logOut(UserApp AppUserApp);
+  UserApp? logOut(UserApp UserApp);
 
 
 
