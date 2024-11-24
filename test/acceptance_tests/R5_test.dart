@@ -1,7 +1,7 @@
 // precio_luz_service_acceptance_test.dart
-import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/viewModel/UserController.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,8 +16,8 @@ void main() {
     late LocationController locationController;
 
 
-    late DbAdapterUser adapterUser;
-    late UserController userController;
+    late DbAdapterUserApp adapterUserApp;
+    late UserAppController userAppController;
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -47,8 +47,8 @@ void main() {
       adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
       locationController = LocationController(adapterLocation);
 
-      adapterUser = FirestoreAdapterUser(collectionName: "testCollection");
-      userController = UserController(adapterUser);
+      adapterUserApp = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppController = UserAppController(adapterUserApp);
       
 
     });
@@ -59,10 +59,10 @@ void main() {
       //creamos cuenta al usuario
       String email = "belen@gmail.com";
       String password = "HolaAAAAA%1";
-      User? user =  userController.createUser(email, password);
+      UserApp? user =  userAppController.createUser(email, password);
 
       //Loguear usuario
-      userController.logIn(user!);
+      userAppController.logIn(user!);
 
 
       //WHEN
@@ -78,7 +78,7 @@ void main() {
 
       //THEN
 
-      final Set<Location> locations = await locationController.getLocationList();
+      final Set<Location> locations = locationController.getLocationList();
 
       // Convertir el set a una lista para acceder al primer elemento
       final locationList = locations.toList();
@@ -101,10 +101,10 @@ void main() {
       //creamos cuenta al usuario
       String email = "belen@gmail.com";
       String password = "HolaAAAAA%1";
-      User? user =  userController.createUser(email, password);
+      UserApp? user =  userAppController.createUser(email, password);
 
       //Loguear usuario
-      userController.logIn(user!);
+      userAppController.logIn(user!);
 
 
 
