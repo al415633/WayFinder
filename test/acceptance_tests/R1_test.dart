@@ -1,9 +1,10 @@
 
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/UserApp.dart';
 
-import 'package:WayFinder/viewModel/UserController.dart';
-import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:integration_test/integration_test.dart';
@@ -11,9 +12,9 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('UserController Test', () {
-    late DbAdapterUser adapter;
-    late UserController userController;
+  group('AppUserAppController Test', () {
+    late DbAdapterUserApp adapter;
+    late UserAppController AppUserAppController;
 
     setUpAll(() async {
       // Inicializar Firebase
@@ -32,9 +33,9 @@ void main() {
 
 
     setUp(() {
-      adapter = FirestoreAdapterUser(collectionName: "testCollection");
+      adapter = FirestoreAdapterUserApp(collectionName: "testCollection");
 
-      userController = UserController(adapter);
+      AppUserAppController = UserAppController(adapter);
     });
 
    
@@ -44,11 +45,11 @@ void main() {
       String password = "Aaaaa,.8";
 
       // WHEN
-      User? user = userController.createUser(email, password);
+      UserApp? AppUserApp = AppUserAppController.createUser(email, password);
 
       // THEN
-      expect(user, isNotNull);
-      expect(user?.email, equals(email));
+      expect(AppUserApp, isNotNull);
+      expect(AppUserApp?.email, equals(email));
     });
 
 
@@ -61,7 +62,7 @@ void main() {
 
       // WHEN
       void action() {
-        userController.createUser(email, password);
+        AppUserAppController.createUser(email, password);
       }
 
       // THEN
@@ -76,14 +77,14 @@ void main() {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
+      UserApp? AppUserApp = AppUserAppController.createUser(email, password);
 
       // WHEN
-      user = userController.logInCredenciales(email, password);
+      AppUserApp = AppUserAppController.logInCredenciales(email, password);
 
       // THEN
-      expect(user, isNotNull);
-      expect(user?.email, equals(email));
+      expect(AppUserApp, isNotNull);
+      expect(AppUserApp?.email, equals(email));
     });
 
 
@@ -94,11 +95,11 @@ void main() {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      userController.createUser(email, password);
+      AppUserAppController.createUser(email, password);
 
       // WHEN
       void action() {
-        userController.logInCredenciales(email, "aaaaaaaaaaaa");
+        AppUserAppController.logInCredenciales(email, "aaaaaaaaaaaa");
       }
 
       // THEN
@@ -111,12 +112,12 @@ void main() {
       // GIVEN
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      userController.logIn(user!);
+      UserApp? AppUserApp = AppUserAppController.createUser(email, password);
+      AppUserAppController.logIn(AppUserApp!);
 
       // WHEN
     
-      User? cerrado= userController.logOut(user);
+      UserApp? cerrado= AppUserAppController.logOut(AppUserApp);
       
 
       // THEN
@@ -126,18 +127,18 @@ void main() {
 
     test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () {
       // GIVEN
-      adapter = FirestoreAdapterUser(collectionName: "No conexion");
-      userController = UserController(adapter);
+      adapter = FirestoreAdapterUserApp(collectionName: "No conexion");
+      AppUserAppController = UserAppController(adapter);
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      User? user = userController.createUser(email, password);
-      userController.logIn(user!);
+      UserApp? AppUserApp = AppUserAppController.createUser(email, password);
+      AppUserAppController.logIn(AppUserApp!);
 
       // WHEN
       
-      User? cerrado;
+      UserApp? cerrado;
       void action() {
-      cerrado= userController.logOut(user) ;
+      cerrado= AppUserAppController.logOut(AppUserApp) ;
       }
 
       // THEN
