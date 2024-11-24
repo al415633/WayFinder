@@ -1,24 +1,26 @@
-// precio_luz_service_acceptance_test.dart
-import 'dart:convert';
+// precio_luz_ContUserController_acceptance_test.dart
 
-import 'package:WayFinder/model/controladorLugar.dart';
-import 'package:WayFinder/model/controladorRuta.dart';
-import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/model/lugar.dart';
-import 'package:WayFinder/model/ruta.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/User.dart';
+import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/Route.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/UserController.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R4: Gestión de rutas', () {
+  group('R4: Gestión de Routes', () {
 
-    late DbAdapterRuta adapterRuta;
-    late ControladorRuta controladorRuta;
+    late DbAdapterRoute adapterRoute;
+    late RouteController routeController;
+
+    late DbAdapterUser userAdapter;
+    late UserController userController;
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -28,7 +30,7 @@ void main() {
 
       // Cargar la configuración desde firebase_config.json
 
-      //google serviceds
+      //google ContUserControllerds
       
 
       await Firebase.initializeApp(
@@ -45,26 +47,47 @@ void main() {
     });
 
     setUp(() async {
-      adapterRuta = FirestoreAdapterRuta(collectionName: "testCollection");
-      controladorRuta = ControladorRuta(adapterRuta);
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController(adapterRoute);
+
+      userAdapter = FirestoreAdapterUser(collectionName: "testCollection");
+      userController = UserController(userAdapter);
       
 
     });
 
-    test('H13-EV', () async {
+    test('H13-E1V - Crear ruta', () async {
 
-      //GIVEN
+    //GIVEN
+     String email = "ana@gmail.com";
+     String password = "Aaaaa,.8";
 
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+
+     User? user = userController.createUser(email, password);
+     user = userController.logIn(user!);
 
 
       //WHEN
+      
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
 
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = Location(lat1, long1, apodo1);
+     Location fin = Location(lat2, long2, apodo2);
+
+
+     Route? route = routeController.createRoute(ini, fin, "a pie", "rápida");
   
 
 
       //THEN
+     expect(route?.getStart(), equals(ini)); // Verifica el Location inicial
+     expect(route?.getEnd(), equals(fin)); // Verifica el Location final
 
       
 
@@ -72,20 +95,45 @@ void main() {
     });
 
 
-    test('H13-EI', () async {
+    test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
 
       //GIVEN
+      userAdapter = FirestoreAdapterUser(collectionName: "No conexion");
+      userController = UserController(userAdapter);
+     String email = "ana@gmail.com";
+     String password = "Aaaaa,.8";
 
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+
+     User? user = userController.createUser(email, password);
+     user = userController.logIn(user!);
 
 
       //WHEN
-
       
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
 
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = Location(lat1, long1, apodo1);
+     Location fin = Location(lat2, long2, apodo2);
+
+
+    Route? route;
+      void action() {
+
+     route = routeController.createRoute(ini, fin, "a pie", "rápida");
+  
+      }
 
       //THEN
+     
+    expect(action, throwsA(isA<ConnectionBBDDException>()));
+      expect(route?.getStart(), equals(isNull)); // Verifica el Location inicial
+     expect(route?.getEnd(), equals(isNull)); // Verifica el Location final
 
      
 
@@ -107,90 +155,7 @@ void main() {
     });
    
 
-    test('H17', () async {
-      
-    });
-   
-    test('H18-EV', () async {
 
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Lugar ini = Lugar(lat1, long1, apodo1);
-      Lugar fin = Lugar(lat2, long2, apodo2);
-
-      await controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-
-      final Set<Ruta> rutas = await controladorRuta.getListaRutas();
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final listaRutas = rutas.toList();
-      
-      // Acceder al primer objeto en la lista
-      final primeraRuta = listaRutas[0];
-
-      // Verificar que los valores del primer lugar son los esperados
-      expect(primeraRuta.getInicio(), equals(ini)); // Verifica el Lugar inicial
-      expect(primeraRuta.getFin, equals(fin)); // Verifica el Lugar final
-      expect(primeraRuta.getDistancia(), equals(0)); // Verifica la distancia calculada
-      expect(primeraRuta.getPoints(), equals(List<Coordenada>)); // Verifica la lista de puntos
-      expect(primeraRuta.getModoTransporte(), equals("a pie")); // Verifica el modo de Transporte
-      expect(primeraRuta.getModoRuta(), equals("rápida")); // Verifica el modo de Transporte
-
-
-
-      
-    });
-
-
-    test('H18-EI', () async {
-
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Lugar ini = Lugar(lat1, long1, apodo1);
-      Lugar fin = Lugar(lat2, long2, apodo2);
-
-      await controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-     expect(() {
-      controladorRuta.getListaRutas();
-    }, throwsException);
-
-
-
-
-      
-    });
    
 
     test('H19', () async {
