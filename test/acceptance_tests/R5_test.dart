@@ -127,7 +127,7 @@ void main() {
 
       //THEN
 
-      final Set<Location> locations = locationController.getLocationList();
+      final Set<Location> locations = await locationController.getLocationList();
 
       // Convertir el set a una lista para acceder al primer elemento
       final locationList = locations.toList();

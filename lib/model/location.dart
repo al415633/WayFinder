@@ -27,6 +27,13 @@ late bool fav;
     fav = false;
   }
 
+ Location.fromMap(Map<String, dynamic> mapa) {
+  this.coordinate = mapa['coord']; 
+  this.toponym = mapa['toponym']; 
+  this.alias = mapa['alias']; 
+  this.fav = mapa['fav']; 
+}
+
   // Método para pasar de coordinates a toponym
   Future<String?> CoordToToponym(Coordinate coord) async{
     http.Response? response;
@@ -96,6 +103,7 @@ late bool fav;
       'coord': coordinate,
       'toponym': toponym,
       'alias': alias,
+      'fav' : fav
     };
   }
 
