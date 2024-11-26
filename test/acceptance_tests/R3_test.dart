@@ -63,7 +63,7 @@ void main() {
       //Loguear usuario
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      UserApp? user = userAppController.createUser(email, password) as UserApp?;
       user = userAppController.logInCredenciales(email, password);
 
 
@@ -103,7 +103,7 @@ void main() {
       //Loguear usuario
        String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      UserApp? user = userAppController.createUser(email, password) as UserApp?;
       user = userAppController.logInCredenciales(email, password);
 
 
@@ -135,7 +135,7 @@ void main() {
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
        String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      UserApp? user = userAppController.createUser(email, password) as UserApp?;
       user = userAppController.logInCredenciales(email, password);
       //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
       final String name = "Coche Ana";
@@ -167,7 +167,7 @@ void main() {
       userAppController = UserAppController(userAppAdapter);
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      UserApp? user = userAppController.createUser(email, password) as UserApp?;
       userAppController.logIn(user!);
 
 
@@ -195,7 +195,7 @@ void main() {
       //Loguear usuario
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      UserApp? user = userAppController.createUser(email, password) as UserApp?;
       user = userAppController.logInCredenciales(email, password);
 
 
