@@ -6,6 +6,8 @@ import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/Route.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -43,6 +45,18 @@ void main() {
           measurementId: "G-TZLW8P5J8V"
         ),
       );
+
+
+      //GIVEN
+
+      //Loguear usuario
+      String email = "isabel@gmail.com";
+      String password = "Iaaaa,.8";
+      String nameU = "Isa";
+
+      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
+      user = userAppController.logInCredenciales(email, password);
+
     });
 
     setUp(() async {
@@ -55,15 +69,58 @@ void main() {
 
     });
 
+
+    tearDown(() async {
+
+
+        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+          try {
+            if (user != null) {
+              // Si ya hay un usurio borro documnetos testCollection
+              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+              var querySnapshot = await collectionRef.get(); 
+
+              for (var doc in querySnapshot.docs) {
+                await doc.reference.delete(); 
+              }
+
+              // Eliminar el usuario
+              await user.delete();
+              print('Usuario y documentos eliminados con éxito.');
+
+            } else {
+              // Si el usuario no está autenticado, intentar iniciar sesión
+              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                email: "isabel@gmail.com",
+                password: "Iaaaa,.8", 
+              );
+
+              // Eliminar todos los documentos de la colección testCollection
+              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+              var querySnapshot = await collectionRef.get(); 
+
+              for (var doc in querySnapshot.docs) {
+                await doc.reference.delete(); // Eliminar cada documento
+              }
+
+              // Eliminar el usuario
+              await userCredential.user!.delete();
+              print('Usuario y documentos eliminados con éxito.');
+            }
+          } catch (e) {
+            print('Error durante la autenticación o eliminación: $e');
+          }
+        });
+    });
+
     test('H13-E1V - Crear ruta', () async {
 
-    //GIVEN
-     String email = "ana@gmail.com";
-     String password = "Aaaaa,.8";
+      //GIVEN
 
+      //Loguear usuario
 
-     UserApp? user = userAppController.createUser(email, password) as UserApp?;
-     user = userAppController.logIn(user!);
+      //Hecho en el setUpAll
+      
 
 
       //WHEN
@@ -97,14 +154,9 @@ void main() {
     test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
 
       //GIVEN
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "No conexion");
-      userAppController = UserAppController(userAppAdapter);
-     String email = "ana@gmail.com";
-     String password = "Aaaaa,.8";
+      //Loguear usuario
 
-
-     UserApp? user = userAppController.createUser(email, password) as UserApp?;
-     user = userAppController.logIn(user!);
+      //Hecho en el setUpAll
 
 
       //WHEN

@@ -20,6 +20,9 @@ void main() {
     late UserAppController userAppController;
 
     setUpAll(() async {
+
+      TestWidgetsFlutterBinding.ensureInitialized();
+
       // Inicializar Firebase
       await Firebase.initializeApp(
         options: FirebaseOptions(
@@ -47,44 +50,44 @@ void main() {
 tearDown(() async {
 
 
-FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-  try {
-    if (user != null) {
-      // Si ya hay un usurio borro documnetos testCollection
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-      var querySnapshot = await collectionRef.get(); 
+  FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+    try {
+      if (user != null) {
+        // Si ya hay un usurio borro documnetos testCollection
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get(); 
 
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete(); 
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); 
+        }
+
+        // Eliminar el usuario
+        await user.delete();
+        print('Usuario y documentos eliminados con éxito.');
+
+      } else {
+        // Si el usuario no está autenticado, intentar iniciar sesión
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: "ana@gmail.com",
+          password: "Aaaaa,.8", 
+        );
+
+        // Eliminar todos los documentos de la colección testCollection
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get(); 
+
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); // Eliminar cada documento
+        }
+
+        // Eliminar el usuario
+        await userCredential.user!.delete();
+        print('Usuario y documentos eliminados con éxito.');
       }
-
-      // Eliminar el usuario
-      await user.delete();
-      print('Usuario y documentos eliminados con éxito.');
-
-    } else {
-      // Si el usuario no está autenticado, intentar iniciar sesión
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: "ana@gmail.com",
-        password: "Aaaaa,.8", 
-      );
-
-      // Eliminar todos los documentos de la colección testCollection
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-      var querySnapshot = await collectionRef.get(); 
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete(); // Eliminar cada documento
-      }
-
-      // Eliminar el usuario
-      await userCredential.user!.delete();
-      print('Usuario y documentos eliminados con éxito.');
+    } catch (e) {
+      print('Error durante la autenticación o eliminación: $e');
     }
-  } catch (e) {
-    print('Error durante la autenticación o eliminación: $e');
-  }
-});
+  });
 });
 
  
