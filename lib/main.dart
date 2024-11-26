@@ -210,6 +210,11 @@ void _login() async {
     userAppController?.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
+
+     Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen()),
+    );
     
     // Navegar a la página de éxito
    // Navigator.push(

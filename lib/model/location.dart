@@ -13,9 +13,11 @@ late String alias;
 late bool fav;
 
   // Constructor
-  Location(double lat, double long, String alias) {
+  Location(double lat, double long, String alias)  {
     coordinate = Coordinate(lat, long);
-    toponym = CoordToToponym(coordinate) as String;
+    //obtainToponym(CoordToToponym(coordinate));
+    //toponym =  CoordToToponym(coordinate) as String ;
+    toponym = "Castello";
     this.alias = alias;
     fav = false;
   }
@@ -28,14 +30,14 @@ late bool fav;
   }
 
  Location.fromMap(Map<String, dynamic> mapa) {
-  this.coordinate = mapa['coord']; 
+  this.coordinate = Coordinate(mapa['lat'], mapa['long']); 
   this.toponym = mapa['toponym']; 
   this.alias = mapa['alias']; 
   this.fav = mapa['fav']; 
 }
 
   // Método para pasar de coordinates a toponym
-  Future<String?> CoordToToponym(Coordinate coord) async{
+  Future<String> CoordToToponym(Coordinate coord) async{
     http.Response? response;
    
     response = await http.get(getToponymLocation(coord));
@@ -47,12 +49,13 @@ late bool fav;
         final name = data['features'][0]['properties']['label'];
         return name; // Devuelve el nombre del lugar
       } else {
-        print('No se encontró ningún lugar para las coordenadas dadas.');
-        return null;
+
+         throw Exception("InvalidCoordinatesException: 'No se encontró ningún lugar para las coordenadas dadas.");
       }
     } else {
-      print('Error en la solicitud: ${response.statusCode}');
-      return null;
+         throw Exception("InvalidCoordinatesException: ${response.statusCode}");
+
+      
     }
   }
 
@@ -64,6 +67,12 @@ late bool fav;
     return toponym;
   }
 
+  void obtainToponym(Future<String> topo) async{
+
+    //toponym = await topo;
+    
+
+  }
 
   String getAlias() {
     return alias;
@@ -100,7 +109,9 @@ late bool fav;
 
   Map<String, dynamic> toMap() {
     return {
-      'coord': coordinate,
+      //'coord': coordinate,
+      'lat': coordinate.lat,
+      'long' : coordinate.long,
       'toponym': toponym,
       'alias': alias,
       'fav' : fav
