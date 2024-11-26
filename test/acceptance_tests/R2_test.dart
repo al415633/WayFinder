@@ -48,15 +48,7 @@ void main() {
       );
 
 
-      //GIVEN
-
-      //Loguear usuario
-      String email = "isabel@gmail.com";
-      String password = "Iaaaa,.8";
-      String nameU = "Isa";
-
-      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
-      user = userAppController.logInCredenciales(email, password);
+      
 
     });
     
@@ -67,10 +59,20 @@ void main() {
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
+
+      //GIVEN
+
+      //Loguear usuario
+      String email = "isabel@gmail.com";
+      String password = "Iaaaa,.8";
+      String nameU = "Isa";
+
+      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
+      user = userAppController.logInCredenciales(email, password);
     });
 
 
-    tearDownAll(() async {
+    tearDown(() async {
 
 
         FirebaseAuth.instance.authStateChanges().listen((User? user) async {
