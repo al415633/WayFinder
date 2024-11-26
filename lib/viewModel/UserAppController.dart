@@ -2,6 +2,7 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,6 +27,9 @@ class UserAppController{
     return _instance!;
   }
 
+ static UserAppController? getInstance() {
+    return _instance;
+  }
 
      bool isValidEmail(String email) {
       final emailRegex = RegExp(
@@ -59,18 +63,30 @@ class UserAppController{
    
    }
 
-  UserApp? logInCredenciales(String email, String password)  {
-    repository.logInCredenciales(email, password);
-    return null; 
+  Future<UserApp?> logInCredenciales(String email, String password)  async {
+    if (!isValidEmail(email)) {
+      throw NotValidEmailException();
+    }
+
+   
+    if (!isValidPassword(password)) {
+      throw IncorrectPasswordException();
+    }
+    return await repository.logInCredenciales(email, password);
+
    }
    
 
-     UserApp? logOut(UserApp userApp) {
-    // TODO: implement logOut
+   Future<UserApp?> logOut(UserApp? userApp) async {
+if (userApp!=null){
+   return await repository.logOut(userApp);
+}
+else{
+  throw UserNotAuthenticatedException();
+}
+     
 
-    //Comporbar que hay acceso a la BBDD
-    throw UnimplementedError("Method not implemented");
-     }
+}
 
 
 
@@ -155,19 +171,21 @@ Future<UserApp?> createUser(String email, String password) async {
 
   
   @override
-  UserApp? logOut(UserApp userApp) {
-    // TODO: implement logOut
-    throw UnimplementedError("Method not implemented");
+  Future<UserApp?> logOut(UserApp userApp) async {
+    try {
+    await auth.signOut();
+    return userApp;  
+  } catch (e) {
+    throw ConnectionBBDDException();
+  }  
   }
 
-
-
-  }
+}
 
 
 
 abstract class DbAdapterUserApp {
   Future<UserApp?> createUser(String email, String password);
-   Future<UserApp?> logInCredenciales(String email, String password);
-  UserApp? logOut(UserApp userApp);
+  Future<UserApp?> logInCredenciales(String email, String password);
+ Future<UserApp?> logOut(UserApp userApp);
 }
