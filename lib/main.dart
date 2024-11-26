@@ -1,3 +1,4 @@
+import 'package:WayFinder/view/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';

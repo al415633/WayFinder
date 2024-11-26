@@ -11,31 +11,32 @@ class LocationController {
  // Propiedades
 
 
-   late Set<Location> locationList;
+   late Future<Set<Location>> locationList;
    final DbAdapterLocation _dbAdapter;
 
 
-   LocationController(this._dbAdapter) : locationList = _dbAdapter.getLocationList() as Set<Location>;
+   LocationController(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
 
 
-   Set<Location> getLocationList(){
+   Future<Set<Location>> getLocationList(){
      return locationList;
    }
 
 
    Future<bool> createLocationFromCoord(double lat, double long, String alias) async{
+
+
+  lat = double.parse(lat.toStringAsFixed(6));
+  long = double.parse(long.toStringAsFixed(6));
+
+
     if (lat > 90 || lat < -90) {
    throw Exception("InvalidCoordinatesException: La latitud debe estar entre -90 y 90 grados.");
    }
    if (long > 180 || long < -180) {
      throw Exception("InvalidCoordinatesException: La longitud debe estar entre -180 y 180 grados.");
    }
-   if (!hasMaxSixDecimals(lat)) {
-     throw Exception("InvalidCoordinatesException: La latitud no debe tener más de 6 decimales.");
-   }
-   if (!hasMaxSixDecimals(long)) {
-     throw Exception("InvalidCoordinatesException: La longitud no debe tener más de 6 decimales.");
-   }
+   
 
 
      Location location = Location(lat, long, alias);
@@ -43,7 +44,11 @@ class LocationController {
      bool success =  await this._dbAdapter.createLocationFromCoord(location);
     
      if (success){
-       locationList.add(location);
+
+      final currentSet = await locationList;
+
+      // Agregar el nuevo Location al Set
+      currentSet.add(location);
      }
 
      return success;
@@ -56,11 +61,17 @@ class LocationController {
 
      bool success = await _dbAdapter.createLocationFromTopo(location);
 
-     if (success){
-       locationList.add(location);
+          if (success){
+
+      final currentSet = await locationList;
+
+      // Agregar el nuevo Location al Set
+      currentSet.add(location);
      }
+
      return success;
    }
+
 
 
 
@@ -97,18 +108,6 @@ class LocationController {
 }
 
 
-
-
-bool hasMaxSixDecimals(double value) {
- // Convierte el número a String
- String valueStr = value.toString();
-  // Divide la cadena en parte entera y parte decimal
- List<String> divisions = valueStr.split('.');
-  // Si no hay parte decimal, cumple la regla
- if (divisions.length < 2) return true;
-  // Verifica que la parte decimal tenga 6 o menos caracteres
- return divisions[1].length <= 6;
-}
 
 
 
