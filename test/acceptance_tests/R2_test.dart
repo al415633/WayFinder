@@ -63,7 +63,8 @@ void main() {
    
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      String name="ana";
+      UserApp? user = await userAppController.createUser(email, password, name) ;
       user = userAppController.logInCredenciales(email, password);
 
 
@@ -103,7 +104,9 @@ void main() {
       
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+       String name = "Ana";
+
+      UserApp? user = await userAppController.createUser(email, password, name);
       user = userAppController.logInCredenciales(email, password);
 
 
@@ -143,7 +146,9 @@ void main() {
       
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      String name = "Ana";
+
+      UserApp? user = await userAppController.createUser(email, password, name) ;
       user = userAppController.logInCredenciales(email, password);
 
       final double lat1 = 39.98567;
@@ -190,7 +195,7 @@ void main() {
       
       String email = "ana@gmail.com";
       String password = "Aaaaa,.8";
-      UserApp? user = userAppController.createUser(email, password);
+      UserApp? user = userAppController.createUser(email, password) as UserApp?;
       user = userAppController.logInCredenciales(email, password);
 
       //WHEN Y THEN
