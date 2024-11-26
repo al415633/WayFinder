@@ -59,7 +59,7 @@ void main() {
       //creamos cuenta al usuario
       String email = "belen@gmail.com";
       String password = "HolaAAAAA%1";
-      UserApp? user =  userAppController.createUser(email, password);
+      UserApp? user =  userAppController.createUser(email, password) as UserApp?;
 
       //Loguear usuario
       userAppController.logIn(user!);
@@ -101,7 +101,7 @@ void main() {
       //creamos cuenta al usuario
       String email = "belen@gmail.com";
       String password = "HolaAAAAA%1";
-      UserApp? user =  userAppController.createUser(email, password);
+      UserApp? user =  userAppController.createUser(email, password) as UserApp?;
 
       //Loguear usuario
       userAppController.logIn(user!);

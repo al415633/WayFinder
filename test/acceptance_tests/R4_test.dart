@@ -62,7 +62,7 @@ void main() {
      String password = "Aaaaa,.8";
 
 
-     UserApp? user = userAppController.createUser(email, password);
+     UserApp? user = userAppController.createUser(email, password) as UserApp?;
      user = userAppController.logIn(user!);
 
 
@@ -103,7 +103,7 @@ void main() {
      String password = "Aaaaa,.8";
 
 
-     UserApp? user = userAppController.createUser(email, password);
+     UserApp? user = userAppController.createUser(email, password) as UserApp?;
      user = userAppController.logIn(user!);
 
 
