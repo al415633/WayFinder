@@ -59,9 +59,17 @@ class UserAppController{
    
    }
 
-  UserApp? logInCredenciales(String email, String password)  {
-    repository.logInCredenciales(email, password);
-    return null; 
+  Future<UserApp?> logInCredenciales(String email, String password)  async {
+    if (!isValidEmail(email)) {
+      throw NotValidEmailException();
+    }
+
+   
+    if (!isValidPassword(password)) {
+      throw IncorrectPasswordException();
+    }
+    return await repository.logInCredenciales(email, password);
+
    }
    
 

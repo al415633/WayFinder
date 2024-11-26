@@ -136,7 +136,7 @@ FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       UserApp? userApp = await userAppController.createUser(email, password, name) ;
 
       // WHEN
-      userApp = userAppController.logInCredenciales(email, password);
+      userApp = await userAppController.logInCredenciales(email, password);
 
       // THEN
       expect(userApp, isNotNull);
@@ -156,8 +156,8 @@ FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       userAppController.createUser(email, password, name);
 
       // WHEN
-      void action() {
-        userAppController.logInCredenciales(email, "aaaaaaaaaaaa");
+      Future<void> action() async {
+        await userAppController.logInCredenciales(email, "aaaaaaaaaaaa");
       }
 
       // THEN
@@ -194,12 +194,12 @@ FirebaseAuth.instance.authStateChanges().listen((User? user) async {
        String name = "Ana";
 
       UserApp? userApp = await userAppController.createUser(email, password, name) ;
-      userAppController.logInCredenciales(email, password);
+      await userAppController.logInCredenciales(email, password);
 
       // WHEN
       
       UserApp? cerrado;
-      void action() {
+      void action() async{
       cerrado= userAppController.logOut(userApp!) ;
       }
 
