@@ -1,4 +1,9 @@
+import 'package:WayFinder/view/createUserView.dart';
+import 'package:WayFinder/view/errorPage.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
+
 import 'package:WayFinder/view/map_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,23 +22,32 @@ void main() async {
   final response = await http.get(Uri.parse('/firebase_config.json'));
   final config = json.decode(response.body);
 
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: config['apiKey'],
-      authDomain: config['authDomain'],
-      projectId: config['projectId'],
-      storageBucket: config['storageBucket'],
-      messagingSenderId: config['messagingSenderId'],
-      appId: config['appId'],
-      measurementId: config['measurementId'],
-    ),
-  );
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+          authDomain: "wayfinder-df8eb.firebaseapp.com",
+          projectId: "wayfinder-df8eb",
+          storageBucket: "wayfinder-df8eb.appspot.com",
+          messagingSenderId: "571791500413",
+          appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+          measurementId: "G-TZLW8P5J8V",
+        ),
+      );
+  final repository = FirestoreAdapterUserApp(collectionName: "production");
 
-  runApp(MiApp());
+ final userAppController = UserAppController(repository);
+
+  runApp(MiApp(userAppController));
+
+    
+
+
 }
 
 class MiApp extends StatelessWidget {
-  const MiApp({super.key});
+  final UserAppController userAppController;
+
+  const MiApp(this.userAppController);
 
   @override
   Widget build(BuildContext context) {
@@ -54,29 +68,165 @@ class Inicio extends StatefulWidget {
 }
 
 
-class _InicioState extends State<Inicio> {
-  // creo un metodo para que me establezca un boton y no tenga codigo repetido
-  Widget buildButton(String text, Widget nextPage) {
-    return Center(
-      child: SizedBox(
-        width: 550,
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => nextPage),
-            );
-          },
-          child: Text(text),
+class _InicioState extends State<Inicio> {final TextEditingController _usuarioController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    
+  }
+
+  @override
+  void dispose() { 
+    // Libera los controladores cuando ya no se necesiten
+    _usuarioController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Inicio de sesión'),
+      ),
+      body: login(),
+    );
+  }
+
+  Widget login() {
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            nombre(),
+            campoUsuario(),
+            const SizedBox(height: 15), // separacion para que quede bonito
+
+            contrasena(),
+            campoContraena(),
+            const SizedBox(height: 15), // separacion para que quede bonito
+            
+            botonEntrar(),
+            const SizedBox(height: 15), // separacion para que quede bonito
+
+            nuevaCuenta(),
+
+          ],
         ),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
 
+   Widget nombre() {
+    return Text(
+      "Usuario",
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
     );
   }
+
+  Widget campoUsuario() { //TextField para escribir el nombre del usurio
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      child: TextField(
+        controller: _usuarioController, // Asignar el controlador al campo de usuario
+        decoration: const InputDecoration(
+          hintText: "Email",
+          fillColor: Colors.white,
+          filled: true,
+        ),
+      ),
+    );
+  }
+
+  Widget contrasena() {
+    return  Text(
+      "Contraseña",
+      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
+    );
+  }
+
+  Widget campoContraena() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      child: TextField(
+        controller: _passwordController, // Asignar el controlador al campo de contraseña
+        obscureText: true, // Ocultar el texto para la contraseña
+        decoration: const InputDecoration(
+          hintText: "Contraseña",
+          fillColor: Colors.white,
+          filled: true,
+        ),
+      ),
+    );
+  }
+
+  Widget botonEntrar() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 147, 164, 173), // Cambia el color de fondo del botón
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10), // Ajusta el padding
+        textStyle: const TextStyle(fontSize: 18), // Opcional: ajusta el estilo del texto
+      ),
+      onPressed: () {
+        
+       _login(); // Llamada a la función de login
+
+      },
+      child: const Text(
+        "Iniciar sesión",
+        style: TextStyle(fontSize: 25, color: Colors.white),
+      ),
+    );
+  }
+
+
+ Widget nuevaCuenta() {
+  return ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CreateUserView()),
+      );
+    },
+    child: const Text("No tienes cuenta?, ¡Clica aquí para hacerte una!"),
+  );
+}
+
+
+
+// Iniciar sesión con Firebase en Flutter Web
+void _login() async {
+  String email = _usuarioController.text;
+  String password = _passwordController.text;
+
+  try {
+    
+    UserAppController? userAppController = UserAppController.getInstance();
+
+    userAppController?.logInCredenciales(email, password);
+    _usuarioController.clear();
+    _passwordController.clear();
+    
+    // Navegar a la página de éxito
+   // Navigator.push(
+   //   context,
+     // MaterialPageRoute(builder: (context) => ExitoPage()),
+   // );
+  } on Exception catch (e) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), // Cambia a la página de error
+      );
+    
+  }
+}
+
+
+
+
+ 
 }
