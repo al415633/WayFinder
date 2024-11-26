@@ -12,6 +12,7 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+
   late FirebaseAuth auth;
   late UserAppController userAppController;
   late UserApp? userApp;
@@ -24,6 +25,7 @@ void main() {
       await doc.reference.delete(); 
     }
   }
+
 
   Future<UserApp?> signInAndDeleteUser(String email, String password) async {
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
