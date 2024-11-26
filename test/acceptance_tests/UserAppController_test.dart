@@ -1,139 +1,99 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
-
-
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+
   late FirebaseAuth auth;
+  late UserAppController userAppController;
+  late UserApp? userApp;
+
+  // Helper para limpiar la colección y eliminar usuario
+  Future<void> cleanUp() async {
+    var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+    var querySnapshot = await collectionRef.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete(); 
+    }
+  }
+
+
+  Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await cleanUp();
+    await userCredential.user!.delete();
+    return null;
+  }
+
+  setUpAll(() async {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+        authDomain: "wayfinder-df8eb.firebaseapp.com",
+        projectId: "wayfinder-df8eb",
+        storageBucket: "wayfinder-df8eb.appspot.com",
+        messagingSenderId: "571791500413",
+        appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+        measurementId: "G-TZLW8P5J8V",
+      ),
+    );
+    final adapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+    userAppController = UserAppController(adapter);
+  });
 
   group('UserAppController Test', () {
-    late DbAdapterUserApp adapter;
-    late UserAppController userAppController;
-
-    setUpAll(() async {
-      // Inicializar Firebase
-      await Firebase.initializeApp(
-        options: FirebaseOptions(
-          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-          authDomain: "wayfinder-df8eb.firebaseapp.com",
-          projectId: "wayfinder-df8eb",
-          storageBucket: "wayfinder-df8eb.appspot.com",
-          messagingSenderId: "571791500413",
-          appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-          measurementId: "G-TZLW8P5J8V",
-        ),
-      );
-    });
-
-  
-
-
-    setUp(() async {
-      adapter = FirestoreAdapterUserApp(collectionName: "testCollection");
-      userAppController = UserAppController(adapter);
-    });
-
- 
-
-tearDown(() async {
-
-
-FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-  try {
-    if (user != null) {
-      // Si ya hay un usurio borro documnetos testCollection
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-      var querySnapshot = await collectionRef.get(); 
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete(); 
-      }
-
-      // Eliminar el usuario
-      await user.delete();
-      print('Usuario y documentos eliminados con éxito.');
-
-    } else {
-      // Si el usuario no está autenticado, intentar iniciar sesión
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: "ana@gmail.com",
-        password: "Aaaaa,.8", 
-      );
-
-      // Eliminar todos los documentos de la colección testCollection
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-      var querySnapshot = await collectionRef.get(); 
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete(); // Eliminar cada documento
-      }
-
-      // Eliminar el usuario
-      await userCredential.user!.delete();
-      print('Usuario y documentos eliminados con éxito.');
-    }
-  } catch (e) {
-    print('Error durante la autenticación o eliminación: $e');
-  }
-});
-});
-
- 
-  
-
-
-
-   
     test('H1-E1V - Guardar Datos Usuario', () async {
       // GIVEN
-      String email = "ana@gmail.com";
-      String password = "Aaaaa,.8";
-      String name = "Ana";
+      String email = "pruebah1E1@gmail.com";
+      String password = "Abbbbaa,.8";
+      String name = "PruebaH1E1";
 
       // WHEN
-      UserApp? userApp = await userAppController.createUser(email, password, name);
+      UserApp? newUserApp = await userAppController.createUser(email, password, name);
 
       // THEN
-      expect(userApp, isNotNull);
-      expect(userApp?.email, equals(email));
+      expect(newUserApp, isNotNull);
+      expect(newUserApp?.email, equals(email));
+
+      await signInAndDeleteUser(email, password);
     });
 
-
-
-
-    test('H1-E2I - Password no cumple reglas de negocio', () {
+    test('H1-E2I - Password no cumple reglas de negocio', () async {
       // GIVEN
-      String email = "ana@gmail.com";
+      String email = "Pruebah1e2@gmail.com";
       String password = "1";
-      String name = "Ana";
+      String name = "Pruebah1e2";
+
       // WHEN
       Future<void> action() async {
         await userAppController.createUser(email, password, name);
       }
+
       // THEN
-      expect(action, throwsA(isA<IncorrectPasswordException>()));
+      expect(action(), throwsA(isA<IncorrectPasswordException>()));
+
+
     });
 
-
-
-
-
     test('H2-E2V - Permite Iniciar Sesión', () async {
-      // GIVEN
-      String email = "ana@gmail.com";
+      // GIVEN (realizado en setUpAll)
+      String email = "Pruebah2e2@gmail.com";
       String password = "Aaaaa,.8";
-       String name = "Ana";
+      String name="Pruebah2e2";
+      await userAppController.createUser(email, password, name);
 
-      UserApp? userApp = await userAppController.createUser(email, password, name) ;
 
       // WHEN
       userApp = await userAppController.logInCredenciales(email, password);
@@ -141,75 +101,74 @@ FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       // THEN
       expect(userApp, isNotNull);
       expect(userApp?.email, equals(email));
+      
+    
+      await signInAndDeleteUser(email, password);
+
+
     });
 
-
-
-
-
-    test('H2-E3I - No permite Iniciar Sesión por password inválido', () {
-      // GIVEN
-      String email = "ana@gmail.com";
+    test('H2-E3I - No permite Iniciar Sesión por password inválido', () async {
+      // GIVEN (realizado en setUpAll)
+      
+      String email = "Pruebah2e3@gmail.com";
       String password = "Aaaaa,.8";
-       String name = "Ana";
-
-      userAppController.createUser(email, password, name);
+      String name="Pruebah2e3";
+      await userAppController.createUser(email, password, name);
 
       // WHEN
       Future<void> action() async {
-        await userAppController.logInCredenciales(email, "aaaaaaaaaaaa");
+        await userAppController.logInCredenciales(email, "aaaaaaaaaa");
       }
 
       // THEN
-      expect(action, throwsA(isA<IncorrectPasswordException>()));
+      expect(action(), throwsA(isA<IncorrectPasswordException>()));
+      
+      await signInAndDeleteUser(email, password);
+
     });
-
-
 
     test('H3-E1V - Cerrar sesion valido', () async {
-      // GIVEN
-      String email = "ana@gmail.com";
-      String password = "Aaaaa,.8";
-       String name = "Ana";
 
-      UserApp? userApp = await userAppController.createUser(email, password, name);
-      userAppController.logInCredenciales(email, password);
+
+      // GIVEN
+
+      String email = "Pruebae3e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah3e1";
+      await userAppController.createUser(email, password, name);
 
       // WHEN
-    
-      UserApp? cerrado= userAppController.logOut(userApp!);
-      
+      UserApp? closedSession = await userAppController.logOut(userApp!);
 
       // THEN
-      expect(cerrado, isNotNull);
-    });
+      expect(closedSession, isNotNull);
 
+      await signInAndDeleteUser(email, password);
+
+    });
 
     test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () async {
       // GIVEN
-      adapter = FirestoreAdapterUserApp(collectionName: "No conexion");
-      userAppController = UserAppController(adapter);
-      String email = "ana@gmail.com";
-      String password = "Aaaaa,.8";
-       String name = "Ana";
+ 
+      String email = "pruebah3e2@gmail.com";
+      String password = "Aaaaacccccc,.8";
+      String name = "pruebah3e2";
 
-      UserApp? userApp = await userAppController.createUser(email, password, name) ;
-      await userAppController.logInCredenciales(email, password);
+      await userAppController.createUser(email, password, name);
+      //Pero no logeado
 
       // WHEN
-      
-      UserApp? cerrado;
-      void action() async{
-      cerrado= userAppController.logOut(userApp!) ;
-      }
+       Future<void> action() async {
+          await userAppController.logOut(null); 
+        }
 
-      // THEN
-      expect(cerrado, isNull);
-      expect(action, throwsA(isA<ConnectionBBDDException>()));
+ 
+       expect(() async => await action(), throwsA(isA<UserNotAuthenticatedException>()));
+
+
+      await signInAndDeleteUser(email, password);
+
     });
-
-
-
   });
 }
-
