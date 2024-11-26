@@ -50,9 +50,9 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String email = "isabel@gmail.com";
-      String password = "Iaaaa,.8";
-      String nameU = "Isa";
+      String email = "lucas@gmail.com";
+      String password = "Laaaa,.8";
+      String nameU = "Lsa";
 
       Future<UserApp?> user = userAppController.createUser(email, password, nameU);
       user = userAppController.logInCredenciales(email, password);
@@ -70,7 +70,7 @@ void main() {
     });
 
 
-    tearDown(() async {
+    tearDownAll(() async {
 
 
         FirebaseAuth.instance.authStateChanges().listen((User? user) async {
@@ -91,8 +91,8 @@ void main() {
             } else {
               // Si el usuario no está autenticado, intentar iniciar sesión
               UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: "isabel@gmail.com",
-                password: "Iaaaa,.8", 
+                email: "lucas@gmail.com",
+                password: "Laaaa,.8", 
               );
 
               // Eliminar todos los documentos de la colección testCollection

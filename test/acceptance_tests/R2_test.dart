@@ -70,7 +70,7 @@ void main() {
     });
 
 
-    tearDown(() async {
+    tearDownAll(() async {
 
 
         FirebaseAuth.instance.authStateChanges().listen((User? user) async {

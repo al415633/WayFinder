@@ -50,9 +50,9 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String email = "isabel@gmail.com";
-      String password = "Iaaaa,.8";
-      String nameU = "Isa";
+      String email = "quique@gmail.com";
+      String password = "Qaaaa,.8";
+      String nameU = "Qsa";
 
       Future<UserApp?> user = userAppController.createUser(email, password, nameU);
       user = userAppController.logInCredenciales(email, password);
@@ -70,7 +70,7 @@ void main() {
     });
 
 
-    tearDown(() async {
+    tearDownAll(() async {
 
 
         FirebaseAuth.instance.authStateChanges().listen((User? user) async {
@@ -91,8 +91,8 @@ void main() {
             } else {
               // Si el usuario no está autenticado, intentar iniciar sesión
               UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: "isabel@gmail.com",
-                password: "Iaaaa,.8", 
+                email: "quique@gmail.com",
+                password: "Qaaaa,.8", 
               );
 
               // Eliminar todos los documentos de la colección testCollection
@@ -122,7 +122,7 @@ void main() {
 
       //WHEN
 
-      final String name = "Coche Isa";
+      final String name = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
@@ -159,7 +159,7 @@ void main() {
 
       //WHEN
 
-      final String name = "Coche Isa";
+      final String name = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Híbrido";
@@ -187,7 +187,7 @@ void main() {
 
 
       //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
-      final String name = "Coche Isa";
+      final String name = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
