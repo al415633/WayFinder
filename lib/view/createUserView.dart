@@ -7,7 +7,6 @@ import 'package:WayFinder/view/logIn.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:flutter/material.dart';
 //IMPORT PARA LA BASE DE DATOS
-import 'package:firebase_auth/firebase_auth.dart';
 
 
 class CreateUserView extends StatefulWidget {
@@ -296,7 +295,7 @@ class _CreateUserViewState extends State<CreateUserView> {
 
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => LogIn()),
+    MaterialPageRoute(builder: (context) => Inicio()),
   );
 } on NotValidEmailException {
   Navigator.push(

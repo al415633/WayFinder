@@ -1,6 +1,9 @@
 import 'package:WayFinder/view/createUserView.dart';
 import 'package:WayFinder/view/errorPage.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
+
+import 'package:WayFinder/view/map_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
@@ -44,7 +47,7 @@ void main() async {
 class MiApp extends StatelessWidget {
   final UserAppController userAppController;
 
-  const MiApp(this.userAppController);
+  const MiApp(this.userAppController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -207,13 +210,18 @@ void _login() async {
     userAppController?.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
+
+     Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen()),
+    );
     
     // Navegar a la página de éxito
    // Navigator.push(
    //   context,
      // MaterialPageRoute(builder: (context) => ExitoPage()),
    // );
-  } on Exception catch (e) {
+  } on Exception {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), // Cambia a la página de error
