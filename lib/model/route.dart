@@ -2,7 +2,7 @@
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
 
-class Route {
+class Routes {
   // Propiedades
 
 Location start = Location(0, 0, "");
@@ -15,7 +15,7 @@ String routeMode = "rápida";
 
 
   // Constructor
-  Route(Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode){
+  Routes(Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode){
     this.start = start;
     this.end = end;
     this.distance = distance;
@@ -40,7 +40,7 @@ String routeMode = "rápida";
   }
   */
 
-   Route.fromMap(Map<String, dynamic> mapa) {
+   Routes.fromMap(Map<String, dynamic> mapa) {
   
   this.start = Location.fromMap(mapa['start']);
   this.end = Location.fromMap(mapa['end']);

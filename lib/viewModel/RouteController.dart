@@ -5,7 +5,7 @@ import 'package:WayFinder/model/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-import 'package:WayFinder/model/Route.dart';
+import 'package:WayFinder/model/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
@@ -13,7 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class RouteController {
   // Propiedades
- late Future<Set<Route>> routeList;
+ late Future<Set<Routes>> routeList;
  final DbAdapterRoute _dbAdapter;
 
 
@@ -26,7 +26,7 @@ RouteController(this._dbAdapter) {
     }
   }
 
- Future<Set<Route>> getRouteList() async {
+ Future<Set<Routes>> getRouteList() async {
     try {
       return await routeList;
     } catch (e) {
@@ -38,7 +38,7 @@ RouteController(this._dbAdapter) {
 
  Future<bool> createRoute(Location start, Location end, String transportMode, String routeMode) async{
 
-   Route route = Route(start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
+   Routes route = Routes(start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
 
      try{
 
@@ -61,10 +61,11 @@ RouteController(this._dbAdapter) {
 
 
  double getDistance(Location start, Location end) {
-   throw UnimplementedError("Method not implemented");
+   
+   return 0;
  }
   List<Coordinate> getPoints(Location start, Location end) {
-   throw UnimplementedError("Method not implemented");
+   return [];
  }
 
 
@@ -102,7 +103,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 
  @override
-  Future<Set<Route>> getRouteList() async {
+  Future<Set<Routes>> getRouteList() async {
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -111,8 +112,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
           .get();
 
       // Convertir cada documento a una instancia de Route
-      Set<Route> routes = querySnapshot.docs.map((doc) {
-        return Route.fromMap(doc.data());
+      Set<Routes> routes = querySnapshot.docs.map((doc) {
+        return Routes.fromMap(doc.data());
       }).toSet();
 
       return routes;
@@ -125,7 +126,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 
   @override
- Future<bool> createRoute(Route route) async{
+ Future<bool> createRoute(Routes route) async{
     try {
       await db
           .collection(_collectionName)
@@ -148,8 +149,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 
 abstract class DbAdapterRoute {
- Future<bool> createRoute(Route route);
- Future<Set<Route>> getRouteList();
+ Future<bool> createRoute(Routes route);
+ Future<Set<Routes>> getRouteList();
 
 
 

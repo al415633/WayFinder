@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -21,20 +23,22 @@ class _MapScreenState extends State<MapScreen> {
   String selectedMode = 'car'; // por defecto
   LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
   bool showInterestPlaces = false; 
+  bool showRoutes = false; 
   bool isSelectingLocation = false; // Nuevo estado para habilitar la selección en el mapa
-  String? locationName; // Nombre del lugar seleccionado
+  String? locationName; 
   final LocationController locationController = LocationController(FirestoreAdapterLocation());
-  List<Location> locations = []; // Lista para almacenar los nombres de las locations
+  List<Location> locations = []; 
+  List<Routes> routes = [];
+  final RouteController routeController = RouteController(FirestoreAdapterRoute());
+  String? routeName; 
 
-
-
-  
 
 
   @override
   void initState() {
     super.initState();
      _fetchLocations(); 
+     _fetchRoutes(); 
   }
 
   void _onModeChanged(String mode) {
@@ -42,9 +46,15 @@ class _MapScreenState extends State<MapScreen> {
       //selectedMode = mode;
       if (mode == 'locations') {
         showInterestPlaces = true; // Muestra el panel lateral
-      } else {
-        showInterestPlaces = false; // Oculta el panel lateral
-      }
+        showRoutes = false; // Muestra el panel lateral de rutas
+
+      } else if (mode == 'routes') {
+      showRoutes = true; // Muestra el panel lateral de rutas
+      showInterestPlaces = false; // Oculta el panel lateral de lugares
+    } else {
+      showInterestPlaces = false; // Oculta ambos paneles
+      showRoutes = false;
+    }
     });
   }
 
@@ -192,7 +202,42 @@ class _MapScreenState extends State<MapScreen> {
 
                     ),
                   ]),
-              ),)
+              ),),
+
+
+          if (showRoutes)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: Container(
+              width: 250,
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Rutas',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        ...routes.map((route) => _buildRouteItem(route)).toList(),
+                        IconButton(
+                          onPressed: _showAddRouteDialog,
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        
         ]  
       )
     );
@@ -241,7 +286,30 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
+Widget _buildRouteItem(Routes route) {
+  return ListTile(
+    leading: const Icon(Icons.directions, color: Colors.blue),
+    title: Text(route.getTransportMode()),
+    subtitle: Text('${route.getStart().getAlias()} → ${route.getEnd().getAlias()}'),
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            print('Eliminar ruta');
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () {
+            print('Editar ruta');
+          },
+        ),
+      ],
+    ),
+  );
+}
 
 
   void _showAddPlaceDialog() {
@@ -313,6 +381,152 @@ class _MapScreenState extends State<MapScreen> {
   );
 }
 
+
+
+void _showAddRouteDialog() {
+  String routeNameInput = '';
+  Location? startLocation;
+  Location? endLocation;
+  String transportMode = 'Coche';
+  String routeMode = 'Rápida';
+  String errorMessage = '';
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setDialogState) {
+          return AlertDialog(
+            title: const Text('Crear ruta'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Nombre de la ruta'),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      routeNameInput = value;
+                      errorMessage = '';
+                    });
+                  },
+                ),
+                DropdownButtonFormField<Location>(
+                  decoration: const InputDecoration(labelText: 'Inicio'),
+                  items: locations.map((location) {
+                    return DropdownMenuItem<Location>(
+                      value: location,
+                      child: Text(location.getAlias()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      startLocation = value;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<Location>(
+                  decoration: const InputDecoration(labelText: 'Final'),
+                  items: locations.map((location) {
+                    return DropdownMenuItem<Location>(
+                      value: location,
+                      child: Text(location.getAlias()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      endLocation = value;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Vehículo'),
+                  items: ['Coche', 'Bicicleta', 'A pie'].map((mode) {
+                    return DropdownMenuItem<String>(
+                      value: mode,
+                      child: Text(mode),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      transportMode = value!;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Modo de ruta'),
+                  items: ['Rápida', 'Corta'].map((mode) {
+                    return DropdownMenuItem<String>(
+                      value: mode,
+                      child: Text(mode),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      routeMode = value!;
+                    });
+                  },
+                ),
+                if (errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (routeNameInput.isEmpty || startLocation == null || endLocation == null) {
+                    setDialogState(() {
+                      errorMessage = 'Completa todos los campos obligatorios';
+                    });
+                    return;
+                  }
+
+                  try {
+                    final success = await routeController.createRoute(
+                      startLocation!,
+                      endLocation!,
+                      transportMode,
+                      routeMode,
+                    );
+
+                    if (success) {
+                      _fetchRoutes(); // Actualizar la lista de rutas
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Ruta creada exitosamente.')),
+                      );
+                    } else {
+                      setDialogState(() {
+                        errorMessage = 'Error al guardar la ruta.';
+                      });
+                    }
+                  } catch (e) {
+                    setDialogState(() {
+                      errorMessage = 'Error: $e';
+                    });
+                  }
+                },
+                child: const Text('Crear'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
 void _fetchLocations() async {
   try {
     // Llamada asíncrona al ViewModel para obtener las ubicaciones
@@ -324,6 +538,20 @@ void _fetchLocations() async {
     print('Error al obtener las ubicaciones: $e');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Error al cargar ubicaciones: $e')),
+    );
+  }
+}
+
+void _fetchRoutes() async {
+  try {
+    final fetchedRoutes = await routeController.getRouteList(); // Obtener la lista de rutas
+    setState(() {
+      routes = fetchedRoutes.cast<Routes>().toList(); // Convertir a lista y actualizar el estado
+    });
+  } catch (e) {
+    print('Error al obtener las rutas: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al cargar rutas: $e')),
     );
   }
 }
