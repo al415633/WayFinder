@@ -24,6 +24,9 @@ void main() {
     late DbAdapterUserApp userAppAdapter;
     late UserAppController userAppController;
 
+    late FirebaseAuth auth;
+    late UserApp? userApp;
+
     setUpAll(() async {
       // Inicializar el entorno de pruebas
 
@@ -47,90 +50,60 @@ void main() {
         ),
       );
 
-
-      
-
-    });
-    
-
-    setUp(() async {
       locationAdapter = FirestoreAdapterLocation(collectionName: "testCollection");
       locationController = LocationController(locationAdapter);
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
 
-      //GIVEN
 
-      //Loguear usuario
-      String email = "isabel@gmail.com";
-      String password = "Iaaaa,.8";
-      String nameU = "Isa";
 
-      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
-      user = userAppController.logInCredenciales(email, password);
     });
+    
 
 
-    tearDown(() async {
+    // Helper para limpiar la colección y eliminar usuario
+      Future<void> cleanUp() async {
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get();
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); 
+        }
+      }
 
 
-        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-          try {
-            if (user != null) {
-              // Si ya hay un usurio borro documnetos testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
+      Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await cleanUp();
+        await userCredential.user!.delete();
+        return null;
+      }
 
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); 
-              }
 
-              // Eliminar el usuario
-              await user.delete();
-              print('Usuario y documentos eliminados con éxito.');
-
-            } else {
-              // Si el usuario no está autenticado, intentar iniciar sesión
-              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: "isabel@gmail.com",
-                password: "Iaaaa,.8", 
-              );
-
-              // Eliminar todos los documentos de la colección testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
-
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); // Eliminar cada documento
-              }
-
-              // Eliminar el usuario
-              await userCredential.user!.delete();
-              print('Usuario y documentos eliminados con éxito.');
-            }
-          } catch (e) {
-            print('Error durante la autenticación o eliminación: $e');
-          }
-        });
-    });
 
     test('H5-E1V - Crear lugar', () async {
 
       //GIVEN
 
       //Loguear usuario
-   
-      //Hecho en el setUpAll
+      String email = "Pruebah5e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah5e1";
+      await userAppController.createUser(email, password, name);
+
+      userApp = await userAppController.logInCredenciales(email, password);
 
 
       //WHEN
 
-      final double lat = 39.98567;
-      final double long = -0.04935;
-      final String alias = "prueba 1";
+      final double lath5e1 = 39.98567;
+      final double longh5e1 = -0.04935;
+      final String aliash5e1 = "prueba 1";
 
-      await locationController.createLocationFromCoord(lat, long, alias);
+      await locationController.createLocationFromCoord(lath5e1, longh5e1, aliash5e1);
 
 
       //THEN
@@ -138,15 +111,19 @@ void main() {
       final Set<Location> location = await locationController.getLocationList();
 
       // Convertir el set a una lista para acceder al primer elemento
-      final locationList = location.toList();
+      final locationListh5e1 = location.toList();
       
       // Acceder al primer objeto en la lista
-      final firstLocation = locationList[0];
+      final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocation.getCoordinate(), equals(Coordinate(lat, long))); // Verifica la latitud
-      expect(firstLocation.getToponym(), equals("Castelló de la Plana")); // Verifica la longitud
-      expect(firstLocation.getAlias(), equals("prueba 1")); // Verifica el alias
+      expect(firstLocationh5e1.getCoordinate().getLat(), equals(lath5e1)); // Verifica la latitud
+      expect(firstLocationh5e1.getCoordinate().getLong(), equals(longh5e1)); // Verifica la longitud
+      expect(firstLocationh5e1.getToponym(), equals("Castelló")); // Verifica el topónimo
+      expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
+
+      await signInAndDeleteUser(email, password);
+
 
 
     });
@@ -157,24 +134,33 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      
-      //Hecho en el setUpAll
+      String email = "Pruebah5e3_@gmail.com"; // Email único
+
+      //String email = "Pruebah5e3@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah5e3";
+      await userAppController.createUser(email, password, name);
+
+      userApp = await userAppController.logInCredenciales(email, password);
 
 
       //WHEN
 
-      final double lat = 91;
-      final double long = 181;
-      final String alias = "prueba 2";
+      final double lath5e3 = 91;
+      final double longh5e3 = 181;
+      final String aliash5e3 = "prueba 2";
 
-      locationController.createLocationFromCoord(lat, long, alias);
+      locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3);
 
 
       //THEN
 
-      expect(() {
-      locationController.createLocationFromCoord(lat, long, alias);
-    }, throwsException);
+      expect(
+    () async => await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3),
+    throwsA(isA<Exception>()),
+  );
+
+          await signInAndDeleteUser(email, password);
 
 
     });
@@ -194,19 +180,25 @@ void main() {
        //GIVEN
 
       //Loguear usuario
+
+      String email = "Pruebah7e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah7e1";
+      await userAppController.createUser(email, password, name);
       
       //Hecho en el setUpAll
 
       final double lat1 = 39.98567;
-      final double long1 = -0.4935;
+      final double long1 = -0.04935;
       final String alias1 = "Castellon";
 
       await locationController.createLocationFromCoord(lat1, long1, alias1);
 
-      final String topo2 = "mi casa";
-      final String alias2 = "Burriana";
+      final double lat2 = 39.98567;
+      final double long2 = -0.04935;
+      final String alias2 = "mi casa";
 
-      await locationController.createLocationFromTopo(topo2, alias2);
+      await locationController.createLocationFromCoord(lat2, long2, alias2);
 
       //WHEN
 
@@ -215,21 +207,27 @@ void main() {
       //THEN
 
       // Convertir el set a una lista para acceder al primer elemento
-      final locationList = location.toList();
+      final locationListh7e1 = location.toList();
       
       // Acceder al primer objeto en la lista
-      final firstLocation = locationList[0];
-      final secondLocation = locationList[1];
+      final firstLocationh7e1 = locationListh7e1[0];
+      final secondLocationh7e1 = locationListh7e1[1];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocation.getCoordinate(), equals(Coordinate(lat1, long1))); // Verifica las coordenadas
-      expect(firstLocation.getToponym(), equals("Castelló de la Plana")); // Verifica el toponimo
-      expect(firstLocation.getAlias(), equals("castellon")); // Verifica el alias
+     expect(firstLocationh7e1.getCoordinate().getLat(), equals(lat1)); // Verifica la latitud
+      expect(firstLocationh7e1.getCoordinate().getLong(), equals(long1)); // Verifica la longitud      
+      expect(firstLocationh7e1.getToponym(), equals("Castelló")); // Verifica el toponimo
+      expect(firstLocationh7e1.getAlias(), equals(alias1)); // Verifica el alias
 
 
       // Verificar que los valores del segundo lugar son los esperados
-      expect(secondLocation.getToponym(), equals("Burriana")); // Verifica el toponimo
-      expect(secondLocation.getAlias(), equals("mi casa")); // Verifica el alias
+      expect(firstLocationh7e1.getCoordinate().getLat(), equals(lat2)); // Verifica la latitud
+      expect(firstLocationh7e1.getCoordinate().getLong(), equals(long2)); // Verifica la longitud      
+      expect(firstLocationh7e1.getToponym(), equals("Castelló")); // Verifica el toponimo
+      expect(secondLocationh7e1.getAlias(), equals(alias2)); // Verifica el alias
+
+      await signInAndDeleteUser(email, password);
+
 
     });
 
@@ -237,15 +235,26 @@ void main() {
     test('H7-E4I - Listar lugares inválida porque no hay conexion BBDD', () async {
        //GIVEN
 
-      //Loguear usuario
-      
-      //Hecho en el setUpAll
+       //Loguear usuario
 
-      //WHEN Y THEN
+      String email = "Pruebah7e4@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah7e4";
+      await userAppController.createUser(email, password, name);
 
-      expect(() {
-      locationController.getLocationList();
-    }, throwsException);
+
+      //WHEN 
+      //simmulamos desconexión
+      await signInAndDeleteUser(email, password);
+
+      //THEN
+
+       expect(
+    () async => await locationController.getLocationList(),
+    throwsA(isA<Exception>()),
+  );
+
+
 
     });
 
