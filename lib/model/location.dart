@@ -7,33 +7,37 @@ import 'package:WayFinder/APIs/apiConection.dart';
 class Location {
   // Propiedades
 
-late Coordinate coordinate;
-late String toponym;
-late String alias;
-late bool fav;
+  Coordinate coordinate = Coordinate(0, 0); 
+  String toponym = "";
+  String alias = "";
+  bool fav = false;
 
   // Constructor
   Location(double lat, double long, String alias)  {
+    if (lat == null || long == null) {
+    throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
+  }
     coordinate = Coordinate(lat, long);
     //obtainToponym(CoordToToponym(coordinate));
     //toponym =  CoordToToponym(coordinate) as String ;
     toponym = "Castello";
     this.alias = alias;
-    fav = false;
   }
 
   Location.fromToponym(String toponym, String alias) {
     this.toponym = toponym;
     coordinate = ToponymToCoord(toponym) as Coordinate;
     this.alias = alias;
-    fav = false;
   }
 
  Location.fromMap(Map<String, dynamic> mapa) {
-  this.coordinate = Coordinate(mapa['lat'], mapa['long']); 
-  this.toponym = mapa['toponym']; 
-  this.alias = mapa['alias']; 
-  this.fav = mapa['fav']; 
+  if (mapa['lat'] == null || mapa['long'] == null) {
+    throw Exception("Datos incompletos: latitud o longitud faltantes.");
+  }
+  this.coordinate = Coordinate(mapa['lat'], mapa['long']);
+  this.toponym = mapa['toponym'] ?? "Sin topónimo";
+  this.alias = mapa['alias'] ?? "Sin alias";
+  this.fav = mapa['fav'] ?? false;
 }
 
   // Método para pasar de coordinates a toponym

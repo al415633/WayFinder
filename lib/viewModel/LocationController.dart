@@ -37,21 +37,36 @@ class LocationController {
      throw Exception("InvalidCoordinatesException: La longitud debe estar entre -180 y 180 grados.");
    }
    
-
+    print("Llego aqui 1");
 
      Location location = Location(lat, long, alias);
 
-     bool success =  await this._dbAdapter.createLocationFromCoord(location);
-    
-     if (success){
+         print("Llego aqui 2");
 
-      final currentSet = await locationList;
 
-      // Agregar el nuevo Location al Set
-      currentSet.add(location);
-     }
+     try{
 
-     return success;
+                print("Llego aqui 5");
+
+
+        bool success =  await this._dbAdapter.createLocationFromCoord(location);
+
+                  print("Llego aqui 6");
+
+        
+        if (success){
+
+          final currentSet = await locationList;
+
+          // Agregar el nuevo Location al Set
+          currentSet.add(location);
+        }
+
+        return success;
+     } catch (e) {
+    print("Error al crear el lugar: $e");
+    return false;
+  }
    }
 
 
@@ -162,11 +177,19 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  @override
  Future<bool> createLocationFromCoord(Location location) async {
    try {
+
+      if (location.coordinate.lat == null || location.coordinate.long == null) {
+        throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
+      }
+          print("Llego aqui 3");
+
        await db
         .collection(_collectionName) // Colección raíz (por ejemplo, "production")
         .doc(_currentUser?.uid) // Documento del usuario actual
         .collection("LocationList") // Subcolección "LocationList"
         .add(location.toMap()); // Agregar el lugar
+        print("Llego aqui 4");
+
      return true;
    } catch (e) {
      print("Error al crear el lugar: $e");

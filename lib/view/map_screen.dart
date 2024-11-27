@@ -50,22 +50,39 @@ class _MapScreenState extends State<MapScreen> {
 
  
  // Método para manejar el evento de clic en el mapa
-  Future<void> _onMapTap(LatLng latlng) async {
-    if (isSelectingLocation) {
-      setState(() {
-        initialPoint = latlng; // Guardar las coordenadas seleccionadas
-        isSelectingLocation = false; // Salir del modo de selección
-      });
+ Future<void> _onMapTap(LatLng latlng) async {
+  if (isSelectingLocation) {
+    setState(() {
+      initialPoint = latlng; // Guardar las coordenadas seleccionadas
+      isSelectingLocation = false; // Salir del modo de selección
+    });
 
-      // Llamar al ViewModel o controlador con el nombre y las coordenadas
-     
-      Future<bool> success = locationController.createLocationFromCoord(initialPoint.latitude, initialPoint.longitude, locationName as String);
+    // Llamar al LocationController para guardar la ubicación
+    try {
+      bool success = await locationController.createLocationFromCoord(
+        latlng.latitude,
+        latlng.longitude,
+        locationName!,
+      );
 
-      if (await success){
-        _fetchLocations();
+      if (success) {
+        _fetchLocations(); // Actualizar la lista de ubicaciones
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ubicación guardada exitosamente.')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al guardar la ubicación.')),
+        );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -271,6 +288,11 @@ class _MapScreenState extends State<MapScreen> {
                         locationName = locationNameInput; // Guardar el nombre del lugar
                         isSelectingLocation = true; // Activar modo de selección
                       });
+
+                       // Mostrar mensaje para guiar al usuario
+                      ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Selecciona una ubicación en el mapa.')),
+                    );
                       Navigator.of(context).pop(); // Cerrar el diálogo
                     }
                   },
@@ -293,6 +315,9 @@ void _fetchLocations() async {
     });
   } catch (e) {
     print('Error al obtener las ubicaciones: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al cargar ubicaciones: $e')),
+    );
   }
 }
 
