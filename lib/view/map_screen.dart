@@ -54,11 +54,18 @@ class _MapScreenState extends State<MapScreen> {
       isSelectingLocation = false; // Salir del modo de selección
     });
 
+    if (locationName == null || locationName!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El nombre del lugar no puede estar vacío.')),
+      );
+      return;
+    }
+
     // Llamar al LocationController para guardar la ubicación
     try {
       bool success = await locationController.createLocationFromCoord(
-        latlng.latitude,
-        latlng.longitude,
+        initialPoint.latitude,
+        initialPoint.longitude,
         locationName!,
       );
 

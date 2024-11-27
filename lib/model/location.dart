@@ -17,7 +17,7 @@ class Location {
     coordinate = Coordinate(lat, long);
     //obtainToponym(CoordToToponym(coordinate));
     //toponym =  CoordToToponym(coordinate) as String ;
-    toponym = "Castello";
+    toponym = "Castelló";
     this.alias = alias;
   }
 

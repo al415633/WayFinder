@@ -15,12 +15,22 @@ class LocationController {
    final DbAdapterLocation _dbAdapter;
 
 
-   LocationController(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
+    LocationController(this._dbAdapter) {
+    try {
+      locationList = _dbAdapter.getLocationList();
+    } catch (e) {
+      // Manejo de errores durante la inicialización
+      locationList = Future.error(e);
+    }
+  }
 
-
-   Future<Set<Location>> getLocationList(){
-     return locationList;
-   }
+  Future<Set<Location>> getLocationList() async {
+    try {
+      return await locationList;
+    } catch (e) {
+      throw Exception("Error al obtener la lista de ubicaciones: $e");
+    }
+  }
 
 
    Future<bool> createLocationFromCoord(double lat, double long, String alias) async{
@@ -37,22 +47,11 @@ class LocationController {
      throw Exception("InvalidCoordinatesException: La longitud debe estar entre -180 y 180 grados.");
    }
    
-    print("Llego aqui 1");
-
      Location location = Location(lat, long, alias);
-
-         print("Llego aqui 2");
-
 
      try{
 
-                print("Llego aqui 5");
-
-
-        bool success =  await _dbAdapter.createLocationFromCoord(location);
-
-                  print("Llego aqui 6");
-
+        bool success =  await this._dbAdapter.createLocationFromCoord(location);
         
         if (success){
 
@@ -157,6 +156,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  @override
  Future<Set<Location>> getLocationList() async{
 
+  try {
     final querySnapshot = await db
         .collection(_collectionName) 
         .doc(_currentUser?.uid) 
@@ -170,6 +170,11 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
   return locations;
 
+ 
+  } catch (e) {
+    throw Exception('No se pudo obtener la lista de ubicaciones. Verifica la conexión.');
+  }
+
 
  }
 
@@ -178,14 +183,15 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  Future<bool> createLocationFromCoord(Location location) async {
    try {
 
-      print("Llego aqui 3");
+      if (location.coordinate.lat == null || location.coordinate.long == null) {
+        throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
+      }
 
        await db
         .collection(_collectionName) // Colección raíz (por ejemplo, "production")
         .doc(_currentUser?.uid) // Documento del usuario actual
         .collection("LocationList") // Subcolección "LocationList"
         .add(location.toMap()); // Agregar el lugar
-        print("Llego aqui 4");
 
      return true;
    } catch (e) {
