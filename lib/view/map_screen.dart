@@ -187,7 +187,7 @@ class _MapScreenState extends State<MapScreen> {
                     Expanded(
                       child: ListView(
                         children: [
-                          ...locations.map((placeName) => _buildInterestPlaceItem(placeName.getAlias())),
+                          ...locations.map((placeName) => _buildInterestPlaceItem(placeName)),
                           IconButton(
                             onPressed: () {
                               _showAddPlaceDialog();
@@ -260,34 +260,81 @@ class _MapScreenState extends State<MapScreen> {
 
 
    // Widget para cada lugar de interés
-  Widget _buildInterestPlaceItem(String placeName) {
-    return ListTile(
-      leading: const Icon(Icons.star, color: Colors.yellow),
-      title: Text(placeName),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              print('Eliminar $placeName');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              print('Editar $placeName');
-            },
-          ),
-        ],
+  Widget _buildInterestPlaceItem(Location location) {
+  return ListTile(
+    leading: IconButton(
+      icon: Icon(
+        location.getFav() ? Icons.star : Icons.star_border,
+        color: location.getFav() ? Colors.yellow : Colors.grey,
       ),
-    );
-  }
+      onPressed: () async {
+        try {
+          if (location.getFav()) {
+            // Si es favorito, lo desmarcamos
+            await locationController.removeFav(location.getAlias(), location.getToponym());
+          } else {
+            // Si no es favorito, lo marcamos
+            await locationController.addFav(location.getAlias(), location.getToponym());
+          }
+          setState(() {
+            location.setFav(!location.getFav()); // Actualizamos el estado localmente
+          });
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
+          );
+        }
+      },
+    ),
+    title: Text(location.getAlias()),
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            print('Eliminar ${location.getAlias()}');
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () {
+            print('Editar ${location.getAlias()}');
+          },
+        ),
+      ],
+    ),
+  );
+}
+
 
 Widget _buildRouteItem(Routes route) {
   return ListTile(
-    leading: const Icon(Icons.directions, color: Colors.blue),
-    title: Text(route.getTransportMode()),
+    leading: IconButton(
+      icon: Icon(
+        route.fav ? Icons.star : Icons.star_border,
+        color: route.fav ? Colors.yellow : Colors.grey,
+      ),
+      onPressed: () async {
+        try {
+          if (route.fav) {
+            // Si es favorito, lo desmarcamos
+            await routeController.removeFav(route.name);
+          } else {
+            // Si no es favorito, lo marcamos
+            await routeController.addFav(route.name);
+          }
+          setState(() {
+            route.fav = !route.fav; // Actualizamos el estado localmente
+          });
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
+          );
+        }
+      },
+    ),
+    title: Text(route.name),
     subtitle: Text('${route.getStart().getAlias()} → ${route.getEnd().getAlias()}'),
     trailing: Row(
       mainAxisSize: MainAxisSize.min,
@@ -493,6 +540,7 @@ void _showAddRouteDialog() {
 
                   try {
                     route = routeController.createRoute(
+                      routeNameInput,
                       startLocation!,
                       endLocation!,
                       transportMode,

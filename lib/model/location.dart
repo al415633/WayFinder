@@ -83,6 +83,10 @@ class Location {
     return fav;
   }
 
+    void setFav(bool b) {
+     this.fav = b;
+  }
+
   // Método para pasar de  toponym a coordinates
   //TO DO: Revisar los nulos y que en vez de eso mande excepción 
   Future<Coordinate?> ToponymToCoord(String topo)  async {
