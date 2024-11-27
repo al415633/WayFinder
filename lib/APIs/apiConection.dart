@@ -28,6 +28,6 @@ getCoordinatesLocation(String topo){
 }
 
 
-getToponymLocation(Coordinate coord) async{
-  return Uri.parse('$urlCoordinate?api_key=$apiKey&point.lat=${coord.getLat}&point.lon=${coord.getLon}');
+getToponymLocation(Coordinate coord) {
+  return Uri.parse('$urlCoordinate?api_key=$apiKey&point.lat=${coord.getLat}&point.lon=${coord.getLong}');
 }

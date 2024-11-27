@@ -2,24 +2,52 @@ import 'package:latlong2/latlong.dart';
 
 class Coordinate {
   // Propiedades
-
-late LatLng coordinate;
-late double lat;
-late double lon;
+  late LatLng coordinate;
+  late double lat;
+  late double long;
 
   // Constructor
   Coordinate(double lat, double long) {
+    this.lat = lat; // Asignar al campo de la clase
+    this.long = long; // Asignar al campo de la clase
     coordinate = LatLng(lat, long);
-    lat = lat;
-    lon = lon;
   }
 
-  double getLat(){
+  double getLat() {
     return lat;
   }
 
-  double getLon(){
-    return lon;
+  double getLong() {
+    return long;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Coordinate) return false;
+
+    return lat == other.lat && long == other.long;
+  }
+
+  @override
+  int get hashCode => lat.hashCode ^ long.hashCode;
+
+
+    Map<String, dynamic> toMap() {
+    return {
+      //'coord': coordinate,
+      'lat':lat,
+      'long' : long,
+    };
+  }
+
+  Coordinate.fromMap(Map<String, dynamic> mapa) {
+  
+  this.lat = mapa['lat'] ;
+  this.long = mapa['long'] ;
+
+  this.coordinate = LatLng(lat, long);
+ 
+}
 
 }
