@@ -5,25 +5,56 @@ import 'package:WayFinder/model/coordinate.dart';
 class Route {
   // Propiedades
 
-late Location start;
-late Location end;
-late double distance;
-late List<Coordinate> points;
-late bool fav;
-late String transportMode;
-late String routeMode;
+Location start = Location(0, 0, "");
+Location end = Location(0, 0, "");
+double distance = 0;
+List<Coordinate> points = [];
+bool fav = false;
+String transportMode = "a pie";
+String routeMode = "rápida";
 
 
   // Constructor
   Route(Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode){
-    start = start;
-    end = end;
-    distance = distance;
-    points = [];
-    fav = false;
-    transportMode = transportMode;
-    routeMode = routeMode;
+    this.start = start;
+    this.end = end;
+    this.distance = distance;
+    this.points = points;
+    this.fav = false;
+    this.transportMode = transportMode;
+    this.routeMode = routeMode;
   }
+
+/*
+  Route.fromMap(Map<String, dynamic> map) {
+    
+      start = Location.fromMap(map['start']);
+      end = Location.fromMap(map['end']);
+      distance = map['distance'];
+      points = (map['points'] as List<dynamic>)
+          .map((point) => Coordinate.fromMap(point))
+          .toList();
+      transportMode = map['transportMode'];
+      routeMode = map['routeMode'];
+    
+  }
+  */
+
+   Route.fromMap(Map<String, dynamic> mapa) {
+  
+  this.start = Location.fromMap(mapa['start']);
+  this.end = Location.fromMap(mapa['end']);
+  this.distance = mapa['distance'];
+  this.points = (mapa['points'] as List<dynamic>)
+          .map((point) => Coordinate.fromMap(point))
+          .toList();
+
+  this.fav = fav;
+  this.transportMode = mapa['transportMode'];
+  this.routeMode = mapa['routeMode'];
+   }
+
+
 
   double calculateCostFuel(String fuelType, double consumption){
     //TO DO : FALTA IMPLEMENTAR
@@ -49,6 +80,8 @@ late String routeMode;
     return distance;
   }
 
+  
+
   List<Coordinate> getPoints(){
     return points;
   }
@@ -66,10 +99,15 @@ late String routeMode;
       'start': start.toMap(),
       'end': end.toMap(),
       'distance': distance,
-      'points': points,
+      'points': points.map((point) => point.toMap()).toList(),      
       'fav' : fav,
       'transportMode' : transportMode,
       'routeMode': routeMode,
     };
   }     
 }
+
+
+
+
+
