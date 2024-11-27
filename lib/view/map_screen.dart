@@ -1,5 +1,8 @@
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -15,33 +18,41 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   List listOfPoints = [];
   List<LatLng> points = [];
-  String selectedMode = 'car'; // por defecto
+  String transportMode = 'car'; // por defecto
   LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
   bool showInterestPlaces = false; 
+  bool showRoutes = false; 
   bool isSelectingLocation = false; // Nuevo estado para habilitar la selección en el mapa
-  String? locationName; // Nombre del lugar seleccionado
+  String? locationName; 
   final LocationController locationController = LocationController(FirestoreAdapterLocation());
-  List<Location> locations = []; // Lista para almacenar los nombres de las locations
+  List<Location> locations = []; 
+  List<Routes> routes = [];
+  final RouteController routeController = RouteController(FirestoreAdapterRoute());
+  String? routeName; 
 
-
-
-  
 
 
   @override
   void initState() {
     super.initState();
      _fetchLocations(); 
+     _fetchRoutes(); 
   }
 
   void _onModeChanged(String mode) {
     setState(() {
-      //selectedMode = mode;
+      //transportMode = mode;
       if (mode == 'locations') {
         showInterestPlaces = true; // Muestra el panel lateral
-      } else {
-        showInterestPlaces = false; // Oculta el panel lateral
-      }
+        showRoutes = false; // Muestra el panel lateral de rutas
+
+      } else if (mode == 'routes') {
+      showRoutes = true; // Muestra el panel lateral de rutas
+      showInterestPlaces = false; // Oculta el panel lateral de lugares
+    } else {
+      showInterestPlaces = false; // Oculta ambos paneles
+      showRoutes = false;
+    }
     });
   }
 
@@ -103,13 +114,13 @@ class _MapScreenState extends State<MapScreen> {
               // Botones de la barra superior
               Row(
                 children: [
-                  _buildTopButton('Lugares de interés', selectedMode == 'locations', () {
+                  _buildTopButton('Lugares de interés', transportMode == 'locations', () {
                     _onModeChanged('locations');
                   }),
-                  _buildTopButton('Rutas', selectedMode == 'routes', () {
+                  _buildTopButton('Rutas', transportMode == 'routes', () {
                     _onModeChanged('routes');
                   }),
-                  _buildTopButton('Vehículos', selectedMode == 'vehicles', () {
+                  _buildTopButton('Vehículos', transportMode == 'vehicles', () {
                     _onModeChanged('vehicles');
                   }),
                 ],
@@ -189,7 +200,42 @@ class _MapScreenState extends State<MapScreen> {
 
                     ),
                   ]),
-              ),)
+              ),),
+
+
+          if (showRoutes)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: Container(
+              width: 250,
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Rutas',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        ...routes.map((route) => _buildRouteItem(route)).toList(),
+                        IconButton(
+                          onPressed: _showAddRouteDialog,
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        
         ]  
       )
     );
@@ -238,7 +284,30 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
+Widget _buildRouteItem(Routes route) {
+  return ListTile(
+    leading: const Icon(Icons.directions, color: Colors.blue),
+    title: Text(route.getTransportMode()),
+    subtitle: Text('${route.getStart().getAlias()} → ${route.getEnd().getAlias()}'),
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            print('Eliminar ruta');
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () {
+            print('Editar ruta');
+          },
+        ),
+      ],
+    ),
+  );
+}
 
 
   void _showAddPlaceDialog() {
@@ -301,7 +370,145 @@ class _MapScreenState extends State<MapScreen> {
                     }
                   },
                   child: const Text('Usar Mapa'),
+
                 ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+
+void _showAddRouteDialog() {
+  String routeNameInput = '';
+  Location? startLocation;
+  Location? endLocation;
+  String errorMessage = '';
+  Routes? route;
+  String transportMode = 'Coche';
+  String routeMode = 'Rápida';
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setDialogState) {
+          return AlertDialog(
+            title: const Text('Crear ruta'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Nombre de la ruta'),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      routeNameInput = value;
+                      errorMessage = '';
+                    });
+                  },
+                ),
+                DropdownButtonFormField<Location>(
+                  decoration: const InputDecoration(labelText: 'Inicio'),
+                  items: locations.map((location) {
+                    return DropdownMenuItem<Location>(
+                      value: location,
+                      child: Text(location.getAlias()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      startLocation = value;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<Location>(
+                  decoration: const InputDecoration(labelText: 'Final'),
+                  items: locations.map((location) {
+                    return DropdownMenuItem<Location>(
+                      value: location,
+                      child: Text(location.getAlias()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      endLocation = value;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Vehículo'),
+                  items: ['Coche', 'Bicicleta', 'A pie'].map((mode) {
+                    return DropdownMenuItem<String>(
+                      value: mode,
+                      child: Text(mode),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      transportMode = value!;
+                    });
+                  },
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Modo de ruta'),
+                  items: ['Rápida', 'Corta'].map((mode) {
+                    return DropdownMenuItem<String>(
+                      value: mode,
+                      child: Text(mode),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setDialogState(() {
+                    });
+                  },
+                ),
+                if (errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (routeNameInput.isEmpty || startLocation == null || endLocation == null) {
+                    setDialogState(() {
+                      errorMessage = 'Completa todos los campos obligatorios';
+                    });
+                    return;
+                  }
+
+                  try {
+                    route = routeController.createRoute(
+                      startLocation!,
+                      endLocation!,
+                      transportMode,
+                      routeMode,
+                    );
+                    
+                    _showRoutes(route!);
+
+                  } catch (e) {
+                    setDialogState(() {
+                      errorMessage = 'Error: $e';
+                    });
+                  }
+                },
+                child: const Text('Crear'),
+              ),
             ],
           );
         },
@@ -325,4 +532,27 @@ void _fetchLocations() async {
   }
 }
 
+void _fetchRoutes() async {
+  try {
+    final fetchedRoutes = await routeController.getRouteList(); // Obtener la lista de rutas
+    setState(() {
+      routes = fetchedRoutes.cast<Routes>().toList(); // Convertir a lista y actualizar el estado
+    });
+  } catch (e) {
+    print('Error al obtener las rutas: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al cargar rutas: $e')),
+    );
+  }
+
+}
+
+  void _showRoutes(Routes route) {
+      Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => RouteMapScreen(route: route),
+    ),
+  );
+  }
 }
