@@ -36,13 +36,18 @@ RouteController(this._dbAdapter) {
 
 
 
- Future<bool> createRoute(Location start, Location end, String transportMode, String routeMode) async{
+ Routes createRoute(Location start, Location end, String transportMode, String routeMode) {
 
    Routes route = Routes(start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
 
-     try{
+  return route;
+    
+ }
 
-        bool success =  await this._dbAdapter.createRoute(route);
+Future<bool> saveRoute(Routes route) async{
+ try{
+
+        bool success =  await this._dbAdapter.saveRoute(route);
         
         if (success){
 
@@ -57,8 +62,7 @@ RouteController(this._dbAdapter) {
     print("Error al crear la ruta: $e");
     return false;
   }
- }
-
+}
 
  double getDistance(Location start, Location end) {
    
@@ -126,7 +130,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 
   @override
- Future<bool> createRoute(Routes route) async{
+ Future<bool> saveRoute(Routes route) async{
     try {
       await db
           .collection(_collectionName)
@@ -149,7 +153,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 
 abstract class DbAdapterRoute {
- Future<bool> createRoute(Routes route);
+ Future<bool> saveRoute(Routes route);
  Future<Set<Routes>> getRouteList();
 
 

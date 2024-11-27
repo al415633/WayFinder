@@ -390,6 +390,7 @@ void _showAddRouteDialog() {
   String transportMode = 'Coche';
   String routeMode = 'Rápida';
   String errorMessage = '';
+  Routes? route;
 
   showDialog(
     context: context,
@@ -493,24 +494,14 @@ void _showAddRouteDialog() {
                   }
 
                   try {
-                    final success = await routeController.createRoute(
+                      route =  routeController.createRoute(
                       startLocation!,
                       endLocation!,
                       transportMode,
                       routeMode,
                     );
 
-                    if (success) {
-                      _fetchRoutes(); // Actualizar la lista de rutas
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Ruta creada exitosamente.')),
-                      );
-                    } else {
-                      setDialogState(() {
-                        errorMessage = 'Error al guardar la ruta.';
-                      });
-                    }
+                    
                   } catch (e) {
                     setDialogState(() {
                       errorMessage = 'Error: $e';
@@ -518,6 +509,7 @@ void _showAddRouteDialog() {
                   }
                 },
                 child: const Text('Crear'),
+                //una vez creado que se muestre por pantalla el mapa
               ),
             ],
           );
