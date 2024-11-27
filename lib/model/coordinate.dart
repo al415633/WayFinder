@@ -5,21 +5,21 @@ class Coordinate {
 
 late LatLng coordinate;
 late double lat;
-late double lon;
+late double long;
 
   // Constructor
   Coordinate(double lat, double long) {
     coordinate = LatLng(lat, long);
     lat = lat;
-    lon = lon;
+    long = long;
   }
 
   double getLat(){
     return lat;
   }
 
-  double getLon(){
-    return lon;
+  double getLong(){
+    return long;
   }
 
 }
