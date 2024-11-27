@@ -90,6 +90,10 @@ String routeMode = "rápida";
     return transportMode;
   }
 
+  void setTransportMode(String transportMode){
+  transportMode = transportMode;
+  }
+
   String getRouteMode(){
     return routeMode;
   }

@@ -1,13 +1,11 @@
-import 'dart:convert';
-import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -20,7 +18,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   List listOfPoints = [];
   List<LatLng> points = [];
-  String selectedMode = 'car'; // por defecto
+  String transportMode = 'car'; // por defecto
   LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
   bool showInterestPlaces = false; 
   bool showRoutes = false; 
@@ -43,7 +41,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _onModeChanged(String mode) {
     setState(() {
-      //selectedMode = mode;
+      //transportMode = mode;
       if (mode == 'locations') {
         showInterestPlaces = true; // Muestra el panel lateral
         showRoutes = false; // Muestra el panel lateral de rutas
@@ -116,13 +114,13 @@ class _MapScreenState extends State<MapScreen> {
               // Botones de la barra superior
               Row(
                 children: [
-                  _buildTopButton('Lugares de interés', selectedMode == 'locations', () {
+                  _buildTopButton('Lugares de interés', transportMode == 'locations', () {
                     _onModeChanged('locations');
                   }),
-                  _buildTopButton('Rutas', selectedMode == 'routes', () {
+                  _buildTopButton('Rutas', transportMode == 'routes', () {
                     _onModeChanged('routes');
                   }),
-                  _buildTopButton('Vehículos', selectedMode == 'vehicles', () {
+                  _buildTopButton('Vehículos', transportMode == 'vehicles', () {
                     _onModeChanged('vehicles');
                   }),
                 ],
@@ -372,6 +370,7 @@ Widget _buildRouteItem(Routes route) {
                     }
                   },
                   child: const Text('Usar Mapa'),
+
                 ),
             ],
           );
@@ -387,10 +386,10 @@ void _showAddRouteDialog() {
   String routeNameInput = '';
   Location? startLocation;
   Location? endLocation;
-  String transportMode = 'Coche';
-  String routeMode = 'Rápida';
   String errorMessage = '';
   Routes? route;
+  String transportMode = 'Coche';
+  String routeMode = 'Rápida';
 
   showDialog(
     context: context,
@@ -463,7 +462,6 @@ void _showAddRouteDialog() {
                   }).toList(),
                   onChanged: (value) {
                     setDialogState(() {
-                      routeMode = value!;
                     });
                   },
                 ),
@@ -494,14 +492,15 @@ void _showAddRouteDialog() {
                   }
 
                   try {
-                      route =  routeController.createRoute(
+                    route = routeController.createRoute(
                       startLocation!,
                       endLocation!,
                       transportMode,
                       routeMode,
                     );
-
                     
+                    _showRoutes(route!);
+
                   } catch (e) {
                     setDialogState(() {
                       errorMessage = 'Error: $e';
@@ -509,7 +508,6 @@ void _showAddRouteDialog() {
                   }
                 },
                 child: const Text('Crear'),
-                //una vez creado que se muestre por pantalla el mapa
               ),
             ],
           );
@@ -546,6 +544,15 @@ void _fetchRoutes() async {
       SnackBar(content: Text('Error al cargar rutas: $e')),
     );
   }
+
 }
 
+  void _showRoutes(Routes route) {
+      Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => RouteMapScreen(route: route),
+    ),
+  );
+  }
 }

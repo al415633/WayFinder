@@ -3,7 +3,6 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/Route.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -24,7 +23,7 @@ void main() {
     late DbAdapterUserApp userAppAdapter;
     late UserAppController userAppController;
 
-     late FirebaseAuth auth;
+    late FirebaseAuth auth;
     late UserApp? userApp;
 
    setUpAll(() async {
@@ -55,9 +54,6 @@ void main() {
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
-
-
-
     });
 
      // Helper para limpiar la colección y eliminar usuario

@@ -24,7 +24,7 @@ void main() async {
 
     await Firebase.initializeApp(
         options: FirebaseOptions(
-          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU", //Que cojones hace la api key aquí. att Daniel Naranjo
           authDomain: "wayfinder-df8eb.firebaseapp.com",
           projectId: "wayfinder-df8eb",
           storageBucket: "wayfinder-df8eb.appspot.com",
@@ -38,10 +38,6 @@ void main() async {
  final userAppController = UserAppController(repository);
 
   runApp(MiApp(userAppController));
-
-    
-
-
 }
 
 class MiApp extends StatelessWidget {
@@ -68,7 +64,8 @@ class Inicio extends StatefulWidget {
 }
 
 
-class _InicioState extends State<Inicio> {final TextEditingController _usuarioController = TextEditingController();
+class _InicioState extends State<Inicio> {
+  final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
