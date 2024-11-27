@@ -172,7 +172,7 @@ class _MapScreenState extends State<MapScreen> {
                     Expanded(
                       child: ListView(
                         children: [
-                          ...locations.map((placeName) => _buildInterestPlaceItem(placeName.getAlias())).toList(),
+                          ...locations.map((placeName) => _buildInterestPlaceItem(placeName.getAlias())),
                           IconButton(
                             onPressed: () {
                               _showAddPlaceDialog();

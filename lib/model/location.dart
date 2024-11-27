@@ -14,7 +14,7 @@ class Location {
 
   // Constructor
   Location(double lat, double long, String alias)  {
-    if (lat == null || long == null) {
+    if (long == null) {
     throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
   }
     coordinate = Coordinate(lat, long);
@@ -34,10 +34,10 @@ class Location {
   if (mapa['lat'] == null || mapa['long'] == null) {
     throw Exception("Datos incompletos: latitud o longitud faltantes.");
   }
-  this.coordinate = Coordinate(mapa['lat'], mapa['long']);
-  this.toponym = mapa['toponym'] ?? "Sin topónimo";
-  this.alias = mapa['alias'] ?? "Sin alias";
-  this.fav = mapa['fav'] ?? false;
+  coordinate = Coordinate(mapa['lat'], mapa['long']);
+  toponym = mapa['toponym'] ?? "Sin topónimo";
+  alias = mapa['alias'] ?? "Sin alias";
+  fav = mapa['fav'] ?? false;
 }
 
   // Método para pasar de coordinates a toponym

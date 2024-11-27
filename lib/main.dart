@@ -47,7 +47,7 @@ void main() async {
 class MiApp extends StatelessWidget {
   final UserAppController userAppController;
 
-  const MiApp(this.userAppController);
+  const MiApp(this.userAppController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +221,7 @@ void _login() async {
    //   context,
      // MaterialPageRoute(builder: (context) => ExitoPage()),
    // );
-  } on Exception catch (e) {
+  } on Exception {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), // Cambia a la página de error
