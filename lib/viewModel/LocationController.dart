@@ -15,12 +15,22 @@ class LocationController {
    final DbAdapterLocation _dbAdapter;
 
 
-   LocationController(this._dbAdapter) : locationList = _dbAdapter.getLocationList();
+    LocationController(this._dbAdapter) {
+    try {
+      locationList = _dbAdapter.getLocationList();
+    } catch (e) {
+      // Manejo de errores durante la inicialización
+      locationList = Future.error(e);
+    }
+  }
 
-
-   Future<Set<Location>> getLocationList(){
-     return locationList;
-   }
+  Future<Set<Location>> getLocationList() async {
+    try {
+      return await locationList;
+    } catch (e) {
+      throw Exception("Error al obtener la lista de ubicaciones: $e");
+    }
+  }
 
 
    Future<bool> createLocationFromCoord(double lat, double long, String alias) async{

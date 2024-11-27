@@ -89,12 +89,12 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String email = "Pruebah5e1@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah5e1";
-      await userAppController.createUser(email, password, name);
+      String emailh5e1 = "Pruebah5e1@gmail.com";
+      String passwordh5e1 = "Aaaaa,.8";
+      String nameh5e1="Pruebah5e1";
+      await userAppController.createUser(emailh5e1, passwordh5e1, nameh5e1);
 
-      userApp = await userAppController.logInCredenciales(email, password);
+      userApp = await userAppController.logInCredenciales(emailh5e1, passwordh5e1);
 
 
       //WHEN
@@ -122,7 +122,7 @@ void main() {
       expect(firstLocationh5e1.getToponym(), equals("Castelló")); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
 
-      await signInAndDeleteUser(email, password);
+      await signInAndDeleteUser(emailh5e1, passwordh5e1);
 
 
 
@@ -134,14 +134,14 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String email = "Pruebah5e3_@gmail.com"; // Email único
+      String emailh5e3 = "Pruebah5e3@gmail.com";
 
       //String email = "Pruebah5e3@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah5e3";
-      await userAppController.createUser(email, password, name);
+      String passwordh5e3 = "Aaaaa,.8";
+      String nameh5e3="Pruebah5e3";
+      await userAppController.createUser(emailh5e3, passwordh5e3, nameh5e3);
 
-      userApp = await userAppController.logInCredenciales(email, password);
+      userApp = await userAppController.logInCredenciales(emailh5e3, passwordh5e3);
 
 
       //WHEN
@@ -160,7 +160,7 @@ void main() {
     throwsA(isA<Exception>()),
   );
 
-          await signInAndDeleteUser(email, password);
+          await signInAndDeleteUser(emailh5e3, passwordh5e3);
 
 
     });
@@ -181,18 +181,18 @@ void main() {
 
       //Loguear usuario
 
-      String email = "Pruebah7e1@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah7e1";
-      await userAppController.createUser(email, password, name);
+      String emailh7e1 = "Pruebah7e1@gmail.com";
+      String passwordh7e1 = "Aaaaa,.8";
+      String nameh7e1="Pruebah7e1";
+      await userAppController.createUser(emailh7e1, passwordh7e1, nameh7e1);
       
       //Hecho en el setUpAll
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
-      final String alias1 = "Castellon";
+      final String alias1h7e1 = "Castellon";
 
-      await locationController.createLocationFromCoord(lat1, long1, alias1);
+      await locationController.createLocationFromCoord(lat1, long1, alias1h7e1);
 
       final double lat2 = 39.98567;
       final double long2 = -0.04935;
@@ -217,7 +217,7 @@ void main() {
      expect(firstLocationh7e1.getCoordinate().getLat(), equals(lat1)); // Verifica la latitud
       expect(firstLocationh7e1.getCoordinate().getLong(), equals(long1)); // Verifica la longitud      
       expect(firstLocationh7e1.getToponym(), equals("Castelló")); // Verifica el toponimo
-      expect(firstLocationh7e1.getAlias(), equals(alias1)); // Verifica el alias
+      expect(firstLocationh7e1.getAlias(), equals(alias1h7e1)); // Verifica el alias
 
 
       // Verificar que los valores del segundo lugar son los esperados
@@ -226,7 +226,7 @@ void main() {
       expect(firstLocationh7e1.getToponym(), equals("Castelló")); // Verifica el toponimo
       expect(secondLocationh7e1.getAlias(), equals(alias2)); // Verifica el alias
 
-      await signInAndDeleteUser(email, password);
+      await signInAndDeleteUser(emailh7e1, passwordh7e1);
 
 
     });
@@ -237,15 +237,15 @@ void main() {
 
        //Loguear usuario
 
-      String email = "Pruebah7e4@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah7e4";
-      await userAppController.createUser(email, password, name);
+      String emailh7e4 = "Pruebah7e4@gmail.com";
+      String passwordh7e4 = "Aaaaa,.8";
+      String nameh7e4="Pruebah7e4";
+      await userAppController.createUser(emailh7e4, passwordh7e4, nameh7e4);
 
 
       //WHEN 
       //simmulamos desconexión
-      await signInAndDeleteUser(email, password);
+      await signInAndDeleteUser(emailh7e4, passwordh7e4);
 
       //THEN
 
