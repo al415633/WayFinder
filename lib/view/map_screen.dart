@@ -1,11 +1,8 @@
-import 'dart:convert';
-import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});

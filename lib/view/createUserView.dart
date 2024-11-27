@@ -3,7 +3,6 @@ import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/main.dart';
 import 'package:WayFinder/view/errorPage.dart';
-import 'package:WayFinder/view/logIn.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:flutter/material.dart';
 //IMPORT PARA LA BASE DE DATOS

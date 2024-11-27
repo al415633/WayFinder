@@ -14,9 +14,6 @@ class Location {
 
   // Constructor
   Location(double lat, double long, String alias)  {
-    if (long == null) {
-    throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
-  }
     coordinate = Coordinate(lat, long);
     //obtainToponym(CoordToToponym(coordinate));
     //toponym =  CoordToToponym(coordinate) as String ;
