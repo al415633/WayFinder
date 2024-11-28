@@ -2,7 +2,9 @@ import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/main.dart';
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/view/errorPage.dart';
+import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:flutter/material.dart';
 //IMPORT PARA LA BASE DE DATOS
@@ -291,10 +293,12 @@ class _CreateUserViewState extends State<CreateUserView> {
    try {
     
     UserAppController? userAppController = UserAppController.getInstance();
+    
+    UserApp? user= await userAppController?.createUser(email, password, name);
 
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => Inicio()),
+    MaterialPageRoute(builder: (context) => MapScreen()),
   );
 } on NotValidEmailException {
   Navigator.push(
