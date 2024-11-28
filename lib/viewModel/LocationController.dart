@@ -51,7 +51,7 @@ class LocationController {
 
      try{
 
-        bool success =  await this._dbAdapter.createLocationFromCoord(location);
+        bool success =  await _dbAdapter.createLocationFromCoord(location);
         
         if (success){
 
@@ -203,7 +203,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  Future<bool> createLocationFromCoord(Location location) async {
    try {
 
-      if (location.coordinate.lat == null || location.coordinate.long == null) {
+      if (location.coordinate.long == null) {
         throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
       }
 

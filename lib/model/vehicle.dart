@@ -38,12 +38,25 @@ late bool fav;
 
   Map<String, dynamic> toMap() {
     return {
-      'combustible': fuelType,
-      'consumo': consumption,
-      'matricula': numberPlate,
-      'nombre': name,
+      'fueltype': fuelType,
+      'consumption': consumption,
+      'numberPlate': numberPlate,
+      'name': name,
+      'fav' : fav
     };
   }
 
+Vehicle.fromMap(Map<String, dynamic> mapa) {
+  if (mapa['fueltype'] == null) {
+    throw Exception("Datos incompletos: tipo de combustible faltante.");
+  }
+
+  if (mapa['consumption'] == null) {
+    throw Exception("Datos incompletos: consumo faltante.");
+  }
+  
+  numberPlate = mapa['numberplate'] ?? "Sin matricula";
+  fav = mapa['fav'] ?? false;
+}
 
 }

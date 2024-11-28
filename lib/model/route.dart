@@ -22,7 +22,7 @@ String routeMode = "rápida";
     this.end = end;
     this.distance = distance;
     this.points = points;
-    this.fav = false;
+    fav = false;
     this.transportMode = transportMode;
     this.routeMode = routeMode;
   }
@@ -52,9 +52,9 @@ String routeMode = "rápida";
           .map((point) => Coordinate.fromMap(point))
           .toList();
 
-  this.fav = fav;
-  this.transportMode = mapa['transportMode'];
-  this.routeMode = mapa['routeMode'];
+  fav = fav;
+  transportMode = mapa['transportMode'];
+  routeMode = mapa['routeMode'];
    }
 
 

@@ -1,7 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/Vehicle.dart';
@@ -14,7 +13,7 @@ import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R3: Gestión de vehículos', () {
+  group('R3: Gestión de vehículos', ()  {
 
     late DbAdapterVehiculo vehicleAdapter;
     late VehicleController vehicleController;
@@ -25,92 +24,67 @@ void main() {
 
 
     setUpAll(() async {
-      // Inicializar el entorno de pruebas
-
-      // no se si hace falta el test delante
-      TestWidgetsFlutterBinding.ensureInitialized();
-
-      // Cargar la configuración desde firebase_config.json
-
-      //google serviceds
-      
-
+      // Inicializar Firebase
       await Firebase.initializeApp(
         options: FirebaseOptions(
-          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-          authDomain: "wayfinder-df8eb.firebaseapp.com",
-          projectId: "wayfinder-df8eb",
-          storageBucket: "wayfinder-df8eb.appspot.com",
-          messagingSenderId: "571791500413",
-          appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-          measurementId: "G-TZLW8P5J8V"
+        apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+        authDomain: "wayfinder-df8eb.firebaseapp.com",
+        projectId: "wayfinder-df8eb",
+        storageBucket: "wayfinder-df8eb.appspot.com",
+        messagingSenderId: "571791500413",
+        appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+        measurementId: "G-TZLW8P5J8V",
         ),
       );
 
-      //GIVEN
-
-      //Loguear usuario
-      String email = "quique@gmail.com";
-      String password = "Qaaaa,.8";
-      String nameU = "Qsa";
-
-      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
-      user = userAppController.logInCredenciales(email, password);
-
-    });
-    
-
-    setUp(() async {
+      // Inicializar controladores
       vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
 
-    });
+      // Crear usuario de prueba
+      const email = "quique@gmail.com";
+      const password = "Qaaaa,.8";
+      const nameU = "Qsa";
 
+      try {
+        await userAppController.createUser(email, password, nameU);
+      } catch (e) {
+        if (e is FirebaseAuthException && e.code != 'email-already-in-use') {
+          rethrow;
+        }
+      }
+
+      // Iniciar sesión
+      await userAppController.logInCredenciales(email, password);
+    });
+    
 
     tearDownAll(() async {
+      // Borrar todos los documentos de testCollection
+      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot = await collectionRef.get();
 
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
 
-        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-          try {
-            if (user != null) {
-              // Si ya hay un usurio borro documnetos testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
+      // Eliminar el usuario
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.delete();
+      }
+    });
 
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); 
-              }
+    tearDown(() async {
+      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot = await collectionRef.get();
 
-              // Eliminar el usuario
-              await user.delete();
-              print('Usuario y documentos eliminados con éxito.');
-
-            } else {
-              // Si el usuario no está autenticado, intentar iniciar sesión
-              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: "quique@gmail.com",
-                password: "Qaaaa,.8", 
-              );
-
-              // Eliminar todos los documentos de la colección testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
-
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); // Eliminar cada documento
-              }
-
-              // Eliminar el usuario
-              await userCredential.user!.delete();
-              print('Usuario y documentos eliminados con éxito.');
-            }
-          } catch (e) {
-            print('Error durante la autenticación o eliminación: $e');
-          }
-        });
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
     });
 
     test('H9-E1V - Crear vehiculo', () async {
@@ -132,7 +106,7 @@ void main() {
 
       //THEN
 
-      final Set<Vehicle> vehicles = vehicleController.getVehicleList();
+      final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
@@ -144,7 +118,7 @@ void main() {
       expect(firstPlace.getConsumption(), equals(24.3)); // Verifica consumo
       expect(firstPlace.getFuelType(), equals("Gasolina")); // Verifica combustible
       expect(firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
-      expect(firstPlace.getName(), equals("Coche Ana"));  // Verifica nombre
+      expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
 
 
     });
@@ -167,14 +141,25 @@ void main() {
 
       //THEN
 
-      void action() {
-        vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
-      }
+      Set<Vehicle> result = await vehicleController.getVehicleList();
+
+
 
 
       // THEN
-      expect(action, throwsException);
-      expect(vehicleController.getVehicleList(), isEmpty); // Verifica consumo
+      expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, name),
+        throwsA(isA<Exception>().having(
+        (e) => e.toString(),
+        'message',
+        contains("NotValidVehicleException: El tipo de combustible no es válido"))),
+      );
+
+
+      print('Patatatatatatata');
+      print(result.first.getName());
+      print(result.first.getNumberPlate());
+      print(result.first.getFuelType());
+      expect(result.isEmpty, true); 
 
       
     });
@@ -197,12 +182,12 @@ void main() {
 
 
       //WHEN
-      Set<Vehicle> vehicleList = vehicleController.getVehicleList();
+      Set<Vehicle> vehicleList = await vehicleController.getVehicleList();
 
       //THEN
 
       expect(vehicleList.first.consumption, equals(24.3));
-      expect(vehicleList.first.name, equals("Coche Ana"));
+      expect(vehicleList.first.name, equals("Coche Quique"));
       expect(vehicleList.first.fuelType, equals("Gasolina"));
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
@@ -219,17 +204,20 @@ void main() {
 
 
     //WHEN
-      Set<Vehicle>? vehicles;
-      void action() {
+      
+      void action() async {
 
-     vehicles = vehicleController.getVehicleList();
+       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
   
       }
 
       //THEN
      
-    expect(action, throwsA(isA<ConnectionBBDDException>()));
-    expect(vehicles, isEmpty);
+    expect(
+    () async => await vehicleController.getVehicleList(),
+    throwsA(isA<ConnectionBBDDException>()),
+  );
+
     });
 
 
@@ -245,7 +233,7 @@ void main() {
 
       //WHEN
 
-      Set<Vehicle> vehicleList = vehicleController.getVehicleList();
+      final vehicleList = await vehicleController.getVehicleList();
 
 
       //THEN
