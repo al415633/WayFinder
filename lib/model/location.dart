@@ -1,19 +1,20 @@
 import 'dart:convert';
 
+import 'package:WayFinder/model/favItemController.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/APIs/apiConection.dart';
 
-class Location {
+class Location implements FavItem{
   // Propiedades
 
   Coordinate coordinate = Coordinate(0, 0); 
   String toponym = "";
   String alias = "";
-  bool fav = false;
+  bool fav;
 
   // Constructor
-  Location(double lat, double long, String alias)  {
+  Location(double lat, double long, String alias, {this.fav = false})  {
     coordinate = Coordinate(lat, long);
     //obtainToponym(CoordToToponym(coordinate));
     //toponym =  CoordToToponym(coordinate) as String ;
@@ -21,13 +22,13 @@ class Location {
     this.alias = alias;
   }
 
-  Location.fromToponym(String toponym, String alias) {
+  Location.fromToponym(String toponym, String alias, {this.fav = false}) {
     this.toponym = toponym;
     coordinate = ToponymToCoord(toponym) as Coordinate;
     this.alias = alias;
   }
 
- Location.fromMap(Map<String, dynamic> mapa) {
+ Location.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
   if (mapa['lat'] == null || mapa['long'] == null) {
     throw Exception("Datos incompletos: latitud o longitud faltantes.");
   }
@@ -36,6 +37,19 @@ class Location {
   alias = mapa['alias'] ?? "Sin alias";
   fav = mapa['fav'] ?? false;
 }
+
+  @override
+  bool getFav() => fav;
+
+  @override
+  void addFav() {
+    fav = true;
+  }
+  
+  @override
+  void removeFav() {
+    fav = false;
+  }
 
   // Método para pasar de coordinates a toponym
   Future<String> CoordToToponym(Coordinate coord) async{
@@ -79,10 +93,6 @@ class Location {
     return alias;
   }
 
-  bool getFav() {
-    return fav;
-  }
-
     void setFav(bool b) {
      fav = b;
   }
@@ -122,7 +132,5 @@ class Location {
       'fav' : fav
     };
   }
-
-
-    
+  
 }

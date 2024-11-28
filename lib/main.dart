@@ -88,7 +88,8 @@ class _InicioState extends State<Inicio> {
       appBar: AppBar(
         title: Text('Inicio de sesión'),
       ),
-      body: login(),
+      //body: login(),
+      body: MapScreen(),
     );
   }
 

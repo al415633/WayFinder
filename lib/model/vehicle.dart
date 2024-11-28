@@ -1,4 +1,6 @@
-class Vehicle {
+import 'package:WayFinder/model/favItemController.dart';
+
+class Vehicle implements FavItem{
   // Propiedades
 
 late String fuelType;
@@ -8,11 +10,23 @@ late String name;
 late bool fav;
 
   // Constructor
-  Vehicle(String fuelType, double consumption, String numberPlate, String name) {
+  Vehicle(String fuelType, double consumption, String numberPlate, String name, {this.fav = false}) {
     this.fuelType = fuelType;
     this.consumption = consumption;
     this.numberPlate = numberPlate;
     this.name = name;
+  }
+
+  @override
+  bool getFav() => fav; // Implementación del método de la interfaz FavItem
+  
+  @override
+  void addFav() {
+    fav = true;
+  }
+  
+  @override
+  void removeFav() {
     fav = false;
   }
 
@@ -32,10 +46,6 @@ late bool fav;
     return name;
   }
 
-  bool getFav(){
-    return fav;
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'fueltype': fuelType,
@@ -46,7 +56,7 @@ late bool fav;
     };
   }
 
-Vehicle.fromMap(Map<String, dynamic> mapa) {
+Vehicle.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
   if (mapa['fueltype'] == null) {
     throw Exception("Datos incompletos: tipo de combustible faltante.");
   }
