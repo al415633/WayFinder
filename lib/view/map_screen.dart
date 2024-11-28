@@ -289,12 +289,6 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
-        
-
-
-
-
-
         ]  
       )
     );
@@ -335,6 +329,7 @@ class _MapScreenState extends State<MapScreen> {
             // Si no es favorito, lo marcamos
             location.addFav();
           }
+          _fetchLocations(); // Actualizar la lista de ubicaciones
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
@@ -380,6 +375,7 @@ Widget _buildRouteItem(Routes route) {
             // Si no es favorito, lo marcamos
             route.addFav();
           }
+          _fetchLocations(); // Actualizar la lista de ubicaciones
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
@@ -425,6 +421,7 @@ Widget _buildVehicleItem(Vehicle vehicle) {
             // Si no es favorito, lo marcamos
             vehicle.addFav();
           }
+          _fetchLocations(); // Actualizar la lista de ubicaciones
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),

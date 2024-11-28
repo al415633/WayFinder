@@ -11,24 +11,25 @@ class Location implements FavItem{
   Coordinate coordinate = Coordinate(0, 0); 
   String toponym = "";
   String alias = "";
-  bool fav;
+  late bool fav;
 
   // Constructor
-  Location(double lat, double long, String alias, {this.fav = false})  {
+  Location(double lat, double long, String alias)  {
     coordinate = Coordinate(lat, long);
     //obtainToponym(CoordToToponym(coordinate));
     //toponym =  CoordToToponym(coordinate) as String ;
-    toponym = "Castelló";
     this.alias = alias;
+    this.fav = false;
   }
 
-  Location.fromToponym(String toponym, String alias, {this.fav = false}) {
+  Location.fromToponym(String toponym, String alias) {
     this.toponym = toponym;
     coordinate = ToponymToCoord(toponym) as Coordinate;
     this.alias = alias;
+    this.fav = false;
   }
 
- Location.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
+ Location.fromMap(Map<String, dynamic> mapa) {
   if (mapa['lat'] == null || mapa['long'] == null) {
     throw Exception("Datos incompletos: latitud o longitud faltantes.");
   }
