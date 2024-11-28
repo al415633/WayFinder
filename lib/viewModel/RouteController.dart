@@ -189,7 +189,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
  }
 
 
- Future<bool> addFav(String routeName) async {
+ @override
+  Future<bool> addFav(String routeName) async {
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -209,6 +210,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     }
   }
 
+  @override
   Future<bool> removeFav(String routeName) async {
     try {
       final querySnapshot = await db

@@ -1,7 +1,6 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
-import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/view/errorPage.dart';
 import 'package:WayFinder/view/map_screen.dart';

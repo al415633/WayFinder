@@ -203,11 +203,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  Future<bool> createLocationFromCoord(Location location) async {
    try {
 
-      if (location.coordinate.long == null) {
-        throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
-      }
-
-       await db
+      await db
         .collection(_collectionName) // Colección raíz (por ejemplo, "production")
         .doc(_currentUser?.uid) // Documento del usuario actual
         .collection("LocationList") // Subcolección "LocationList"

@@ -44,11 +44,11 @@ String routeMode = "rápida";
 
    Routes.fromMap(Map<String, dynamic> mapa) {
 
-  this.name = mapa['name'];
-  this.start = Location.fromMap(mapa['start']);
-  this.end = Location.fromMap(mapa['end']);
-  this.distance = mapa['distance'];
-  this.points = (mapa['points'] as List<dynamic>)
+  name = mapa['name'];
+  start = Location.fromMap(mapa['start']);
+  end = Location.fromMap(mapa['end']);
+  distance = mapa['distance'];
+  points = (mapa['points'] as List<dynamic>)
           .map((point) => Coordinate.fromMap(point))
           .toList();
 
@@ -70,7 +70,7 @@ String routeMode = "rápida";
   }
 
   String getName(){
-    return this.name;
+    return name;
   }
 
   Location getStart(){

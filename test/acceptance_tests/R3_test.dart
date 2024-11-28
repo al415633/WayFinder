@@ -1,6 +1,7 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/Vehicle.dart';
@@ -78,30 +79,51 @@ void main() {
       }
     });
 
-    tearDown(() async {
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-      var querySnapshot = await collectionRef.get();
+ Future<void> _deleteVehicle(String numberPlate) async {
+  var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+  var querySnapshot = await collectionRef.where('numberPlate', isEqualTo: numberPlate).get();
 
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
-    });
+  for (var doc in querySnapshot.docs) {
+    await doc.reference.delete();
+  }
+  vehicleController.vehicleList =Future.value();
+ }
+
+  Future<void> cleanUp() async {
+    var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+    var querySnapshot = await collectionRef.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete(); 
+    }
+  }
+   Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await cleanUp();
+    await userCredential.user!.delete();
+    return null;
+  }
 
     test('H9-E1V - Crear vehiculo', () async {
 
       //GIVEN
 
       //Loguear usuario
-      //Hecho en el setUpAll
-
+       String email = "Pruebah9e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah9e1";
+      await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
       //WHEN
 
-      final String name = "Coche Quique";
+      final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
 
 
       //THEN
@@ -119,6 +141,11 @@ void main() {
       expect(firstPlace.getFuelType(), equals("Gasolina")); // Verifica combustible
       expect(firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
       expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
+    
+    
+    await _deleteVehicle(numberPlate);
+    await signInAndDeleteUser(email, password);
+
 
 
     });
@@ -126,6 +153,11 @@ void main() {
 
     test('H9-E3I - Crear vehículo inválido', () async {
       //GIVEN
+      String email = "Pruebah9e3@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah9e3";
+      await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
 
       //Loguear usuario
       //Hecho en el SetUpAll
@@ -133,7 +165,7 @@ void main() {
 
       //WHEN
 
-      final String name = "Coche Quique";
+      final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Híbrido";
@@ -142,12 +174,14 @@ void main() {
       //THEN
 
       Set<Vehicle> result = await vehicleController.getVehicleList();
+            await signInAndDeleteUser(email, password);
+
 
 
 
 
       // THEN
-      expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, name),
+      expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec),
         throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
@@ -169,15 +203,21 @@ void main() {
       //GIVEN
       //Loguear usuario
       //Hecho en el setUpAll
-
+      String email = "Pruebah10e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah10e1";
+         await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
 
       //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
-      final String name = "Coche Quique";
+      final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+            await signInAndDeleteUser(email, password);
+
 
 
 
@@ -191,12 +231,24 @@ void main() {
       expect(vehicleList.first.fuelType, equals("Gasolina"));
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
+      await _deleteVehicle(numberPlate);
+            await signInAndDeleteUser(email, password);
+
+
+
+
     });
 
 
     test('H10-E3I - Listar vehículos sin conexion a la BBDD', () async {
        
       // GIVEN
+      String email = "Pruebah10e3@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah10e3";
+   await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
+
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "No conexion");
       userAppController = UserAppController(userAppAdapter);
       //Loguear usuario
@@ -217,6 +269,8 @@ void main() {
     () async => await vehicleController.getVehicleList(),
     throwsA(isA<ConnectionBBDDException>()),
   );
+        await signInAndDeleteUser(email, password);
+
 
     });
 
@@ -225,6 +279,11 @@ void main() {
        
        //GIVEN
 
+ String email = "Pruebah10e2@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah10e2";
+   await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
       //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
       //No tiene vehiculos
       //Loguear usuario
@@ -239,8 +298,10 @@ void main() {
       //THEN
 
       expect(vehicleList, isEmpty);
+  await signInAndDeleteUser(email, password);
     });
-   
+       
+
 
 
   });
