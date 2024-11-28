@@ -1,8 +1,9 @@
 
+import 'package:WayFinder/model/favItemController.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
 
-class Routes {
+class Routes implements FavItem {
   // Propiedades
 
 String name = "";
@@ -10,13 +11,13 @@ Location start = Location(0, 0, "");
 Location end = Location(0, 0, "");
 double distance = 0;
 List<Coordinate> points = [];
-bool fav = false;
+bool fav;
 String transportMode = "a pie";
 String routeMode = "rápida";
 
 
   // Constructor
-  Routes(String name, Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode){
+  Routes(String name, Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode, {this.fav = false}){
     this.name = name;
     this.start = start;
     this.end = end;
@@ -28,7 +29,7 @@ String routeMode = "rápida";
   }
 
 /*
-  Route.fromMap(Map<String, dynamic> map) {
+  Route.fromMap(Map<String, dynamic> map): fav = mapa['fav'] ?? false  {
     
       start = Location.fromMap(map['start']);
       end = Location.fromMap(map['end']);
@@ -42,7 +43,7 @@ String routeMode = "rápida";
   }
   */
 
-   Routes.fromMap(Map<String, dynamic> mapa) {
+  Routes.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
 
   this.name = mapa['name'];
   this.start = Location.fromMap(mapa['start']);
@@ -51,13 +52,23 @@ String routeMode = "rápida";
   this.points = (mapa['points'] as List<dynamic>)
           .map((point) => Coordinate.fromMap(point))
           .toList();
-
   fav = fav;
   transportMode = mapa['transportMode'];
   routeMode = mapa['routeMode'];
-   }
+  }
 
+  @override
+  bool getFav() => fav;
 
+  @override
+  void addFav() {
+    fav = true;
+  }
+  
+  @override
+  void removeFav() {
+    fav = false;
+  }
 
   double calculateCostFuel(String fuelType, double consumption){
     //TO DO : FALTA IMPLEMENTAR

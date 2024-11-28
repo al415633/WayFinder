@@ -1,4 +1,5 @@
 import 'package:WayFinder/main.dart';
+import 'package:WayFinder/model/favItemController.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/Vehicle.dart';
@@ -207,7 +208,7 @@ class _MapScreenState extends State<MapScreen> {
                     Expanded(
                       child: ListView(
                         children: [
-                          ...locations.map((placeName) => _buildInterestPlaceItem(placeName)),
+                          ...locations.map((placeName) => _buildLocationItem(placeName)),
                           IconButton(
                             onPressed: () {
                               _showAddPlaceDialog();
@@ -276,7 +277,7 @@ class _MapScreenState extends State<MapScreen> {
                   Expanded(
                     child: ListView(
                       children: [
-                        ...vehicles.map((placeName) => _buildVehicleItem(placeName.getName())),
+                        ...vehicles.map((vehicle) => _buildVehicleItem(vehicle)),
                         IconButton(
                           onPressed: _showAddVehicleDialog,
                           icon: const Icon(Icons.add),
@@ -318,25 +319,22 @@ class _MapScreenState extends State<MapScreen> {
 
 
    // Widget para cada lugar de interés
-  Widget _buildInterestPlaceItem(Location location) {
+  Widget _buildLocationItem(Location location) {
   return ListTile(
     leading: IconButton(
       icon: Icon(
         location.getFav() ? Icons.star : Icons.star_border,
         color: location.getFav() ? Colors.yellow : Colors.grey,
       ),
-      onPressed: () async {
+      onPressed: () {
         try {
           if (location.getFav()) {
             // Si es favorito, lo desmarcamos
-            await locationController.removeFav(location.getAlias(), location.getToponym());
+            location.removeFav();
           } else {
             // Si no es favorito, lo marcamos
-            await locationController.addFav(location.getAlias(), location.getToponym());
+            location.addFav();
           }
-          setState(() {
-            location.setFav(!location.getFav()); // Actualizamos el estado localmente
-          });
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
@@ -370,21 +368,18 @@ Widget _buildRouteItem(Routes route) {
   return ListTile(
     leading: IconButton(
       icon: Icon(
-        route.fav ? Icons.star : Icons.star_border,
-        color: route.fav ? Colors.yellow : Colors.grey,
+        route.getFav() ? Icons.star : Icons.star_border,
+        color: route.getFav() ? Colors.yellow : Colors.grey,
       ),
       onPressed: () async {
         try {
-          if (route.fav) {
+          if (route.getFav()) {
             // Si es favorito, lo desmarcamos
-            await routeController.removeFav(route.name);
+            route.removeFav();
           } else {
             // Si no es favorito, lo marcamos
-            await routeController.addFav(route.name);
+            route.addFav();
           }
-          setState(() {
-            route.fav = !route.fav; // Actualizamos el estado localmente
-          });
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
@@ -414,23 +409,43 @@ Widget _buildRouteItem(Routes route) {
   );
 }
 
-Widget _buildVehicleItem(String placeName) {
+Widget _buildVehicleItem(Vehicle vehicle) {
   return ListTile(
-      leading: const Icon(Icons.star, color: Colors.yellow),
-      title: Text(placeName),
+          leading: IconButton(
+      icon: Icon(
+        vehicle.getFav()? Icons.star : Icons.star_border,
+        color: vehicle.getFav() ? Colors.yellow : Colors.grey,
+      ),
+      onPressed: () async {
+        try {
+          if (vehicle.getFav()) {
+            // Si es favorito, lo desmarcamos
+            vehicle.removeFav();
+          } else {
+            // Si no es favorito, lo marcamos
+            vehicle.addFav();
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al cambiar el estado de favorito: $e')),
+          );
+        }
+      },
+    ),
+      title: Text(vehicle.getName()),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              print('Eliminar $placeName');
+              print('Eliminar $vehicle');
             },
           ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              print('Editar $placeName');
+              print('Editar $vehicle');
             },
           ),
         ],
@@ -655,7 +670,6 @@ void _showAddVehicleDialog() {
   String fuelTypeInput = ''; // Esto se actualizará con la opción seleccionada
   double consumptionInput = 0.0;
   String numberPlateInput = '';
-  Vehicle? vehicle;
   
   // Mensajes de error
   String errorMessage = ''; 
@@ -808,14 +822,13 @@ void _showAddVehicleDialog() {
 }
 
 
-
-
 void _fetchLocations() async {
   try {
     // Llamada asíncrona al ViewModel para obtener las ubicaciones
     final fetchedLocations = await locationController.getLocationList(); // Esperar el resultado del Future
     setState(() {
       locations = fetchedLocations.toList(); // Convertir el Set a una lista y actualizar el estado
+      locations = sortFavItems(locations);
     });
   } catch (e) {
     print('Error al obtener las ubicaciones: $e');
@@ -825,11 +838,33 @@ void _fetchLocations() async {
   }
 }
 
+List<T> sortFavItems<T extends FavItem>(List<T> items) {
+  // Crea una copia de la lista original
+  List<T> sortedItems = List.from(items);
+
+  // Ordena la nueva lista
+  sortedItems.sort((itemA, itemB) {
+    final isAFav = itemA.getFav();
+    final isBFav = itemB.getFav();
+    if (isAFav && !isBFav) {
+      return -1; // itemA va antes
+    } else if (!isAFav && isBFav) {
+      return 1; // itemB va antes
+    } else {
+      return 0;
+    }
+  });
+
+  // Devuelve la lista ordenada
+  return sortedItems;
+}
+
 void _fetchRoutes() async {
   try {
     final fetchedRoutes = await routeController.getRouteList(); // Obtener la lista de rutas
     setState(() {
       routes = fetchedRoutes.cast<Routes>().toList(); // Convertir a lista y actualizar el estado
+      routes = sortFavItems(routes);
     });
   } catch (e) {
     print('Error al obtener las rutas: $e');
@@ -854,6 +889,7 @@ void _fetchRoutes() async {
     final fetchedVehicles = await vehicleController.getVehicleList(); // Obtener la lista de rutas
     setState(() {
       vehicles = fetchedVehicles.toList(); // Convertir a lista y actualizar el estado
+      vehicles = sortFavItems(vehicles);
     });
   } catch (e) {
     print('Error al obtener los vehículos: $e');
