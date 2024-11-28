@@ -1,7 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/Vehicle.dart';

@@ -235,7 +235,7 @@ class _MapScreenState extends State<MapScreen> {
                   Expanded(
                     child: ListView(
                       children: [
-                        ...routes.map((route) => _buildRouteItem(route)).toList(),
+                        ...routes.map((route) => _buildRouteItem(route)),
                         IconButton(
                           onPressed: _showAddRouteDialog,
                           icon: const Icon(Icons.add),

@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 class RouteMapScreen extends StatefulWidget {
   final Routes route;
 
-  RouteMapScreen({required this.route});
+  const RouteMapScreen({super.key, required this.route});
 
   @override
   _RouteMapScreenState createState() => _RouteMapScreenState();

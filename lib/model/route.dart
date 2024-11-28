@@ -20,7 +20,7 @@ String routeMode = "rápida";
     this.end = end;
     this.distance = distance;
     this.points = points;
-    this.fav = false;
+    fav = false;
     this.transportMode = transportMode;
     this.routeMode = routeMode;
   }
@@ -42,16 +42,16 @@ String routeMode = "rápida";
 
    Routes.fromMap(Map<String, dynamic> mapa) {
   
-  this.start = Location.fromMap(mapa['start']);
-  this.end = Location.fromMap(mapa['end']);
-  this.distance = mapa['distance'];
-  this.points = (mapa['points'] as List<dynamic>)
+  start = Location.fromMap(mapa['start']);
+  end = Location.fromMap(mapa['end']);
+  distance = mapa['distance'];
+  points = (mapa['points'] as List<dynamic>)
           .map((point) => Coordinate.fromMap(point))
           .toList();
 
-  this.fav = fav;
-  this.transportMode = mapa['transportMode'];
-  this.routeMode = mapa['routeMode'];
+  fav = fav;
+  transportMode = mapa['transportMode'];
+  routeMode = mapa['routeMode'];
    }
 
 

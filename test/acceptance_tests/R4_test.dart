@@ -103,7 +103,7 @@ void main() {
      Location fin = Location(lat2, long2, apodo2);
 
 
-     await routeController.createRoute(ini, fin, "a pie", "rápida");
+     routeController.createRoute(ini, fin, "a pie", "rápida");
   
 
       //THEN
@@ -153,7 +153,7 @@ void main() {
     Routes? firstRouteh13e1;
       void action() async {
 
-     await routeController.createRoute(ini, fin, "a pie", "rápida");
+     routeController.createRoute(ini, fin, "a pie", "rápida");
 
 
       final Set<Routes> routes =  await routeController.getRouteList();

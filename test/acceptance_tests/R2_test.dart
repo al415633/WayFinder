@@ -1,7 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
