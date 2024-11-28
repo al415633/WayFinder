@@ -78,19 +78,24 @@ class VehicleController {
     }
 
     bool validNumberPlate(String? numberPlate) {
-    if (numberPlate == null) return false;
+      if (numberPlate == null) return false;
 
+      // Formatos existentes
+      final format1 = RegExp(r'^[A-Z]{3}\d{4}$');  // Ejemplo: ABC1234
+      final format2 = RegExp(r'^[A-Z]{1}\d{4}$');  // Ejemplo: A1234
+      final format3 = RegExp(r'^[A-Z]{1,2}\d{4}[A-Z]{2}$');  // Ejemplo: A1234BC, AB1234XY
+      
+      // Formato para números seguidos de letras (como 1879ABC)
+      final format4 = RegExp(r'^\d{4}[A-Z]{3}$');  // Ejemplo: 1879ABC
 
-    final format1 = RegExp(r'^[A-Z]{3}\d{4}$');
-    final format2 = RegExp(r'^[A-Z]{1}\d{4}$');
-    final format3 = RegExp(r'^[A-Z]{1,2}\d{4}[A-Z]{2}$');
-
-
-    return format1.hasMatch(numberPlate) ||
-    format2.hasMatch(numberPlate) ||
-    format3.hasMatch(numberPlate);
-
+      // Verifica si alguna de las expresiones regulares coincide
+      return format1.hasMatch(numberPlate) ||
+            format2.hasMatch(numberPlate) ||
+            format3.hasMatch(numberPlate) ||
+            format4.hasMatch(numberPlate);
     }
+
+
 
     bool validateFuelType(String? fuelType){
       const validFuelTypes = ['Gasolina', 'Diésel', 'Eléctrico'];
