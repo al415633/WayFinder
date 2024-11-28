@@ -95,7 +95,7 @@ class Location implements FavItem{
   }
 
     void setFav(bool b) {
-     this.fav = b;
+     fav = b;
   }
 
   // Método para pasar de  toponym a coordinates

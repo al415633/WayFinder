@@ -1,3 +1,4 @@
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/Vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,22 +11,23 @@ class VehicleController {
     late Future<Set<Vehicle>> vehicleList;
     final DbAdapterVehiculo _dbAdapter;
 
-    VehicleController._internal(this._dbAdapter) : vehicleList = _dbAdapter.getVehicleList();
+    VehicleController._internal(this._dbAdapter) {
+      vehicleList = Future.value(<Vehicle>{}); // Inicializa con un conjunto vacío
+    }
+
     static VehicleController? _instance;
 
 
-    factory VehicleController(DbAdapterVehiculo dbAdapter) {
-
-
-      _instance ??= VehicleController._internal(dbAdapter);
-      return _instance!;
-    }
+  factory VehicleController(DbAdapterVehiculo dbAdapter) {
+    _instance ??= VehicleController._internal(dbAdapter);
+    return _instance!;
+  }
 
 
 
 
     Future<Set<Vehicle>> getVehicleList(){ 
-      return vehicleList;
+      return _dbAdapter.getVehicleList();
     }
 
     Future<bool> createVehicle(String numberPlate, double consumption, String fuelType, String name) async{
@@ -45,17 +47,16 @@ class VehicleController {
      }
 
 
-     Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
+      Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
 
       bool success =  await _dbAdapter.createVehicle(vehicle);
       
-     if (success){
-      final currentSet = await vehicleList;
+      if (success){
+        final currentSet = await vehicleList;
+        currentSet.add(vehicle);
+      }
 
-      currentSet.add(vehicle);
-     }
-
-     return success;
+      return success;
     }
 
 
@@ -128,54 +129,63 @@ class FirestoreAdapterVehiculo implements DbAdapterVehiculo {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  User? _currentUser; // Propiedad para almacenar el usuario actual
-
-  FirestoreAdapterVehiculo({String collectionName = "production"}) : _collectionName = collectionName;
+  FirestoreAdapterVehiculo({String collectionName = "production"})
+      : _collectionName = collectionName;
 
   @override
-  Future<Set<Vehicle>> getVehicleList() async{
-  
+  Future<Set<Vehicle>> getVehicleList() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede obtener la lista de vehículos.');
+    }
+
     try {
       final querySnapshot = await db
-      .collection(_collectionName)
-      .doc(_currentUser?.uid)
-      .collection("VehicleList")
-      .get();
+          .collection(_collectionName)
+          .doc(user.uid)
+          .collection("VehicleList")
+          .get();
 
-     Set<Vehicle> vehicles = querySnapshot.docs.map((doc) {
-      return Vehicle.fromMap(doc.data());
-     }) .toSet();
-
-     return vehicles;
-    
+      return querySnapshot.docs.map((doc) {
+        return Vehicle.fromMap(doc.data());
+      }).toSet();
     } catch (e) {
-      throw Exception('No se pudo obtener la lista de vehículos. Verifica la conexión.');
+      throw ConnectionBBDDException();
     }
   }
 
   @override
   Future<bool> createVehicle(Vehicle vehicle) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el vehículo.');
+    }
+
     try {
-     await db.collection(_collectionName).add(vehicle.toMap());
-     return true;
-   } catch (e) {
-     print("Error al crear vehículo: $e");
-     return false;
-   }
+      await db
+          .collection(_collectionName)
+          .doc(user.uid)
+          .collection("VehicleList")
+          .add(vehicle.toMap());
+      return true;
+    } catch (e) {
+      throw Exception('Error al crear el vehículo: $e');
+    }
   }
-  
+
   @override
   Future<bool> addFav(String numberPlate, String name) {
-    // TODO: implement ponerFav
     throw UnimplementedError();
   }
-  
+
   @override
   Future<bool> removeFav(String numberPlate, String name) {
-    // TODO: implement quitarFav
     throw UnimplementedError();
   }
 }
+
 
 abstract class DbAdapterVehiculo {
   Future<bool> createVehicle(Vehicle vehicle);

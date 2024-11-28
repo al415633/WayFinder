@@ -197,7 +197,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  @override
  Future<bool> createLocationFromCoord(Location location) async {
    try {
-       await db
+      await db
         .collection(_collectionName) // Colección raíz (por ejemplo, "production")
         .doc(_currentUser?.uid) // Documento del usuario actual
         .collection("LocationList") // Subcolección "LocationList"

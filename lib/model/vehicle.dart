@@ -56,17 +56,22 @@ late bool fav;
     };
   }
 
-Vehicle.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
-  if (mapa['fueltype'] == null) {
-    throw Exception("Datos incompletos: tipo de combustible faltante.");
-  }
+// Constructor de la clase desde un mapa
+  Vehicle.fromMap(Map<String, dynamic> mapa) {
+    // Verificar que los campos necesarios no sean nulos
+    if (mapa['fueltype'] == null) {
+      throw Exception("Datos incompletos: tipo de combustible faltante.");
+    }
+    if (mapa['consumption'] == null) {
+      throw Exception("Datos incompletos: consumo faltante.");
+    }
 
-  if (mapa['consumption'] == null) {
-    throw Exception("Datos incompletos: consumo faltante.");
+    // Asignación de propiedades con valores del mapa
+    fuelType = mapa['fueltype'] ?? "Desconocido"; // Valor por defecto si es nulo
+    consumption = mapa['consumption']?.toDouble() ?? 0.0; // Asegúrate de convertir a `double`
+    numberPlate = mapa['numberPlate'] ?? "Sin matrícula"; // Valor por defecto si es nulo
+    name = mapa['name'] ?? "Sin nombre"; // Valor por defecto si es nulo
+    fav = mapa['fav'] ?? false; // Valor por defecto si es nulo
   }
-  
-  numberPlate = mapa['numberplate'] ?? "Sin matricula";
-  fav = mapa['fav'] ?? false;
-}
 
 }

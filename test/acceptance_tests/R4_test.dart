@@ -105,7 +105,7 @@ void main() {
      String name1 = "ruta 1";
 
 
-     await routeController.createRoute(name1, ini, fin, "a pie", "rápida");
+     routeController.createRoute(name1, ini, fin, "a pie", "rápida");
   
 
       //THEN
@@ -157,7 +157,7 @@ void main() {
     Routes? firstRouteh13e1;
       void action() async {
 
-     await routeController.createRoute(name1, ini, fin, "a pie", "rápida");
+     routeController.createRoute(name1, ini, fin, "a pie", "rápida");
 
 
       final Set<Routes> routes =  await routeController.getRouteList();

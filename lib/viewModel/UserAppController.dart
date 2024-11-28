@@ -183,7 +183,7 @@ Future<UserApp?> createUser(String email, String password) async {
 @override
 Future<bool> logOut() async {
   try {
-    if (auth == null || auth.currentUser == null) {
+    if (auth.currentUser == null) {
 
       throw UserNotAuthenticatedException();
     }

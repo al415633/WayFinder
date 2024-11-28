@@ -4,7 +4,6 @@ import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:integration_test/integration_test.dart';
@@ -17,7 +16,6 @@ void main() {
   late UserAppController userAppController;
   late UserApp? userApp;
 
-  // Helper para limpiar la colección y eliminar usuario
   Future<void> cleanUp() async {
     var collectionRef = FirebaseFirestore.instance.collection('testCollection');
     var querySnapshot = await collectionRef.get();
