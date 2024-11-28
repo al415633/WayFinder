@@ -1,9 +1,11 @@
+import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/Vehicle.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -34,6 +36,7 @@ class _MapScreenState extends State<MapScreen> {
   String? routeName; 
   final VehicleController vehicleController = VehicleController(FirestoreAdapterVehiculo());
   List<Vehicle> vehicles = [];
+  UserAppController? userAppController = UserAppController.getInstance();
 
 
 
@@ -148,7 +151,12 @@ class _MapScreenState extends State<MapScreen> {
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () {
-                      _onModeChanged('reload');
+                       userAppController?.logOut();
+
+                Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => Inicio()), // Navega a la pantalla de inicio
+                      (Route<dynamic> route) => false, // Elimina todas las rutas anteriores
+                    );
                     },
                   ),
                 ],
@@ -281,6 +289,11 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         
+
+
+
+
+
         ]  
       )
     );
