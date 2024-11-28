@@ -2,11 +2,6 @@ import 'package:WayFinder/model/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
-
-
-
 class LocationController {
  // Propiedades
 
@@ -202,7 +197,6 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  @override
  Future<bool> createLocationFromCoord(Location location) async {
    try {
-
       await db
         .collection(_collectionName) // Colección raíz (por ejemplo, "production")
         .doc(_currentUser?.uid) // Documento del usuario actual
