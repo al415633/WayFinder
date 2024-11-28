@@ -1,18 +1,12 @@
 // precio_luz_service_acceptance_test.dart
-import 'dart:convert';
-
-import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/viewModel/controladorLugar.dart';
-import 'package:WayFinder/viewModel/controladorRuta.dart';
-import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/model/lugar.dart';
-import 'package:WayFinder/model/ruta.dart';
-import 'package:WayFinder/model/User.dart';
-import 'package:WayFinder/viewModel/UserService.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
@@ -20,12 +14,12 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R5: Gestión de preferencias', () {
 
-    late DbAdapterLugar adapterLugar;
-    late ControladorLugar controladorLugar;
+    late DbAdapterLocation adapterLocation;
+    late LocationController locationController;
 
 
-    late DbAdapterUser adapterUser;
-    late UserService userService;
+    late DbAdapterUserApp adapterUserApp;
+    late UserAppController userAppController;
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -49,28 +43,75 @@ void main() {
           measurementId: "G-TZLW8P5J8V"
         ),
       );
+
+       //GIVEN
+
+      //Loguear usuario
+      String email = "miguel@gmail.com";
+      String password = "Maaaa,.8";
+      String nameU = "Msa";
+
+      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
+      user = userAppController.logInCredenciales(email, password);
     });
 
     setUp(() async {
-      adapterLugar = FirestoreAdapterLugar(collectionName: "testCollection");
-      controladorLugar = ControladorLugar(adapterLugar);
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
 
-      adapterUser = FirestoreAdapterUser(collectionName: "testCollection");
-      userService = UserService(adapterUser);
+      adapterUserApp = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppController = UserAppController(adapterUserApp);
       
 
     });
 
-    test('H20-EV', () async {
+    tearDownAll(() async {
 
-      //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
-      //creamos cuenta al usuario
-      String email = "belen@gmail.com";
-      String password = "HolaAAAAA%1";
-      User? user =  userService.createUser(email, password);
 
-      //Loguear usuario
-      userService.logIn(user!);
+        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+          try {
+            if (user != null) {
+              // Si ya hay un usurio borro documnetos testCollection
+              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+              var querySnapshot = await collectionRef.get(); 
+
+              for (var doc in querySnapshot.docs) {
+                await doc.reference.delete(); 
+              }
+
+              // Eliminar el usuario
+              await user.delete();
+              print('Usuario y documentos eliminados con éxito.');
+
+            } else {
+              // Si el usuario no está autenticado, intentar iniciar sesión
+              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                email: "miguel@gmail.com",
+                password: "Maaaa,.8", 
+              );
+
+              // Eliminar todos los documentos de la colección testCollection
+              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+              var querySnapshot = await collectionRef.get(); 
+
+              for (var doc in querySnapshot.docs) {
+                await doc.reference.delete(); // Eliminar cada documento
+              }
+
+              // Eliminar el usuario
+              await userCredential.user!.delete();
+              print('Usuario y documentos eliminados con éxito.');
+            }
+          } catch (e) {
+            print('Error durante la autenticación o eliminación: $e');
+          }
+        });
+    });
+
+    test('H20-E1V - Marcar como favorito un lugar', () async {
+
+      //GIVEN 
+      //Hecho en el SetUpAll
 
 
       //WHEN
@@ -80,19 +121,19 @@ void main() {
       final String apodo1 = "castellon";
 
 
-      await controladorLugar.crearLugarPorCoord(lat1, long1, apodo1);
-      controladorLugar.ponerFav("Castelló de la Plana", apodo1);
+      await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      locationController.addFav("Castelló de la Plana", apodo1);
 
 
       //THEN
 
-      final Set<Lugar> lugares = await controladorLugar.getListaLugares();
+      final Set<Location> locations = await locationController.getLocationList();
 
       // Convertir el set a una lista para acceder al primer elemento
-      final listaLugares = lugares.toList();
+      final locationList = locations.toList();
       
       // Acceder al primer objeto en la lista
-      final primerLugar = listaLugares[0];
+      final primerLugar = locationList[0];
 
       // Verificar que los valores del primer lugar son los esperados
       expect(primerLugar.getFav(), equals(true)); // Verifica el Lugar inicial
@@ -103,16 +144,11 @@ void main() {
     });
 
 
-    test('H20-EI', () async {
+    test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
-          //GIVEN --> aquí habria que mirar si generamos un usuario por defecto y solo logIn
-      //creamos cuenta al usuario
-      String email = "belen@gmail.com";
-      String password = "HolaAAAAA%1";
-      User? user =  userService.createUser(email, password);
+      //GIVEN 
+      //Hecho en el SetUpAll
 
-      //Loguear usuario
-      userService.logIn(user!);
 
 
 
@@ -123,12 +159,12 @@ void main() {
       final String apodo1 = "castellon";
 
 
-      await controladorLugar.crearLugarPorCoord(lat1, long1, apodo1);
+      await locationController.createLocationFromCoord(lat1, long1, apodo1);
 
       //THEN
      
      expect(() {
-      controladorLugar.ponerFav("Castelló de la Plana", apodo1);
+      locationController.addFav("Castelló de la Plana", apodo1);
     }, throwsException);
 
 

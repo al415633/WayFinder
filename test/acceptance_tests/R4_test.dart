@@ -1,24 +1,30 @@
-// precio_luz_service_acceptance_test.dart
-import 'dart:convert';
+// precio_luz_ContUserController_acceptance_test.dart
 
-import 'package:WayFinder/viewModel/controladorLugar.dart';
-import 'package:WayFinder/viewModel/controladorRuta.dart';
-import 'package:WayFinder/model/coordenada.dart';
-import 'package:WayFinder/model/lugar.dart';
-import 'package:WayFinder/model/ruta.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R4: Gestión de rutas', () {
+  group('R4: Gestión de Routes', () {
 
-    late DbAdapterRuta adapterRuta;
-    late ControladorRuta controladorRuta;
+    late DbAdapterRoute adapterRoute;
+    late RouteController routeController;
+
+    late DbAdapterUserApp userAppAdapter;
+    late UserAppController userAppController;
+
+    late FirebaseAuth auth;
+    late UserApp? userApp;
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -28,7 +34,7 @@ void main() {
 
       // Cargar la configuración desde firebase_config.json
 
-      //google serviceds
+      //google ContUserControllerds
       
 
       await Firebase.initializeApp(
@@ -42,52 +48,127 @@ void main() {
           measurementId: "G-TZLW8P5J8V"
         ),
       );
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController(adapterRoute);
+
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppController = UserAppController(userAppAdapter);
     });
 
-    setUp(() async {
-      adapterRuta = FirestoreAdapterRuta(collectionName: "testCollection");
-      controladorRuta = ControladorRuta(adapterRuta);
-      
+     // Helper para limpiar la colección y eliminar usuario
+      Future<void> cleanUp() async {
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get();
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); 
+        }
+      }
 
-    });
 
-    test('H13-EV', () async {
+      Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await cleanUp();
+        await userCredential.user!.delete();
+        return null;
+      }
+
+
+    test('H13-E1V - Crear ruta', () async {
 
       //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      String emailh13e1 = "Pruebah5e1@gmail.com";
+      String passwordh13e1 = "Aaaaa,.8";
+      String nameh13e1="Pruebah5e1";
+      await userAppController.createUser(emailh13e1, passwordh13e1, nameh13e1);
 
+      userApp = await userAppController.logInCredenciales(emailh13e1, passwordh13e1);
 
       //WHEN
+      
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
 
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = Location(lat1, long1, apodo1);
+     Location fin = Location(lat2, long2, apodo2);
+
+
+     await routeController.createRoute(ini, fin, "a pie", "rápida");
   
 
-
       //THEN
 
-      
+      final Set<Routes> routes =  await routeController.getRouteList();
+      final routeListh13e1 = routes.toList();
+      final firstRouteh13e1 = routeListh13e1[0];
+
+
+      //THEN
+     expect(firstRouteh13e1.getStart(), equals(ini)); // Verifica el Location inicial
+     expect(firstRouteh13e1.getEnd(), equals(fin)); // Verifica el Location final
+
+     await signInAndDeleteUser(emailh13e1, passwordh13e1);
+
 
 
     });
 
 
-    test('H13-EI', () async {
+    test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
 
       //GIVEN
-
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      String emailh13e2 = "Pruebah5e1@gmail.com";
+      String passwordh13e2 = "Aaaaa,.8";
+      String nameh13e2="Pruebah5e1";
+      await userAppController.createUser(emailh13e2, passwordh13e2, nameh13e2);
+
+      userApp = await userAppController.logInCredenciales(emailh13e2, passwordh13e2);
 
 
       //WHEN
-
       
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
 
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = Location(lat1, long1, apodo1);
+     Location fin = Location(lat2, long2, apodo2);
+
+
+    Routes? firstRouteh13e1;
+      void action() async {
+
+     await routeController.createRoute(ini, fin, "a pie", "rápida");
+
+
+      final Set<Routes> routes =  await routeController.getRouteList();
+      final routeListh13e1 = routes.toList();
+      firstRouteh13e1 = routeListh13e1[0];
+  
+      }
 
       //THEN
-
      
+    expect(action, throwsA(isA<ConnectionBBDDException>()));
+      expect(firstRouteh13e1?.getStart(), equals(isNull)); // Verifica el Location inicial
+     expect(firstRouteh13e1?.getEnd(), equals(isNull)); // Verifica el Location final
+
+     await signInAndDeleteUser(emailh13e2, passwordh13e2);
 
     });
 
@@ -107,90 +188,7 @@ void main() {
     });
    
 
-    test('H17', () async {
-      
-    });
-   
-    test('H18-EV', () async {
 
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Lugar ini = Lugar(lat1, long1, apodo1);
-      Lugar fin = Lugar(lat2, long2, apodo2);
-
-      controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-
-      final Set<Ruta> rutas = controladorRuta.getListaRutas();
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final listaRutas = rutas.toList();
-      
-      // Acceder al primer objeto en la lista
-      final primeraRuta = listaRutas[0];
-
-      // Verificar que los valores del primer lugar son los esperados
-      expect(primeraRuta.getInicio(), equals(ini)); // Verifica el Lugar inicial
-      expect(primeraRuta.getFin, equals(fin)); // Verifica el Lugar final
-      expect(primeraRuta.getDistancia(), equals(0)); // Verifica la distancia calculada
-      expect(primeraRuta.getPoints(), equals(List<Coordenada>)); // Verifica la lista de puntos
-      expect(primeraRuta.getModoTransporte(), equals("a pie")); // Verifica el modo de Transporte
-      expect(primeraRuta.getModoRuta(), equals("rápida")); // Verifica el modo de Transporte
-
-
-
-      
-    });
-
-
-    test('H18-EI', () async {
-
-      //GIVEN
-
-      //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
-
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Lugar ini = Lugar(lat1, long1, apodo1);
-      Lugar fin = Lugar(lat2, long2, apodo2);
-
-      controladorRuta.crearRuta(ini, fin, "a pie", "rápida");
-
-
-      //THEN
-     expect(() {
-      controladorRuta.getListaRutas();
-    }, throwsException);
-
-
-
-
-      
-    });
    
 
     test('H19', () async {

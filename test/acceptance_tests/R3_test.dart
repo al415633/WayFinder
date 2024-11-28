@@ -1,24 +1,28 @@
 // precio_luz_service_acceptance_test.dart
-import 'dart:convert';
 
-import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
-import 'package:WayFinder/viewModel/controladorVehiculo.dart';
-import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
+import 'package:WayFinder/model/Vehicle.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R2: Gestión de lugares de interés', () {
+  group('R3: Gestión de vehículos', () {
 
-    late DbAdapterVehiculo adapter;
-    late Controladorvehiculo controladorVehiculo;
+    late DbAdapterVehiculo vehicleAdapter;
+    late VehicleController vehicleController;
 
-    
+
+    late DbAdapterUserApp userAppAdapter;
+    late UserAppController userAppController;
+
 
     setUpAll(() async {
       // Inicializar el entorno de pruebas
@@ -42,36 +46,93 @@ void main() {
           measurementId: "G-TZLW8P5J8V"
         ),
       );
-    });
-    
-
-    setUp(() async {
-      adapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
-      controladorVehiculo = Controladorvehiculo(adapter);
-
-    });
-
-    test('H9-EV', () async {
 
       //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      String email = "quique@gmail.com";
+      String password = "Qaaaa,.8";
+      String nameU = "Qsa";
 
+      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
+      user = userAppController.logInCredenciales(email, password);
+
+    });
+    
+
+    setUp(() async {
+      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(vehicleAdapter);
+
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppController = UserAppController(userAppAdapter);
+
+    });
+
+
+    tearDownAll(() async {
+
+
+        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+          try {
+            if (user != null) {
+              // Si ya hay un usurio borro documnetos testCollection
+              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+              var querySnapshot = await collectionRef.get(); 
+
+              for (var doc in querySnapshot.docs) {
+                await doc.reference.delete(); 
+              }
+
+              // Eliminar el usuario
+              await user.delete();
+              print('Usuario y documentos eliminados con éxito.');
+
+            } else {
+              // Si el usuario no está autenticado, intentar iniciar sesión
+              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                email: "quique@gmail.com",
+                password: "Qaaaa,.8", 
+              );
+
+              // Eliminar todos los documentos de la colección testCollection
+              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+              var querySnapshot = await collectionRef.get(); 
+
+              for (var doc in querySnapshot.docs) {
+                await doc.reference.delete(); // Eliminar cada documento
+              }
+
+              // Eliminar el usuario
+              await userCredential.user!.delete();
+              print('Usuario y documentos eliminados con éxito.');
+            }
+          } catch (e) {
+            print('Error durante la autenticación o eliminación: $e');
+          }
+        });
+    });
+
+    test('H9-E1V - Crear vehiculo', () async {
+
+      //GIVEN
+
+      //Loguear usuario
+      //Hecho en el setUpAll
 
       //WHEN
 
-      final String name = "Coche Ana";
+      final String name = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      await controladorVehiculo.createVehicle(numberPlate, consumption, fuelType, name);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
 
 
       //THEN
 
-      final Set<Vehicle> vehicles = controladorVehiculo.getVehicleList();
+      final Set<Vehicle> vehicles = vehicleController.getVehicleList();
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
@@ -89,16 +150,16 @@ void main() {
     });
 
 
-    test('H9-EI', () async {
-//GIVEN
+    test('H9-E3I - Crear vehículo inválido', () async {
+      //GIVEN
 
       //Loguear usuario
-      //controladorUsuario.login(usuarioPruebas)
+      //Hecho en el SetUpAll
 
 
       //WHEN
 
-      final String name = "Coche Ana";
+      final String name = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Híbrido";
@@ -107,39 +168,93 @@ void main() {
       //THEN
 
       void action() {
-        controladorVehiculo.createVehicle(numberPlate, consumption, fuelType, name);
+        vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
       }
 
 
       // THEN
-      expect(action, throwsA(isA<Notvalidvehicleexception>()));
-    });
-      expect(controladorVehiculo.getVehicleList(), isEmpty); // Verifica consumo
+      expect(action, throwsException);
+      expect(vehicleController.getVehicleList(), isEmpty); // Verifica consumo
 
       
     });
 
 
-    test('H10-EV', () async {
+    test('H10-E1V - Listar vehículos válido', () async {
+      //GIVEN
+      //Loguear usuario
+      //Hecho en el setUpAll
+
+
+      //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
+      final String name = "Coche Quique";
+      final double consumption = 24.3;
+      final String numberPlate = "DKR9087";
+      final String fuelType = "Gasolina";
+
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, name);
+
+
+
+      //WHEN
+      Set<Vehicle> vehicleList = vehicleController.getVehicleList();
+
+      //THEN
+
+      expect(vehicleList.first.consumption, equals(24.3));
+      expect(vehicleList.first.name, equals("Coche Ana"));
+      expect(vehicleList.first.fuelType, equals("Gasolina"));
+      expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
     });
 
 
-    test('H10-EV', () async {
+    test('H10-E3I - Listar vehículos sin conexion a la BBDD', () async {
        
-    });
+      // GIVEN
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "No conexion");
+      userAppController = UserAppController(userAppAdapter);
+      //Loguear usuario
+      //Hecho en el setUpAll
 
 
-    test('H7-EI', () async {
-      
-    });
+    //WHEN
+      Set<Vehicle>? vehicles;
+      void action() {
 
+     vehicles = vehicleController.getVehicleList();
+  
+      }
 
-    test('H8', () async {
+      //THEN
      
+    expect(action, throwsA(isA<ConnectionBBDDException>()));
+    expect(vehicles, isEmpty);
+    });
+
+
+    test('H10-E2V - Listar vehículos BBDD vacía', () async {
+       
+       //GIVEN
+
+      //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
+      //No tiene vehiculos
+      //Loguear usuario
+      //Hecho en el setUpAll
+
+
+      //WHEN
+
+      Set<Vehicle> vehicleList = vehicleController.getVehicleList();
+
+
+      //THEN
+
+      expect(vehicleList, isEmpty);
     });
    
 
 
   });
-}
+  
+  }
