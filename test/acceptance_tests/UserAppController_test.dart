@@ -4,6 +4,7 @@ import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:integration_test/integration_test.dart';
@@ -136,37 +137,36 @@ void main() {
       String password = "Aaaaa,.8";
       String name="Pruebah3e1";
       await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
 
       // WHEN
-      UserApp? closedSession = await userAppController.logOut(userApp!);
+      bool closedSession = await userAppController.logOut();
 
       // THEN
-      expect(closedSession, isNotNull);
+      expect(closedSession, isTrue);
 
       await signInAndDeleteUser(email, password);
 
     });
 
-    test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () async {
+    test('H3-E4I - Cerrar sesion sin estar conectado', () async {
       // GIVEN
  
-      String email = "pruebah3e2@gmail.com";
+      String email = "pruebah3e4@gmail.com";
       String password = "Aaaaacccccc,.8";
       String name = "pruebah3e2";
 
-      await userAppController.createUser(email, password, name);
       //Pero no logeado
 
       // WHEN
        Future<void> action() async {
-          await userAppController.logOut(null); 
+          await userAppController.logOut(); 
         }
 
  
        expect(() async => await action(), throwsA(isA<UserNotAuthenticatedException>()));
 
 
-      await signInAndDeleteUser(email, password);
 
     });
   });

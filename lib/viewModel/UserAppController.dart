@@ -77,12 +77,10 @@ class UserAppController{
    }
    
 
-   Future<UserApp?> logOut(UserApp? userApp) async {
-if (userApp!=null){
-   return await repository.logOut(userApp);
-}
-else{
-  throw UserNotAuthenticatedException();
+   Future<bool> logOut() async {
+
+  return repository.logOut();
+   
 }
      
 
@@ -92,7 +90,19 @@ else{
 
 
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class FirestoreAdapterUserApp implements DbAdapterUserApp {
   final  String _collectionName;
@@ -170,22 +180,30 @@ Future<UserApp?> createUser(String email, String password) async {
   }
 
   
-  @override
-  Future<UserApp?> logOut(UserApp userApp) async {
-    try {
+@override
+Future<bool> logOut() async {
+  try {
+    if (auth == null || auth.currentUser == null) {
+
+      throw UserNotAuthenticatedException();
+    }
+
     await auth.signOut();
-    return userApp;  
+    return true;
   } catch (e) {
-    throw ConnectionBBDDException();
-  }  
+
+    throw UserNotAuthenticatedException();
   }
+}
 
 }
+
+
 
 
 
 abstract class DbAdapterUserApp {
   Future<UserApp?> createUser(String email, String password);
   Future<UserApp?> logInCredenciales(String email, String password);
- Future<UserApp?> logOut(UserApp userApp);
+ Future<bool> logOut();
 }

@@ -204,7 +204,7 @@ void _login() async {
     
     UserAppController? userAppController = UserAppController.getInstance();
 
-    userAppController?.logInCredenciales(email, password);
+    await userAppController?.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
 
@@ -212,16 +212,10 @@ void _login() async {
       context,
       MaterialPageRoute(builder: (context) => MapScreen()),
     );
-    
-    // Navegar a la página de éxito
-   // Navigator.push(
-   //   context,
-     // MaterialPageRoute(builder: (context) => ExitoPage()),
-   // );
   } on Exception {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), // Cambia a la página de error
+        MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), 
       );
     
   }
