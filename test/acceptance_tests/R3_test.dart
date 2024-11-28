@@ -86,7 +86,7 @@ void main() {
   for (var doc in querySnapshot.docs) {
     await doc.reference.delete();
   }
-  vehicleController.vehicleList =Future.value();
+  vehicleController.vehicleList = Future.value(<Vehicle>{});
  }
 
   Future<void> cleanUp() async {
@@ -114,7 +114,10 @@ void main() {
        String email = "Pruebah9e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah9e1";
+      print(email);
+
       await userAppController.createUser(email, password, name);
+      print(email);
       await userAppController.logInCredenciales(email, password);
       //WHEN
 
@@ -132,6 +135,7 @@ void main() {
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
+      print(vehicleList);
       
       // Acceder al primer objeto en la lista
       final firstPlace = vehicleList[0];
@@ -143,8 +147,11 @@ void main() {
       expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
     
     
-    await _deleteVehicle(numberPlate);
+    print(namec);
     await signInAndDeleteUser(email, password);
+    print(vehicleList);
+    await _deleteVehicle(numberPlate);
+    print(email);
 
 
 
@@ -174,7 +181,6 @@ void main() {
       //THEN
 
       Set<Vehicle> result = await vehicleController.getVehicleList();
-            await signInAndDeleteUser(email, password);
 
 
 
@@ -190,12 +196,10 @@ void main() {
 
 
       print('Patatatatatatata');
-      print(result.first.getName());
-      print(result.first.getNumberPlate());
-      print(result.first.getFuelType());
       expect(result.isEmpty, true); 
 
-      
+      await signInAndDeleteUser(email, password);
+
     });
 
 
@@ -206,17 +210,19 @@ void main() {
       String email = "Pruebah10e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah10e1";
-         await userAppController.createUser(email, password, name);
+      print(name);
+      await userAppController.createUser(email, password, name);
+      print(name);
       await userAppController.logInCredenciales(email, password);
+      print(name);
 
-      //Tiene vehículo {nombre: "Coche Ana", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
+      //Tiene vehículo {nombre: "Coche Quique", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
       await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
-            await signInAndDeleteUser(email, password);
 
 
 
@@ -232,9 +238,7 @@ void main() {
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
       await _deleteVehicle(numberPlate);
-            await signInAndDeleteUser(email, password);
-
-
+      await signInAndDeleteUser(email, password);
 
 
     });
