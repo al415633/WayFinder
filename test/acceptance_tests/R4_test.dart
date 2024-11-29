@@ -4,6 +4,7 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -105,7 +106,7 @@ void main() {
      String name1 = "ruta 1";
 
 
-     routeController.createRoute(name1, ini, fin, "a pie", "rápida");
+     routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
   
 
       //THEN
@@ -157,7 +158,7 @@ void main() {
     Routes? firstRouteh13e1;
       void action() async {
 
-     routeController.createRoute(name1, ini, fin, "a pie", "rápida");
+     routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
 
 
       final Set<Routes> routes =  await routeController.getRouteList();

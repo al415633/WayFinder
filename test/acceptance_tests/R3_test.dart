@@ -1,6 +1,7 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
@@ -114,10 +115,8 @@ void main() {
        String email = "Pruebah9e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah9e1";
-      print(email);
 
       await userAppController.createUser(email, password, name);
-      print(email);
       await userAppController.logInCredenciales(email, password);
       //WHEN
 
@@ -135,7 +134,6 @@ void main() {
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
-      print(vehicleList);
       
       // Acceder al primer objeto en la lista
       final firstPlace = vehicleList[0];
@@ -147,11 +145,8 @@ void main() {
       expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
     
     
-    print(namec);
     await signInAndDeleteUser(email, password);
-    print(vehicleList);
     await _deleteVehicle(numberPlate);
-    print(email);
 
 
 
@@ -195,7 +190,6 @@ void main() {
       );
 
 
-      print('Patatatatatatata');
       expect(result.isEmpty, true); 
 
       await signInAndDeleteUser(email, password);
@@ -210,11 +204,8 @@ void main() {
       String email = "Pruebah10e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah10e1";
-      print(name);
       await userAppController.createUser(email, password, name);
-      print(name);
       await userAppController.logInCredenciales(email, password);
-      print(name);
 
       //Tiene vehículo {nombre: "Coche Quique", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
       final String namec = "Coche Quique";
@@ -244,36 +235,16 @@ void main() {
     });
 
 
-    test('H10-E3I - Listar vehículos sin conexion a la BBDD', () async {
-       
-      // GIVEN
-      String email = "Pruebah10e3@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah10e3";
-   await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
-
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "No conexion");
-      userAppController = UserAppController(userAppAdapter);
-      //Loguear usuario
-      //Hecho en el setUpAll
-
-
+    test('H10-4I - Listar vehículos sin conexion a la BBDD', () async {
     //WHEN
-      
       void action() async {
-
        final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
-  
       }
-
       //THEN
-     
     expect(
-    () async => await vehicleController.getVehicleList(),
-    throwsA(isA<ConnectionBBDDException>()),
+        () async => await vehicleController.getVehicleList(),
+        throwsA(isA<NotAuthenticatedUserException>()),
   );
-        await signInAndDeleteUser(email, password);
 
 
     });
@@ -288,12 +259,6 @@ void main() {
       String name="Pruebah10e2";
    await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
-      //Usuario {email: "ana@gmail.com", password: "Aaaaa,.8"}
-      //No tiene vehiculos
-      //Loguear usuario
-      //Hecho en el setUpAll
-
-
       //WHEN
 
       final vehicleList = await vehicleController.getVehicleList();

@@ -1,4 +1,5 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/Vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +28,8 @@ class VehicleController {
 
 
     Future<Set<Vehicle>> getVehicleList(){ 
+
+  
       return _dbAdapter.getVehicleList();
     }
 
@@ -134,10 +137,12 @@ class FirestoreAdapterVehiculo implements DbAdapterVehiculo {
 
   @override
   Future<Set<Vehicle>> getVehicleList() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final auth = FirebaseAuth.instance;
+    final user =auth.currentUser;
+    
 
-    if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede obtener la lista de vehículos.');
+    if (auth == null || user == null) {
+      throw NotAuthenticatedUserException();
     }
 
     try {
