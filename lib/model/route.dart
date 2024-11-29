@@ -1,5 +1,5 @@
 
-import 'package:WayFinder/model/favItemController.dart';
+import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
 

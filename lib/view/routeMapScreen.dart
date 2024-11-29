@@ -21,11 +21,12 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   late LatLng initialPoint;
   late LatLng destination;
   late List<LatLng> points;
-  late bool selectInitialPoint;
-  late bool selectDestination;
   late String transportMode;
-  bool showInterestPlaces = false; 
-  bool showRoutes = true; 
+  bool showInterestPlaces = false;
+  bool showRoutes = true;
+  bool showVehicles = false;
+  double distance = 0.0;
+  double estimatedTime = 0.0;
 
   @override
   void initState() {
@@ -36,8 +37,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     initialPoint = LatLng(start.getLat(), start.getLong());
     destination = LatLng(end.getLat(), end.getLong());
     points = [];
-    selectInitialPoint = false;
-    selectDestination = false;
+
     getCoordinates();
   }
 
@@ -59,21 +59,32 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         points = listOfPoints
             .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
             .toList();
+        calculateDistanceAndTime();
       }
     });
   }
 
-  void _onMapTap(LatLng latlng) {
-    setState(() {
-      if (selectInitialPoint) {
-        initialPoint = latlng;
-        selectInitialPoint = false;
-      } else if (selectDestination) {
-        destination = latlng;
-        selectDestination = false;
-      }
-      getCoordinates();
-    });
+  void calculateDistanceAndTime() {
+    distance = 0.0;
+    for (int i = 0; i < points.length - 1; i++) {
+      distance += Distance().as(LengthUnit.Kilometer, points[i], points[i + 1]);
+    }
+    // Estimar tiempo por velocidad media
+    double speed;
+    if (transportMode == 'Coche') {
+      print("c");
+      speed = 60.0;
+    } else if (transportMode == 'A pie') {
+      print("p");
+      speed = 5.0;
+    } else if (transportMode == 'Bicicleta') {
+      print("b");
+      speed = 15.0;
+    } else {
+      print("nada");
+      speed = 0.0;
+    }
+    estimatedTime = distance / speed; // Time in hours
   }
 
   void _onTransportChanged(String newTransportMode) {
@@ -84,31 +95,38 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     });
   }
 
-    void _onModeChanged(String mode) {
+  void _onModeChanged(String mode) {
     setState(() {
-      if (mode == 'locations') {
-        showInterestPlaces = true; // Muestra el panel lateral
-        showRoutes = false; // Muestra el panel lateral de rutas
+      if (mode == 'routes') {
+        showRoutes = true; // Muestra el panel lateral de rutas
+        showInterestPlaces = false; // Oculta el panel lateral de lugares
+      } else {
+        if (mode == 'locations') {
+          showInterestPlaces = true; // Muestra el panel lateral
+          showRoutes = false; // Muestra el panel lateral de rutas
+        } else if (mode == 'vehicles') {
+          showRoutes = false;
+          showInterestPlaces = false;
+          showVehicles = true;
+        } else {
+          showInterestPlaces = false; // Oculta todos los paneles
+          showRoutes = false;
+          showVehicles = false;
+        }
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MapScreen(),
           ),
         );
-      } else if (mode == 'routes') {
-      showRoutes = true; // Muestra el panel lateral de rutas
-      showInterestPlaces = false; // Oculta el panel lateral de lugares
-    } else {
-      showInterestPlaces = false; // Oculta ambos paneles
-      showRoutes = false;
-    }
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Color(0xFF99D2E5),
         elevation: 0,
         toolbarHeight: 70,
@@ -120,7 +138,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
               // Botones de la barra superior
               Row(
                 children: [
-                  _buildTopButton('Lugares de interés', transportMode == 'locations', () {
+                  _buildTopButton(
+                      'Lugares de interés', transportMode == 'locations', () {
                     _onModeChanged('locations');
                   }),
                   _buildTopButton('Rutas', transportMode == 'routes', () {
@@ -132,63 +151,46 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 ],
               ),
               Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ToggleButtons(
-              isSelected: [
-                selectInitialPoint,
-                selectDestination,
-              ],
-              onPressed: (int index) {
-                setState(() {
-                  if (index == 0) {
-                    selectInitialPoint = !selectInitialPoint;
-                    if (selectInitialPoint) selectDestination = false;
-                  } else if (index == 1) {
-                    selectDestination = !selectDestination;
-                    if (selectDestination) selectInitialPoint = false;
-                  }
-                });
-              },
-              children: const <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('Cambia el origen'),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ToggleButtons(
+                  isSelected: [
+                    transportMode == 'Coche',
+                    transportMode == 'A pie',
+                    transportMode == 'Bicicleta',
+                  ],
+                  onPressed: (int index) {
+                    if (index == 0) {
+                      _onTransportChanged('Coche');
+                    } else if (index == 1) {
+                      _onTransportChanged('A pie');
+                    } else if (index == 2) {
+                      _onTransportChanged('Bicicleta');
+                    }
+                  },
+                  children: const <Widget>[
+                    Icon(Icons.directions_car),
+                    Icon(Icons.directions_walk),
+                    Icon(Icons.directions_bike),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('Cambia el destino'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text('Distancia: ${distance.toStringAsFixed(2)} km'),
+                    Text(
+                        'Tiempo estimado: ${estimatedTime.toStringAsFixed(2)} horas'),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ToggleButtons(
-              isSelected: [
-                transportMode == 'Coche',
-                transportMode == 'A pie',
-                transportMode == 'Bicicleta',
-              ],
-              onPressed: (int index) {
-                if (index == 0) {
-                  _onTransportChanged('Coche');
-                } else if (index == 1) {
-                  _onTransportChanged('A pie');
-                } else if (index == 2) {
-                  _onTransportChanged('Bicicleta');
-                }
-              },
-              children: const <Widget>[
-                Icon(Icons.directions_car),
-                Icon(Icons.directions_walk),
-                Icon(Icons.directions_bike),
-              ],
-            ),
-          ),
-          Row(
+              ),
+              Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.settings, color: Colors.white,),
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       _onModeChanged('settings');
                     },
@@ -201,8 +203,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                   ),
                 ],
               ),
-
-
             ],
           ),
         ),
@@ -214,7 +214,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
               options: MapOptions(
                 initialCenter: initialPoint,
                 initialZoom: 13.0,
-                onTap: (tapPosition, point) => _onMapTap(point),
               ),
               children: [
                 TileLayer(
@@ -264,24 +263,27 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     );
   }
 
-    // Botón superior personalizado
-  Widget _buildTopButton(String label, bool isSelected, VoidCallback onPressed) {
+  // Botón superior personalizado
+  Widget _buildTopButton(
+      String label, bool isSelected, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          backgroundColor: isSelected ? const Color.fromARGB(71, 203, 220, 228) :  Color.fromARGB(0, 153, 210, 229),
-          foregroundColor: Colors.white  ,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          backgroundColor: isSelected
+              ? const Color.fromARGB(71, 203, 220, 228)
+              : Color.fromARGB(0, 153, 210, 229),
+          foregroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Text(label),
       ),
     );
   }
 
-
-   // Widget para cada lugar de interés
+  // Widget para cada lugar de interés
   Widget _buildInterestPlaceItem(String placeName) {
     return ListTile(
       leading: const Icon(Icons.star, color: Colors.yellow),

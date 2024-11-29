@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:WayFinder/model/favItemController.dart';
+import 'package:WayFinder/model/favItem.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/APIs/apiConection.dart';

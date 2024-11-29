@@ -1,4 +1,4 @@
-import 'package:WayFinder/model/favItemController.dart';
+import 'package:WayFinder/model/favItem.dart';
 
 class Vehicle implements FavItem{
   // Propiedades
