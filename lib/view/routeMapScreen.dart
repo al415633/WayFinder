@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -21,7 +22,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   late LatLng initialPoint;
   late LatLng destination;
   late List<LatLng> points;
-  late String transportMode;
+  late TransportMode transportMode;
   bool showInterestPlaces = false;
   bool showRoutes = true;
   bool showVehicles = false;
@@ -45,11 +46,11 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
     var fin = '${destination.longitude}, ${destination.latitude}';
     http.Response? response;
-    if (transportMode == 'Coche') {
+    if (transportMode == TransportMode.coche) {
       response = await http.get(getCarRouteUrl(ini, fin));
-    } else if (transportMode == 'A pie') {
+    } else if (transportMode == TransportMode.aPie) {
       response = await http.get(getWalkRouteUrl(ini, fin));
-    } else if (transportMode == 'Bicicleta') {
+    } else if (transportMode == TransportMode.bicicleta) {
       response = await http.get(getBikeRouteUrl(ini, fin));
     }
     setState(() {
@@ -71,23 +72,19 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     }
     // Estimar tiempo por velocidad media
     double speed;
-    if (transportMode == 'Coche') {
-      print("c");
+    if (transportMode == TransportMode.coche) {
       speed = 60.0;
-    } else if (transportMode == 'A pie') {
-      print("p");
+    } else if (transportMode == TransportMode.aPie) {
       speed = 5.0;
-    } else if (transportMode == 'Bicicleta') {
-      print("b");
+    } else if (transportMode == TransportMode.bicicleta) {
       speed = 15.0;
     } else {
-      print("nada");
       speed = 0.0;
     }
     estimatedTime = distance / speed; // Time in hours
   }
 
-  void _onTransportChanged(String newTransportMode) {
+  void _onTransportChanged(TransportMode newTransportMode) {
     setState(() {
       transportMode = newTransportMode;
       widget.route.setTransportMode(newTransportMode);
@@ -154,17 +151,17 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: ToggleButtons(
                   isSelected: [
-                    transportMode == 'Coche',
-                    transportMode == 'A pie',
-                    transportMode == 'Bicicleta',
+                    transportMode == TransportMode.coche,
+                    transportMode == TransportMode.aPie,
+                    transportMode == TransportMode.bicicleta,
                   ],
                   onPressed: (int index) {
                     if (index == 0) {
-                      _onTransportChanged('Coche');
+                      _onTransportChanged(TransportMode.coche);
                     } else if (index == 1) {
-                      _onTransportChanged('A pie');
+                      _onTransportChanged(TransportMode.aPie);
                     } else if (index == 2) {
-                      _onTransportChanged('Bicicleta');
+                      _onTransportChanged(TransportMode.bicicleta);
                     }
                   },
                   children: const <Widget>[

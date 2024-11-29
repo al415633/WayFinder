@@ -1,5 +1,6 @@
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/transportMode.dart';
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,7 +37,7 @@ RouteController(this._dbAdapter) {
 
 
 
- Routes createRoute(String name, Location start, Location end, String transportMode, String routeMode) {
+ Routes createRoute(String name, Location start, Location end, TransportMode transportMode, String routeMode) {
 
    Routes route = Routes(name, start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
 

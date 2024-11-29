@@ -2,6 +2,7 @@
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/transportMode.dart';
 
 class Routes implements FavItem {
   // Propiedades
@@ -12,12 +13,12 @@ Location end = Location(0, 0, "");
 double distance = 0;
 List<Coordinate> points = [];
 bool fav;
-String transportMode = "a pie";
+TransportMode transportMode = TransportMode.aPie;
 String routeMode = "rápida";
 
 
   // Constructor
-  Routes(String name, Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode, {this.fav = false}){
+  Routes(String name, Location start, Location end, double distance, List<Coordinate> points, TransportMode transportMode, String routeMode, {this.fav = false}){
     this.name = name;
     this.start = start;
     this.end = end;
@@ -103,11 +104,11 @@ String routeMode = "rápida";
     return points;
   }
 
-  String getTransportMode(){
+  TransportMode getTransportMode(){
     return transportMode;
   }
 
-  void setTransportMode(String transportMode){
+  void setTransportMode(TransportMode transportMode){
   transportMode = transportMode;
   }
 
