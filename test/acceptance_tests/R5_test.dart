@@ -21,6 +21,10 @@ void main() {
     late DbAdapterUserApp adapterUserApp;
     late UserAppController userAppController;
 
+      late FirebaseAuth auth;
+    late UserApp? userApp;
+
+
    setUpAll(() async {
       // Inicializar el entorno de pruebas
 
@@ -44,74 +48,48 @@ void main() {
         ),
       );
 
-       //GIVEN
 
-      //Loguear usuario
-      String email = "miguel@gmail.com";
-      String password = "Maaaa,.8";
-      String nameU = "Msa";
-
-      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
-      user = userAppController.logInCredenciales(email, password);
-    });
-
-    setUp(() async {
       adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
       locationController = LocationController(adapterLocation);
 
       adapterUserApp = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(adapterUserApp);
-      
 
     });
 
-    tearDownAll(() async {
+
+      // Helper para limpiar la colección y eliminar usuario
+      Future<void> cleanUp() async {
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get();
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); 
+        }
+      }
 
 
-        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-          try {
-            if (user != null) {
-              // Si ya hay un usurio borro documnetos testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
+      Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await cleanUp();
+        await userCredential.user!.delete();
+        return null;
+      }
 
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); 
-              }
-
-              // Eliminar el usuario
-              await user.delete();
-              print('Usuario y documentos eliminados con éxito.');
-
-            } else {
-              // Si el usuario no está autenticado, intentar iniciar sesión
-              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: "miguel@gmail.com",
-                password: "Maaaa,.8", 
-              );
-
-              // Eliminar todos los documentos de la colección testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
-
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); // Eliminar cada documento
-              }
-
-              // Eliminar el usuario
-              await userCredential.user!.delete();
-              print('Usuario y documentos eliminados con éxito.');
-            }
-          } catch (e) {
-            print('Error durante la autenticación o eliminación: $e');
-          }
-        });
-    });
+  
 
     test('H20-E1V - Marcar como favorito un lugar', () async {
 
       //GIVEN 
-      //Hecho en el SetUpAll
+      //Loguear usuario
+      String emailh20e1 = "Pruebah20e1@gmail.com";
+      String passwordh20e1 = "Aaaaa,.8";
+      String nameh20e1="Pruebah20e1";
+      await userAppController.createUser(emailh20e1, passwordh20e1, nameh20e1);
+
+      userApp = await userAppController.logInCredenciales(emailh20e1, passwordh20e1);
 
 
       //WHEN
@@ -138,7 +116,7 @@ void main() {
       // Verificar que los valores del primer lugar son los esperados
       expect(primerLugar.getFav(), equals(true)); // Verifica el Lugar inicial
      
-      
+      await signInAndDeleteUser(emailh20e1, passwordh20e1);
 
 
     });
@@ -147,10 +125,13 @@ void main() {
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
       //GIVEN 
-      //Hecho en el SetUpAll
+      //Loguear usuario
+      String emailh20e2 = "Pruebah20e2@gmail.com";
+      String passwordh20e2 = "Aaaaa,.8";
+      String nameh20e2="Pruebah20e2";
+      await userAppController.createUser(emailh20e2, passwordh20e2, nameh20e2);
 
-
-
+      userApp = await userAppController.logInCredenciales(emailh20e2, passwordh20e2);
 
       //WHEN
 
@@ -168,7 +149,7 @@ void main() {
     }, throwsException);
 
 
-     
+    await signInAndDeleteUser(emailh20e2, passwordh20e2);
 
     });
 

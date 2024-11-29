@@ -36,9 +36,9 @@ RouteController(this._dbAdapter) {
 
 
 
- Routes createRoute(Location start, Location end, String transportMode, String routeMode) {
+ Routes createRoute(String name, Location start, Location end, String transportMode, String routeMode) {
 
-   Routes route = Routes(start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
+   Routes route = Routes(name, start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
 
   return route;
     
@@ -47,7 +47,7 @@ RouteController(this._dbAdapter) {
 Future<bool> saveRoute(Routes route) async{
  try{
 
-        bool success =  await this._dbAdapter.saveRoute(route);
+        bool success =  await _dbAdapter.saveRoute(route);
         
         if (success){
 
@@ -72,7 +72,51 @@ Future<bool> saveRoute(Routes route) async{
    return [];
  }
 
+  Future<bool> addFav(String routeName) async {
+    try {
+      // Llamar al adaptador para marcar como favorita en la base de datos
+      bool success = await _dbAdapter.addFav(routeName);
 
+      if (success) {
+        // Si se actualiza con éxito, reflejar en la lista local
+        final currentSet = await routeList;
+        for (var route in currentSet) {
+          if (route.name == routeName) {
+            route.fav = true; // Actualizar la propiedad `fav` en la lista local
+            break;
+          }
+        }
+      }
+
+      return success;
+    } catch (e) {
+      print("Error al añadir la ruta a favoritos: $e");
+      return false;
+    }
+  }
+
+  Future<bool> removeFav(String routeName) async {
+    try {
+      // Llamar al adaptador para desmarcar como favorita en la base de datos
+      bool success = await _dbAdapter.removeFav(routeName);
+
+      if (success) {
+        // Si se actualiza con éxito, reflejar en la lista local
+        final currentSet = await routeList;
+        for (var route in currentSet) {
+          if (route.getName() == routeName) {
+            route.fav = false; // Actualizar la propiedad `fav` en la lista local
+            break;
+          }
+        }
+      }
+
+      return success;
+    } catch (e) {
+      print("Error al eliminar la ruta de favoritos: $e");
+      return false;
+    }
+  }
 
 }
 
@@ -145,6 +189,48 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
  }
 
 
+ @override
+  Future<bool> addFav(String routeName) async {
+    try {
+      final querySnapshot = await db
+          .collection(_collectionName)
+          .doc(_currentUser?.uid)
+          .collection("RouteList")
+          .where('name', isEqualTo: routeName)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.update({'fav': true});
+      }
+
+      return true;
+    } catch (e) {
+      print("Error al añadir la ruta a favoritos en la base de datos: $e");
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> removeFav(String routeName) async {
+    try {
+      final querySnapshot = await db
+          .collection(_collectionName)
+          .doc(_currentUser?.uid)
+          .collection("RouteList")
+          .where('name', isEqualTo: routeName)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.update({'fav': false});
+      }
+
+      return true;
+    } catch (e) {
+      print("Error al eliminar la ruta de favoritos en la base de datos: $e");
+      return false;
+    }
+  }
+
  }
 
 
@@ -155,6 +241,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 abstract class DbAdapterRoute {
  Future<bool> saveRoute(Routes route);
  Future<Set<Routes>> getRouteList();
+ Future<bool> removeFav(String routeName) ;
+ Future<bool> addFav(String routeName) ;
 
 
 

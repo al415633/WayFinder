@@ -2,11 +2,6 @@ import 'package:WayFinder/model/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
-
-
-
 class LocationController {
  // Propiedades
 
@@ -51,7 +46,7 @@ class LocationController {
 
      try{
 
-        bool success =  await this._dbAdapter.createLocationFromCoord(location);
+        bool success =  await _dbAdapter.createLocationFromCoord(location);
         
         if (success){
 
@@ -92,32 +87,52 @@ class LocationController {
 
    Future<bool> addFav(String topo, String alias) async{
 
+      try {
+          bool success = await _dbAdapter.addFav(topo, alias);
 
-     // habra que modificar tmb la lista que esta siendo actualmente usada
+          if (success) {
+            // Si la operación fue exitosa, actualizar la lista local
+            final currentSet = await locationList;
+            for (var location in currentSet) {
+              if (location.getToponym() == topo && location.getAlias() == alias) {
+                location.fav = true; // Marcar como favorito en la lista local
+                break;
+              }
+            }
+          }
 
-
-       bool success = await _dbAdapter.addFav(topo, alias);
-
-
-       return success;
+          return success;
+        } catch (e) {
+          print("Error al añadir a favoritos en el controlador: $e");
+          return false;
+        }
+      
    }
 
 
    Future<bool> removeFav(String topo, String alias) async{
 
+     try {
+    // Llamar al método del adaptador para quitar de favoritos en la base de datos
+    bool success = await _dbAdapter.removeFav(topo, alias);
 
-     // habra que modificar tmb la lista que esta siendo actualmente usada
+    if (success) {
+      // Si la operación fue exitosa, actualizar la lista local
+      final currentSet = await locationList;
+      for (var location in currentSet) {
+        if (location.getToponym() == topo && location.getAlias() == alias) {
+          location.fav = false; // Desmarcar como favorito en la lista local
+          break;
+        }
+      }
+    }
 
-
-
-
-       bool success = await _dbAdapter.removeFav(topo, alias);
-
-
-       return success;
+    return success;
+  } catch (e) {
+    print("Error al eliminar de favoritos en el controlador: $e");
+    return false;
+  }
    }
-
-
  
 }
 
@@ -182,12 +197,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  @override
  Future<bool> createLocationFromCoord(Location location) async {
    try {
-
-      if (location.coordinate.lat == null || location.coordinate.long == null) {
-        throw Exception("Coordenadas inválidas: latitud o longitud no pueden ser nulas.");
-      }
-
-       await db
+      await db
         .collection(_collectionName) // Colección raíz (por ejemplo, "production")
         .doc(_currentUser?.uid) // Documento del usuario actual
         .collection("LocationList") // Subcolección "LocationList"
@@ -210,14 +220,55 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
    }
  }
   @override
- Future<bool> addFav(String topo, String alias) {
-   // TODO: implement ponerFav
-   throw UnimplementedError();
+ Future<bool> addFav(String topo, String alias) async {
+   try {
+    // Obtener la referencia al documento con el topónimo y alias correspondiente
+    final querySnapshot = await db
+        .collection(_collectionName)
+        .doc(_currentUser?.uid)
+        .collection("LocationList")
+        .where("toponym", isEqualTo: topo)
+        .where("alias", isEqualTo: alias)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw Exception("No se encontró la ubicación con el topónimo '$topo' y alias '$alias'.");
+    }
+
+    // Actualizar el campo 'fav' a true en el primer documento encontrado
+    await querySnapshot.docs.first.reference.update({"fav": true});
+
+    return true;
+  } catch (e) {
+    print("Error al añadir a favoritos: $e");
+    return false;
+  }
  }
+
   @override
- Future<bool> removeFav(String topo, String alias) {
-   // TODO: implement quitarFav
-   throw UnimplementedError();
+ Future<bool> removeFav(String topo, String alias) async {
+  try {
+    // Obtener la referencia al documento con el topónimo y alias correspondiente
+    final querySnapshot = await db
+        .collection(_collectionName)
+        .doc(_currentUser?.uid)
+        .collection("LocationList")
+        .where("toponym", isEqualTo: topo)
+        .where("alias", isEqualTo: alias)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw Exception("No se encontró la ubicación con el topónimo '$topo' y alias '$alias'.");
+    }
+
+    // Actualizar el campo 'fav' a false en el primer documento encontrado
+    await querySnapshot.docs.first.reference.update({"fav": false});
+
+    return true;
+  } catch (e) {
+    print("Error al eliminar de favoritos: $e");
+    return false;
+  }
  }
 
 }

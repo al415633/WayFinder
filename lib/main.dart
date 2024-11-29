@@ -43,7 +43,7 @@ void main() async {
 class MiApp extends StatelessWidget {
   final UserAppController userAppController;
 
-  const MiApp(this.userAppController);
+  const MiApp(this.userAppController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +89,7 @@ class _InicioState extends State<Inicio> {
         title: Text('Inicio de sesión'),
       ),
       body: login(),
+      //body: MapScreen(),
     );
   }
 
@@ -204,7 +205,7 @@ void _login() async {
     
     UserAppController? userAppController = UserAppController.getInstance();
 
-    userAppController?.logInCredenciales(email, password);
+    await userAppController?.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
 
@@ -212,16 +213,10 @@ void _login() async {
       context,
       MaterialPageRoute(builder: (context) => MapScreen()),
     );
-    
-    // Navegar a la página de éxito
-   // Navigator.push(
-   //   context,
-     // MaterialPageRoute(builder: (context) => ExitoPage()),
-   // );
-  } on Exception catch (e) {
+  } on Exception {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), // Cambia a la página de error
+        MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), 
       );
     
   }

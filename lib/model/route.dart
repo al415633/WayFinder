@@ -1,32 +1,35 @@
 
+import 'package:WayFinder/model/favItemController.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
 
-class Routes {
+class Routes implements FavItem {
   // Propiedades
 
+String name = "";
 Location start = Location(0, 0, "");
 Location end = Location(0, 0, "");
 double distance = 0;
 List<Coordinate> points = [];
-bool fav = false;
+bool fav;
 String transportMode = "a pie";
 String routeMode = "rápida";
 
 
   // Constructor
-  Routes(Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode){
+  Routes(String name, Location start, Location end, double distance, List<Coordinate> points, String transportMode, String routeMode, {this.fav = false}){
+    this.name = name;
     this.start = start;
     this.end = end;
     this.distance = distance;
     this.points = points;
-    this.fav = false;
+    fav = false;
     this.transportMode = transportMode;
     this.routeMode = routeMode;
   }
 
 /*
-  Route.fromMap(Map<String, dynamic> map) {
+  Route.fromMap(Map<String, dynamic> map): fav = mapa['fav'] ?? false  {
     
       start = Location.fromMap(map['start']);
       end = Location.fromMap(map['end']);
@@ -40,21 +43,32 @@ String routeMode = "rápida";
   }
   */
 
-   Routes.fromMap(Map<String, dynamic> mapa) {
-  
-  this.start = Location.fromMap(mapa['start']);
-  this.end = Location.fromMap(mapa['end']);
-  this.distance = mapa['distance'];
-  this.points = (mapa['points'] as List<dynamic>)
+  Routes.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
+
+  name = mapa['name'];
+  start = Location.fromMap(mapa['start']);
+  end = Location.fromMap(mapa['end']);
+  distance = mapa['distance'];
+  points = (mapa['points'] as List<dynamic>)
           .map((point) => Coordinate.fromMap(point))
           .toList();
+  fav = fav;
+  transportMode = mapa['transportMode'];
+  routeMode = mapa['routeMode'];
+  }
 
-  this.fav = fav;
-  this.transportMode = mapa['transportMode'];
-  this.routeMode = mapa['routeMode'];
-   }
+  @override
+  bool getFav() => fav;
 
-
+  @override
+  void addFav() {
+    fav = true;
+  }
+  
+  @override
+  void removeFav() {
+    fav = false;
+  }
 
   double calculateCostFuel(String fuelType, double consumption){
     //TO DO : FALTA IMPLEMENTAR
@@ -66,6 +80,9 @@ String routeMode = "rápida";
     return distance * avgConsumption;
   }
 
+  String getName(){
+    return name;
+  }
 
   Location getStart(){
       return start;
@@ -100,6 +117,7 @@ String routeMode = "rápida";
 
   Map<String, dynamic> toMap() {
     return {
+      'name' : name,
       'start': start.toMap(),
       'end': end.toMap(),
       'distance': distance,

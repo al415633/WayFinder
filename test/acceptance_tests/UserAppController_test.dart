@@ -1,5 +1,4 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -17,7 +16,6 @@ void main() {
   late UserAppController userAppController;
   late UserApp? userApp;
 
-  // Helper para limpiar la colección y eliminar usuario
   Future<void> cleanUp() async {
     var collectionRef = FirebaseFirestore.instance.collection('testCollection');
     var querySnapshot = await collectionRef.get();
@@ -137,37 +135,36 @@ void main() {
       String password = "Aaaaa,.8";
       String name="Pruebah3e1";
       await userAppController.createUser(email, password, name);
+      await userAppController.logInCredenciales(email, password);
 
       // WHEN
-      UserApp? closedSession = await userAppController.logOut(userApp!);
+      bool closedSession = await userAppController.logOut();
 
       // THEN
-      expect(closedSession, isNotNull);
+      expect(closedSession, isTrue);
 
       await signInAndDeleteUser(email, password);
 
     });
 
-    test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () async {
+    test('H3-E4I - Cerrar sesion sin estar conectado', () async {
       // GIVEN
  
-      String email = "pruebah3e2@gmail.com";
+      String email = "pruebah3e4@gmail.com";
       String password = "Aaaaacccccc,.8";
       String name = "pruebah3e2";
 
-      await userAppController.createUser(email, password, name);
       //Pero no logeado
 
       // WHEN
        Future<void> action() async {
-          await userAppController.logOut(null); 
+          await userAppController.logOut(); 
         }
 
  
        expect(() async => await action(), throwsA(isA<UserNotAuthenticatedException>()));
 
 
-      await signInAndDeleteUser(email, password);
 
     });
   });

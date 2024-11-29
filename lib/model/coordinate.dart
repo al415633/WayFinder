@@ -43,10 +43,10 @@ class Coordinate {
 
   Coordinate.fromMap(Map<String, dynamic> mapa) {
   
-  this.lat = mapa['lat'] ;
-  this.long = mapa['long'] ;
+  lat = mapa['lat'] ;
+  long = mapa['long'] ;
 
-  this.coordinate = LatLng(lat, long);
+  coordinate = LatLng(lat, long);
  
 }
 
