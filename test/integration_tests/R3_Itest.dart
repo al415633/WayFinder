@@ -81,8 +81,8 @@ void main() {
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      when(vehicleController.createVehicle(numberPlate, consumption, fuelType, namec))
-      .thenAnswer((_) async => true);
+      //when(vehicleController.createVehicle(numberPlate, consumption, fuelType, namec))
+      //.thenAnswer((_) async => true);
 
       when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
 
@@ -90,7 +90,7 @@ void main() {
 
       final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
-      when(vehicleController.getVehicleList()).thenAnswer((_) async => {vehicleMock});
+      //when(vehicleController.getVehicleList()).thenAnswer((_) async => {vehicleMock});
 
       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
 
