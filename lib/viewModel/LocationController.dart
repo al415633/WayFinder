@@ -49,9 +49,7 @@ class LocationController {
         bool success =  await _dbAdapter.createLocationFromCoord(location);
         
         if (success){
-
           final currentSet = await locationList;
-
           // Agregar el nuevo Location al Set
           currentSet.add(location);
         }
@@ -196,23 +194,33 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
  @override
  Future<bool> createLocationFromCoord(Location location) async {
-   try {
-      await db
-        .collection(_collectionName) // Colección raíz (por ejemplo, "production")
-        .doc(_currentUser?.uid) // Documento del usuario actual
-        .collection("LocationList") // Subcolección "LocationList"
-        .add(location.toMap()); // Agregar el lugar
+   
+    final user = FirebaseAuth.instance.currentUser;
 
-     return true;
-   } catch (e) {
-     print("Error al crear el lugar: $e");
-     return false;
-   }
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el location.');
+    }
+
+    try {
+      await db
+          .collection(_collectionName)
+          .doc(user.uid)
+          .collection("LocationList")
+          .add(location.toMap());
+      return true;
+    } catch (e) {
+      throw Exception('Error al crear el lugar: $e');
+    }
  }
+ 
  @override
  Future<bool> createLocationFromTopo(Location location) async {
    try {
-     await db.collection(_collectionName).add(location.toMap());
+     await db
+        .collection(_collectionName)
+        .doc(_currentUser?.uid) // Documento del usuario actual
+        .collection("LocationList") // Subcolección "LocationList"
+        .add(location.toMap());
      return true;
    } catch (e) {
      print("Error al crear el lugar: $e");

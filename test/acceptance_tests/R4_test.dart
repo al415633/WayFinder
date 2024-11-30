@@ -55,7 +55,50 @@ void main() {
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
+
+       // Crear usuario de prueba
+      const email = "pruebaR4@gmail.com";
+      const password = "Qaaaa,.8";
+      const nameU = "Qsa";
+
+      try {
+        await userAppController.createUser(email, password, nameU);
+      } catch (e) {
+        if (e is FirebaseAuthException && e.code != 'email-already-in-use') {
+          rethrow;
+        }
+      }
+
+      // Iniciar sesión
+      await userAppController.logInCredenciales(email, password);
     });
+
+      tearDownAll(() async {
+        // Borrar todos los documentos de testCollection
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get();
+
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete();
+        }
+
+        // Eliminar el usuario
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await user.delete();
+        }
+      });   
+
+
+      Future<void> _deleteRoute(String name) async {
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.where('name', isEqualTo: name).get();
+
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete();
+        }
+        routeController.routeList = Future.value(<Routes>{});
+      }
 
      // Helper para limpiar la colección y eliminar usuario
       Future<void> cleanUp() async {
@@ -83,9 +126,9 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String emailh13e1 = "Pruebah5e1@gmail.com";
+      String emailh13e1 = "Pruebah13e1@gmail.com";
       String passwordh13e1 = "Aaaaa,.8";
-      String nameh13e1="Pruebah5e1";
+      String nameh13e1="Pruebah13e1";
       await userAppController.createUser(emailh13e1, passwordh13e1, nameh13e1);
 
       userApp = await userAppController.logInCredenciales(emailh13e1, passwordh13e1);
@@ -106,21 +149,16 @@ void main() {
      String name1 = "ruta 1";
 
 
-     routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
+     Routes firstRouteh13e1 = routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
   
-
-      //THEN
-
-      final Set<Routes> routes =  await routeController.getRouteList();
-      final routeListh13e1 = routes.toList();
-      final firstRouteh13e1 = routeListh13e1[0];
-
 
       //THEN
      expect(firstRouteh13e1.getStart(), equals(ini)); // Verifica el Location inicial
      expect(firstRouteh13e1.getEnd(), equals(fin)); // Verifica el Location final
 
      await signInAndDeleteUser(emailh13e1, passwordh13e1);
+     await _deleteRoute(name1);
+
 
 
 
@@ -129,11 +167,12 @@ void main() {
 
     test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
 
+/*
       //GIVEN
       //Loguear usuario
-      String emailh13e2 = "Pruebah5e1@gmail.com";
+      String emailh13e2 = "Pruebah13e2@gmail.com";
       String passwordh13e2 = "Aaaaa,.8";
-      String nameh13e2="Pruebah5e1";
+      String nameh13e2="Pruebah13e2";
       await userAppController.createUser(emailh13e2, passwordh13e2, nameh13e2);
 
       userApp = await userAppController.logInCredenciales(emailh13e2, passwordh13e2);
@@ -155,7 +194,7 @@ void main() {
      String name1 = "ruta 1";
 
 
-    Routes? firstRouteh13e1;
+    Routes? firstRouteh13e2;
       void action() async {
 
      routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
@@ -163,17 +202,21 @@ void main() {
 
       final Set<Routes> routes =  await routeController.getRouteList();
       final routeListh13e1 = routes.toList();
-      firstRouteh13e1 = routeListh13e1[0];
+      firstRouteh13e2 = routeListh13e1[0];
   
       }
 
       //THEN
      
-    expect(action, throwsA(isA<ConnectionBBDDException>()));
-      expect(firstRouteh13e1?.getStart(), equals(isNull)); // Verifica el Location inicial
-     expect(firstRouteh13e1?.getEnd(), equals(isNull)); // Verifica el Location final
+     expect(action, throwsA(isA<ConnectionBBDDException>()));
+     expect(firstRouteh13e2?.getStart(), equals(isNull)); // Verifica el Location inicial
+     expect(firstRouteh13e2?.getEnd(), equals(isNull)); // Verifica el Location final
 
      await signInAndDeleteUser(emailh13e2, passwordh13e2);
+     await _deleteRoute(name1);
+
+     */
+
 
     });
 

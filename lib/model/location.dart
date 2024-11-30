@@ -20,6 +20,7 @@ class Location implements FavItem{
     //toponym =  CoordToToponym(coordinate) as String ;
     this.alias = alias;
     this.fav = false;
+    print("Hola");
   }
 
   Location.fromToponym(String toponym, String alias) {
@@ -132,6 +133,11 @@ class Location implements FavItem{
       'alias': alias,
       'fav' : fav
     };
+  }
+
+  @override
+  String toString() {
+    return 'Location(toponym: $toponym, alias: $alias, coordinate: $coordinate, fav: $fav)';
   }
   
 }
