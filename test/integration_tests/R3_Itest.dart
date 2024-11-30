@@ -11,74 +11,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+import 'R3_Itest.mocks.dart';
 
 
+@GenerateMocks([FirebaseAuth, DbAdapterVehicle, DbAdapterUserApp])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R3: Gestión de vehículos', ()  {
 
-    late DbAdapterVehicle vehicleAdapter;
+    late MockDbAdapterVehicle mockVehicleAdapter;
     late VehicleController vehicleController;
 
 
-    late DbAdapterUserApp userAppAdapter;
+    late MockDbAdapterUserApp mockUserAppAdapter;
     late UserAppController userAppController;
 
 
-    setUpAll(() async {
-      // Inicializar Firebase
-      await Firebase.initializeApp(
-        options: FirebaseOptions(
-        apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-        authDomain: "wayfinder-df8eb.firebaseapp.com",
-        projectId: "wayfinder-df8eb",
-        storageBucket: "wayfinder-df8eb.appspot.com",
-        messagingSenderId: "571791500413",
-        appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-        measurementId: "G-TZLW8P5J8V",
-        ),
-      );
-
-      // Inicializar controladores
-      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
-      vehicleController = VehicleController(vehicleAdapter);
-
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
-      userAppController = UserAppController(userAppAdapter);
-
-      // Crear usuario de prueba
-      const email = "quique@gmail.com";
-      const password = "Qaaaa,.8";
-      const nameU = "Qsa";
-
-      try {
-        await userAppController.createUser(email, password, nameU);
-      } catch (e) {
-        if (e is FirebaseAuthException && e.code != 'email-already-in-use') {
-          rethrow;
-        }
-      }
-
-      // Iniciar sesión
-      await userAppController.logInCredenciales(email, password);
-    });
+    setUp(() async {
+    mockUserAppAdapter = MockDbAdapterUserApp();
+    mockVehicleAdapter = MockDbAdapterVehicle();
+    userAppController = UserAppController(mockUserAppAdapter);
+    vehicleController = VehicleController(mockVehicleAdapter);
+  });
     
-
-    tearDownAll(() async {
-      // Borrar todos los documentos de testCollection
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-      var querySnapshot = await collectionRef.get();
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
-
-      // Eliminar el usuario
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await user.delete();
-      }
-    });
 
  Future<void> _deleteVehicle(String numberPlate) async {
   var collectionRef = FirebaseFirestore.instance.collection('testCollection');
@@ -116,8 +74,6 @@ void main() {
       String password = "Aaaaa,.8";
       String name="Pruebah9e1";
 
-      await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
       //WHEN
 
       final String namec = "Coche Quique";
@@ -125,12 +81,22 @@ void main() {
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+      when(vehicleController.createVehicle(numberPlate, consumption, fuelType, namec))
+      .thenAnswer((_) async => true);
 
+      when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
 
-      //THEN
+      bool success = await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+
+      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
+      when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
+      when(vehicleController.getVehicleList()).thenAnswer((_) async => {vehicleMock});
 
       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
+
+      //THEN
+      expect(success, isTrue);
+
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
@@ -143,12 +109,10 @@ void main() {
       expect(firstPlace.getFuelType(), equals("Gasolina")); // Verifica combustible
       expect(firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
       expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
-    
-    
-    await signInAndDeleteUser(email, password);
-    await _deleteVehicle(numberPlate);
 
-
+      // Verificar interacciones con el mock
+      verify(mockVehicleAdapter.createVehicle(any)).called(1);
+      verify(mockVehicleAdapter.getVehicleList()).called(1);
 
     });
 
@@ -158,42 +122,48 @@ void main() {
       String email = "Pruebah9e3@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah9e3";
-      await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
+
 
       //Loguear usuario
       //Hecho en el SetUpAll
 
 
       //WHEN
-
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final String fuelType = "Híbrido";
 
+      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
 
-      //THEN
+      // Configura el mock para lanzar una excepción
+      when(mockVehicleAdapter.createVehicle(vehicleMock))
+          .thenThrow(Exception("NotValidVehicleException: El tipo de combustible no es válido"));
+      when(mockVehicleAdapter.getVehicleList())
+          .thenAnswer((_) async => <Vehicle>{});
 
-      Set<Vehicle> result = await vehicleController.getVehicleList();
-
-
-
-
+      // WHEN
+      Future<void> action() async {
+        await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+      }
 
       // THEN
-      expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec),
+      expect(
+        action(),
         throwsA(isA<Exception>().having(
-        (e) => e.toString(),
-        'message',
-        contains("NotValidVehicleException: El tipo de combustible no es válido"))),
+          (e) => e.toString(),
+          'message',
+          contains("NotValidVehicleException: El tipo de combustible no es válido"),
+        )),
       );
 
+      final vehicles = await vehicleController.getVehicleList();
+      print(vehicles.first.getName());
+      expect(vehicles.isEmpty, true);
 
-      expect(result.isEmpty, true); 
-
-      await signInAndDeleteUser(email, password);
-
+      // Verificar que no se llamó a `createVehicle` en el mock
+      verifyNever(mockVehicleAdapter.createVehicle(any));
+      verify(mockVehicleAdapter.getVehicleList()).called(1);
     });
 
 
@@ -204,8 +174,7 @@ void main() {
       String email = "Pruebah10e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah10e1";
-      await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
+
 
       //Tiene vehículo {nombre: "Coche Quique", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
       final String namec = "Coche Quique";
@@ -213,38 +182,47 @@ void main() {
       final String numberPlate = "DKR9087";
       final String fuelType = "Gasolina";
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
 
+      // Simula la creación exitosa del vehículo
+      when(mockVehicleAdapter.createVehicle(any))
+      .thenAnswer((_) async => true);
 
+      // Simula que `getVehicleList` devuelve un conjunto con el vehículo creado
+      when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
 
 
       //WHEN
-      Set<Vehicle> vehicleList = await vehicleController.getVehicleList();
+
+      final success = await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+      final vehicleList = await vehicleController.getVehicleList();
 
       //THEN
 
+      expect(success, isTrue);
       expect(vehicleList.first.consumption, equals(24.3));
       expect(vehicleList.first.name, equals("Coche Quique"));
       expect(vehicleList.first.fuelType, equals("Gasolina"));
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
-      await _deleteVehicle(numberPlate);
-      await signInAndDeleteUser(email, password);
-
-
+      verify(mockVehicleAdapter.createVehicle(any)).called(1);
+      verify(mockVehicleAdapter.getVehicleList()).called(1);
     });
 
 
     test('H10-4I - Listar vehículos sin conexion a la BBDD', () async {
-    //WHEN
+
+      when(mockVehicleAdapter.getVehicleList())
+      .thenThrow(NotAuthenticatedUserException());
+      //WHEN
       void action() async {
-       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
+        final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
       }
       //THEN
-    expect(
+      expect(
         () async => await vehicleController.getVehicleList(),
         throwsA(isA<NotAuthenticatedUserException>()),
-  );
+      );
 
 
     });

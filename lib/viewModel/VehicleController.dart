@@ -10,7 +10,7 @@ class VehicleController {
   // Propiedades
 
     late Future<Set<Vehicle>> vehicleList;
-    final DbAdapterVehiculo _dbAdapter;
+    final DbAdapterVehicle _dbAdapter;
 
     VehicleController._internal(this._dbAdapter) {
       vehicleList = Future.value(<Vehicle>{}); // Inicializa con un conjunto vacío
@@ -19,7 +19,7 @@ class VehicleController {
     static VehicleController? _instance;
 
 
-  factory VehicleController(DbAdapterVehiculo dbAdapter) {
+  factory VehicleController(DbAdapterVehicle dbAdapter) {
     _instance ??= VehicleController._internal(dbAdapter);
     return _instance!;
   }
@@ -57,8 +57,10 @@ class VehicleController {
       if (success){
         final currentSet = await vehicleList;
         currentSet.add(vehicle);
-      }
 
+        vehicleList = Future.value(currentSet);  // Actualizar el future con el nuevo set
+      }
+      
       return success;
     }
 
@@ -128,7 +130,7 @@ bool threeDecimalPlacesMax(double value) {
 }
 
 
-class FirestoreAdapterVehiculo implements DbAdapterVehiculo {
+class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -192,7 +194,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehiculo {
 }
 
 
-abstract class DbAdapterVehiculo {
+abstract class DbAdapterVehicle {
   Future<bool> createVehicle(Vehicle vehicle);
   Future<Set<Vehicle>> getVehicleList();
   Future<bool> addFav(String numberPlate, String name);
