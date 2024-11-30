@@ -20,7 +20,15 @@ class Location implements FavItem{
     //toponym =  CoordToToponym(coordinate) as String ;
     this.alias = alias;
     this.fav = false;
-    print("Hola");
+  }
+
+  // Constructor con fav para los tests
+  Location.conFav(double lat, double long, String alias, bool fav)  {
+    coordinate = Coordinate(lat, long);
+    //obtainToponym(CoordToToponym(coordinate));
+    //toponym =  CoordToToponym(coordinate) as String ;
+    this.alias = alias;
+    this.fav = fav;
   }
 
   Location.fromToponym(String toponym, String alias) {

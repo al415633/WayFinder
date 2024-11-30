@@ -165,35 +165,39 @@ void main() {
 
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
-      /*
-
-      //GIVEN 
-      //Loguear usuario
+        // GIVEN 
       String emailh20e2 = "Pruebah20e2@gmail.com";
       String passwordh20e2 = "Aaaaa,.8";
-      String nameh20e2="Pruebah20e2";
+      String nameh20e2 = "Pruebah20e2";
       await userAppController.createUser(emailh20e2, passwordh20e2, nameh20e2);
-
       userApp = await userAppController.logInCredenciales(emailh20e2, passwordh20e2);
 
-      //WHEN
-
+      // WHEN
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String apodo1 = "castellon";
 
-
       await locationController.createLocationFromCoord(lat1, long1, apodo1);
 
-      //THEN
-     
-     expect(() {
-      locationController.addFav("Castelló de la Plana", apodo1);
-    }, false);
+      // Verificar que la ubicación se ha añadido correctamente
+      locationController.addFav("Castellónaef", apodo1);
+      
+      final Set<Location> locations = await locationController.getLocationList();
+      expect(locations.isNotEmpty, true);  // Asegúrate de que no esté vacío
 
 
-    await signInAndDeleteUser(emailh20e2, passwordh20e2);
-    */
+      // THEN
+      final locationList = locations.toList();
+      print(locationList.toString());
+      print(locationList[0].toString());
+      final Location primerLugar = locationList[0];
+
+      print(primerLugar.getFav());
+
+      expect(primerLugar.getFav(), equals(false)); // En este caso no se marca como favorito porque no lo encuentra con ese toponimo
+
+      await signInAndDeleteUser(emailh20e2, passwordh20e2);
+      await _deleteLocation(apodo1);
 
     });
 
