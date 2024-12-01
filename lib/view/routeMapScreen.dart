@@ -40,11 +40,13 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     fetchCoordinates();
   }
 
-  void fetchCoordinates() async{
-    points = await RouteController.getInstance()!.getPoints(initialPoint, destination, transportMode);
-    widget.route.setPoints = points;
+    void fetchCoordinates() async {
+    var result = await RouteController.getInstance()!.getPoints(initialPoint, destination, transportMode);
     setState(() {
-      calculateDistanceAndTime();
+      points = result['points'];
+      distance = result['distance'];
+      estimatedTime = result['duration'];
+      print('Distance: $distance, Estimated Time: $estimatedTime'); // Debugging statement
     });
   }
 

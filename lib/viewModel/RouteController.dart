@@ -44,39 +44,65 @@ class RouteController {
     }
   }
 
-  Future<List<LatLng>> getPoints(LatLng initialPoint, LatLng destination, TransportMode transportMode) async {
-  //más adelante se tnedrá que tener en cuenta el tipo de ruta
-  var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
-  var fin = '${destination.longitude}, ${destination.latitude}';
-  http.Response? response;
-  if (transportMode == TransportMode.coche) {
-    response = await http.get(getCarRouteUrl(ini, fin));
-  } else if (transportMode == TransportMode.aPie) {
-    response = await http.get(getWalkRouteUrl(ini, fin));
-  } else if (transportMode == TransportMode.bicicleta) {
-    response = await http.get(getBikeRouteUrl(ini, fin));
+  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
+      LatLng destination, TransportMode transportMode) async {
+    //más adelante se tnedrá que tener en cuenta el tipo de ruta
+    var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
+    var fin = '${destination.longitude}, ${destination.latitude}';
+    http.Response? response;
+    if (transportMode == TransportMode.coche) {
+      response = await http.get(getCarRouteUrl(ini, fin));
+    } else if (transportMode == TransportMode.aPie) {
+      response = await http.get(getWalkRouteUrl(ini, fin));
+    } else if (transportMode == TransportMode.bicicleta) {
+      response = await http.get(getBikeRouteUrl(ini, fin));
+    }
+    if (response?.statusCode == 200) {
+      var data = jsonDecode(response!.body);
+      var listOfPoints = data['features'][0]['geometry']['coordinates'];
+      List<LatLng> points = listOfPoints
+          .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
+          .toList();
+      double distance = data['features'][0]['properties']['segments'][0]
+              ['distance'] /
+          1000; // Convertir a km
+      double duration = data['features'][0]['properties']['segments'][0]
+              ['duration'] /
+          3600; // Convertir a horas
+      return {
+        'points': points,
+        'distance': distance,
+        'duration': duration,
+      };
+    } else {
+      return {
+        'points': [],
+        'distance': 0.0,
+        'duration': 0.0,
+      };
+    }
   }
-  if (response?.statusCode == 200) {
-    var data = jsonDecode(response!.body);
-    var listOfPoints = data['features'][0]['geometry']['coordinates'];
-    List<LatLng> points = listOfPoints
-        .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
-        .toList();
-    return points;
-  } else {
-    return [];
+  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination, TransportMode transportMode) async {
+    try {
+      Map<String, dynamic> pointsData = await getPoints(initialPoint, destination, transportMode);
+      return pointsData['points'] as List<LatLng>;
+    } catch (e) {
+      throw Exception("Error al obtener los puntos de la ruta: $e");
+    }
   }
-}
 
   Future<Routes> createRoute(String name, Location start, Location end,
       TransportMode transportMode, String routeMode) async {
-      LatLng initialPoint = LatLng(start.getCoordinate().getLat(),start.getCoordinate().getLong());
-      LatLng destination = LatLng(end.getCoordinate().getLat(),end.getCoordinate().getLong());
-      List<LatLng> points = await getPoints(initialPoint, destination, transportMode);
-      double distance = calculateDistance(points);
-      double time = calculateTime(transportMode, distance);
-      Routes route = Routes(
-          name, start, end, points, distance, time, transportMode, routeMode);
+    LatLng initialPoint =
+        LatLng(start.getCoordinate().getLat(), start.getCoordinate().getLong());
+    LatLng destination =
+        LatLng(end.getCoordinate().getLat(), end.getCoordinate().getLong());
+    List<LatLng> points =
+        await fetchRoutePoints(initialPoint, destination, transportMode);
+    double distance = calculateDistance(points);
+    double time = calculateTime(transportMode, distance);
+    Routes route = Routes(
+        name, start, end, points, distance, time, transportMode, routeMode);
     return route;
   }
 
@@ -101,10 +127,9 @@ class RouteController {
   double calculateDistance(List<LatLng> points) {
     var distance = 0.0;
     for (int i = 0; i < points.length - 1; i++) {
-      distance += Distance().as(
-          LengthUnit.Meter, points[i], points[i + 1]);
+      distance += Distance().as(LengthUnit.Meter, points[i], points[i + 1]);
     }
-    return distance/1000;
+    return distance / 1000;
   }
 
   double calculateTime(TransportMode transportMode, double distance) {
@@ -118,7 +143,7 @@ class RouteController {
     } else {
       speed = 0.0;
     }
-    return distance/speed; //en horas
+    return distance / speed; //en horas
   }
 
   Future<bool> addFav(String routeName) async {
