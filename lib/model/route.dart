@@ -1,61 +1,48 @@
-
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/transportMode.dart';
+import 'package:latlong2/latlong.dart';
 
 class Routes implements FavItem {
   // Propiedades
-
-String name = "";
-Location start = Location(0, 0, "");
-Location end = Location(0, 0, "");
-double distance = 0;
-List<Coordinate> points = [];
-bool fav;
-TransportMode transportMode = TransportMode.aPie;
-String routeMode = "rápida";
-
+  late String name;
+  late Location start;
+  late Location end;
+  late double distance;
+  late double time;
+  List<LatLng> points = [];
+  bool fav;
+  late TransportMode transportMode;
+  late String routeMode;
 
   // Constructor
-  Routes(String name, Location start, Location end, double distance, List<Coordinate> points, TransportMode transportMode, String routeMode, {this.fav = false}){
+  Routes(String name, Location start, Location end, List<LatLng> points,
+      double distance, double time, TransportMode transportMode, String routeMode,
+      {this.fav = false}) {
     this.name = name;
     this.start = start;
     this.end = end;
     this.distance = distance;
+    this.time = time;
     this.points = points;
     fav = false;
     this.transportMode = transportMode;
     this.routeMode = routeMode;
   }
 
-/*
-  Route.fromMap(Map<String, dynamic> map): fav = mapa['fav'] ?? false  {
-    
-      start = Location.fromMap(map['start']);
-      end = Location.fromMap(map['end']);
-      distance = map['distance'];
-      points = (map['points'] as List<dynamic>)
-          .map((point) => Coordinate.fromMap(point))
-          .toList();
-      transportMode = map['transportMode'];
-      routeMode = map['routeMode'];
-    
-  }
-  */
-
   Routes.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
-
-  name = mapa['name'];
-  start = Location.fromMap(mapa['start']);
-  end = Location.fromMap(mapa['end']);
-  distance = mapa['distance'];
-  points = (mapa['points'] as List<dynamic>)
-          .map((point) => Coordinate.fromMap(point))
-          .toList();
-  fav = fav;
-  transportMode = mapa['transportMode'];
-  routeMode = mapa['routeMode'];
+    name = mapa['name'];
+    start = Location.fromMap(mapa['start']);
+    end = Location.fromMap(mapa['end']);
+    distance = mapa['distance'];
+    time = mapa['time'];
+    points = (mapa['points'] as List<dynamic>)
+        .map((point) => Coordinate.fromMap(point)).cast<LatLng>()
+        .toList();
+    fav = fav;
+    transportMode = mapa['transportMode'];
+    routeMode = mapa['routeMode'];
   }
 
   @override
@@ -65,72 +52,51 @@ String routeMode = "rápida";
   void addFav() {
     fav = true;
   }
-  
+
   @override
   void removeFav() {
     fav = false;
   }
 
-  double calculateCostFuel(String fuelType, double consumption){
+  double calculateCostFuel(String fuelType, double consumption) {
     //TO DO : FALTA IMPLEMENTAR
     return 0;
   }
 
-  double calculateCostKCal(){
-   double avgConsumption = 55;
+  double calculateCostKCal() {
+    double avgConsumption = 55;
     return distance * avgConsumption;
   }
 
-  String getName(){
-    return name;
-  }
+  String get getName => name;
+  Location get getStart => start;
+  Location get getEnd => end;
+  double get getDistance => distance;
+  double get getTime => time;
+  List<LatLng> get getPoints => points;
+  TransportMode get getTransportMode => transportMode;
+  String get getRouteMode => routeMode;
 
-  Location getStart(){
-      return start;
-  }
-
-
-  Location getEnd(){
-    return end;
-  }
-
-  double getDistance(){
-    return distance;
-  }
-
-  
-
-  List<Coordinate> getPoints(){
-    return points;
-  }
-
-  TransportMode getTransportMode(){
-    return transportMode;
-  }
-
-  void setTransportMode(TransportMode transportMode){
-  transportMode = transportMode;
-  }
-
-  String getRouteMode(){
-    return routeMode;
-  }
+  set setName(String name) => this.name = name;
+  set setStart(Location start) => this.start = start;
+  set setEnd(Location end) => this.end = end;
+  set setDistance(double distance) => this.distance = distance;
+  set setTime(double time) => this.time = time;
+  set setPoints(List<LatLng> points) => this.points = points;
+  set setTransportMode(TransportMode transportMode) => this.transportMode = transportMode;
+  set setRouteMode(String routeMode) => this.routeMode = routeMode;
 
   Map<String, dynamic> toMap() {
     return {
-      'name' : name,
+      'name': name,
       'start': start.toMap(),
       'end': end.toMap(),
       'distance': distance,
-      'points': points.map((point) => point.toMap()).toList(),      
-      'fav' : fav,
-      'transportMode' : transportMode,
+      'time': time,
+      'points': points.map((point) => {'latitude': point.latitude, 'longitude': point.longitude}).toList(),
+      'fav': fav,
+      'transportMode': transportMode,
       'routeMode': routeMode,
     };
-  }     
+  }
 }
-
-
-
-
-

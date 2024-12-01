@@ -1,33 +1,42 @@
-import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/transportMode.dart';
-
-
+import 'dart:convert';
+import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
+import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-
-
+import 'package:latlong2/latlong.dart';
 
 class RouteController {
   // Propiedades
- late Future<Set<Routes>> routeList;
- final DbAdapterRoute _dbAdapter;
+  late Future<Set<Routes>> routeList;
 
+  // Propiedad privada
+  final DbAdapterRoute repository;
 
-
-RouteController(this._dbAdapter) {
+  // Constructor privado
+  RouteController._internal(this.repository) {
     try {
-      routeList = _dbAdapter.getRouteList();
+      routeList = repository.getRouteList();
     } catch (e) {
       routeList = Future.error(e);
     }
   }
 
- Future<Set<Routes>> getRouteList() async {
+  // Instancia única
+  static RouteController? _instance;
+
+  factory RouteController(DbAdapterRoute repository) {
+    _instance ??= RouteController._internal(repository);
+    return _instance!;
+  }
+
+  static RouteController? getInstance() {
+    return _instance;
+  }
+
+  Future<Set<Routes>> getRouteList() async {
     try {
       return await routeList;
     } catch (e) {
@@ -35,48 +44,87 @@ RouteController(this._dbAdapter) {
     }
   }
 
-
-
- Routes createRoute(String name, Location start, Location end, TransportMode transportMode, String routeMode) {
-
-   Routes route = Routes(name, start, end, getDistance(start, end), getPoints(start, end), transportMode, routeMode) ;
-
-  return route;
-    
- }
-
-Future<bool> saveRoute(Routes route) async{
- try{
-
-        bool success =  await _dbAdapter.saveRoute(route);
-        
-        if (success){
-
-          final currentSet = await routeList;
-
-          // Agregar el nuevo Location al Set
-          currentSet.add(route);
-        }
-
-        return success;
-     } catch (e) {
-    print("Error al crear la ruta: $e");
-    return false;
+  Future<List<LatLng>> getPoints(LatLng initialPoint, LatLng destination, TransportMode transportMode) async {
+  //más adelante se tnedrá que tener en cuenta el tipo de ruta
+  var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
+  var fin = '${destination.longitude}, ${destination.latitude}';
+  http.Response? response;
+  if (transportMode == TransportMode.coche) {
+    response = await http.get(getCarRouteUrl(ini, fin));
+  } else if (transportMode == TransportMode.aPie) {
+    response = await http.get(getWalkRouteUrl(ini, fin));
+  } else if (transportMode == TransportMode.bicicleta) {
+    response = await http.get(getBikeRouteUrl(ini, fin));
+  }
+  if (response?.statusCode == 200) {
+    var data = jsonDecode(response!.body);
+    var listOfPoints = data['features'][0]['geometry']['coordinates'];
+    List<LatLng> points = listOfPoints
+        .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
+        .toList();
+    return points;
+  } else {
+    return [];
   }
 }
 
- double getDistance(Location start, Location end) {
-   
-   return 0;
- }
-  List<Coordinate> getPoints(Location start, Location end) {
-   return [];
- }
+  Future<Routes> createRoute(String name, Location start, Location end,
+      TransportMode transportMode, String routeMode) async {
+      LatLng initialPoint = LatLng(start.getCoordinate().getLat(),start.getCoordinate().getLong());
+      LatLng destination = LatLng(end.getCoordinate().getLat(),end.getCoordinate().getLong());
+      List<LatLng> points = await getPoints(initialPoint, destination, transportMode);
+      double distance = calculateDistance(points);
+      double time = calculateTime(transportMode, distance);
+      Routes route = Routes(
+          name, start, end, points, distance, time, transportMode, routeMode);
+    return route;
+  }
+
+  Future<bool> saveRoute(Routes route) async {
+    try {
+      bool success = await repository.saveRoute(route);
+
+      if (success) {
+        final currentSet = await routeList;
+
+        // Agregar el nuevo Location al Set
+        currentSet.add(route);
+      }
+
+      return success;
+    } catch (e) {
+      print("Error al crear la ruta: $e");
+      return false;
+    }
+  }
+
+  double calculateDistance(List<LatLng> points) {
+    var distance = 0.0;
+    for (int i = 0; i < points.length - 1; i++) {
+      distance += Distance().as(
+          LengthUnit.Meter, points[i], points[i + 1]);
+    }
+    return distance/1000;
+  }
+
+  double calculateTime(TransportMode transportMode, double distance) {
+    double speed;
+    if (transportMode == TransportMode.coche) {
+      speed = 60.0;
+    } else if (transportMode == TransportMode.aPie) {
+      speed = 5.0;
+    } else if (transportMode == TransportMode.bicicleta) {
+      speed = 15.0;
+    } else {
+      speed = 0.0;
+    }
+    return distance/speed; //en horas
+  }
 
   Future<bool> addFav(String routeName) async {
     try {
       // Llamar al adaptador para marcar como favorita en la base de datos
-      bool success = await _dbAdapter.addFav(routeName);
+      bool success = await repository.addFav(routeName);
 
       if (success) {
         // Si se actualiza con éxito, reflejar en la lista local
@@ -99,14 +147,15 @@ Future<bool> saveRoute(Routes route) async{
   Future<bool> removeFav(String routeName) async {
     try {
       // Llamar al adaptador para desmarcar como favorita en la base de datos
-      bool success = await _dbAdapter.removeFav(routeName);
+      bool success = await repository.removeFav(routeName);
 
       if (success) {
         // Si se actualiza con éxito, reflejar en la lista local
         final currentSet = await routeList;
         for (var route in currentSet) {
-          if (route.getName() == routeName) {
-            route.fav = false; // Actualizar la propiedad `fav` en la lista local
+          if (route.getName == routeName) {
+            route.fav =
+                false; // Actualizar la propiedad `fav` en la lista local
             break;
           }
         }
@@ -118,21 +167,15 @@ Future<bool> saveRoute(Routes route) async{
       return false;
     }
   }
-
 }
 
-
-
-
 class FirestoreAdapterRoute implements DbAdapterRoute {
- final String _collectionName;
- final FirebaseFirestore db = FirebaseFirestore.instance;
+  final String _collectionName;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
- User? _currentUser; // Propiedad para almacenar el usuario actual
+  User? _currentUser; // Propiedad para almacenar el usuario actual
 
-
-
- FirestoreAdapterRoute({String collectionName = "production"})
+  FirestoreAdapterRoute({String collectionName = "production"})
       : _collectionName = collectionName {
     // Configurar el listener para authStateChanges
     _initializeAuthListener();
@@ -150,8 +193,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     });
   }
 
-
- @override
+  @override
   Future<Set<Routes>> getRouteList() async {
     try {
       final querySnapshot = await db
@@ -171,11 +213,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     }
   }
 
-
-
-
   @override
- Future<bool> saveRoute(Routes route) async{
+  Future<bool> saveRoute(Routes route) async {
     try {
       await db
           .collection(_collectionName)
@@ -187,10 +226,9 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       print("Error al guardar la ruta: $e");
       return false;
     }
- }
+  }
 
-
- @override
+  @override
   Future<bool> addFav(String routeName) async {
     try {
       final querySnapshot = await db
@@ -231,28 +269,11 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       return false;
     }
   }
-
- }
-
-
-
-
-
-
-abstract class DbAdapterRoute {
- Future<bool> saveRoute(Routes route);
- Future<Set<Routes>> getRouteList();
- Future<bool> removeFav(String routeName) ;
- Future<bool> addFav(String routeName) ;
-
-
-
-
 }
 
-
-
-
-
-
-
+abstract class DbAdapterRoute {
+  Future<bool> saveRoute(Routes route);
+  Future<Set<Routes>> getRouteList();
+  Future<bool> removeFav(String routeName);
+  Future<bool> addFav(String routeName);
+}

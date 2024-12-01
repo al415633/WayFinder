@@ -357,7 +357,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
       title: Text(route.name),
       subtitle:
-          Text('${route.getStart().getAlias()} → ${route.getEnd().getAlias()}'),
+          Text('${route.getStart.getAlias()} → ${route.getEnd.getAlias()}'),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
