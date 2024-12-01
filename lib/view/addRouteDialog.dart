@@ -1,6 +1,7 @@
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
@@ -111,7 +112,7 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                 child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (routeNameInput.isEmpty ||
                       startLocationInput == null ||
                       endLocationInput == null) {
@@ -120,12 +121,10 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                     });
                   } else {
                     // Crear la ruta
-                    Routes newRoute = Routes(
+                    Routes newRoute = await RouteController.getInstance()!.createRoute(
                       routeNameInput,
                       startLocationInput!,
                       endLocationInput!,
-                      0.0, // Distance will be calculated later
-                      [], // Points will be fetched later
                       transportModeInput,
                       routeModeInput,
                     );

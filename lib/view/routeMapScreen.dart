@@ -1,13 +1,10 @@
-import 'dart:convert';
-import 'package:WayFinder/APIs/apiConection.dart';
-import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/map_screen.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
 
 class RouteMapScreen extends StatefulWidget {
   final Routes route;
@@ -19,6 +16,7 @@ class RouteMapScreen extends StatefulWidget {
 }
 
 class _RouteMapScreenState extends State<RouteMapScreen> {
+  late Routes route;
   late LatLng initialPoint;
   late LatLng destination;
   late List<LatLng> points;
@@ -32,91 +30,58 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   @override
   void initState() {
     super.initState();
-    transportMode = widget.route.getTransportMode();
-    Coordinate start = widget.route.getStart().getCoordinate();
-    Coordinate end = widget.route.getEnd().getCoordinate();
-    initialPoint = LatLng(start.getLat(), start.getLong());
-    destination = LatLng(end.getLat(), end.getLong());
+    route = widget.route;
+    transportMode = route.getTransportMode;
+    initialPoint = LatLng(route.getStart.getCoordinate().getLat(),
+        route.getStart.getCoordinate().getLong());
+    destination = LatLng(route.getEnd.getCoordinate().getLat(),
+        route.getEnd.getCoordinate().getLong());
     points = [];
-
-    getCoordinates();
+    fetchCoordinates();
   }
 
-  void getCoordinates() async {
-    var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
-    var fin = '${destination.longitude}, ${destination.latitude}';
-    http.Response? response;
-    if (transportMode == TransportMode.coche) {
-      response = await http.get(getCarRouteUrl(ini, fin));
-    } else if (transportMode == TransportMode.aPie) {
-      response = await http.get(getWalkRouteUrl(ini, fin));
-    } else if (transportMode == TransportMode.bicicleta) {
-      response = await http.get(getBikeRouteUrl(ini, fin));
-    }
+  void fetchCoordinates() async{
+    points = await RouteController.getInstance()!.getPoints(initialPoint, destination, transportMode);
+    widget.route.setPoints = points;
     setState(() {
-      if (response?.statusCode == 200) {
-        var data = jsonDecode(response!.body);
-        var listOfPoints = data['features'][0]['geometry']['coordinates'];
-        points = listOfPoints
-            .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
-            .toList();
-        calculateDistanceAndTime();
-      }
+      calculateDistanceAndTime();
     });
   }
 
   void calculateDistanceAndTime() {
-    distance = 0.0;
-    for (int i = 0; i < points.length - 1; i++) {
-      distance += Distance().as(LengthUnit.Kilometer, points[i], points[i + 1]);
-    }
-    // Estimar tiempo por velocidad media
-    double speed;
-    if (transportMode == TransportMode.coche) {
-      speed = 60.0;
-    } else if (transportMode == TransportMode.aPie) {
-      speed = 5.0;
-    } else if (transportMode == TransportMode.bicicleta) {
-      speed = 15.0;
-    } else {
-      speed = 0.0;
-    }
-    estimatedTime = distance / speed; // Time in hours
+    distance = RouteController.getInstance()!.calculateDistance(points);
+    widget.route.setDistance = distance;
+    estimatedTime = RouteController.getInstance()!.calculateTime(transportMode, distance);
+    widget.route.setTime = estimatedTime;
   }
+
 
   void _onTransportChanged(TransportMode newTransportMode) {
     setState(() {
       transportMode = newTransportMode;
-      widget.route.setTransportMode(newTransportMode);
-      getCoordinates();
+      widget.route.setTransportMode = transportMode;
+      fetchCoordinates();
     });
   }
 
   void _onModeChanged(String mode) {
     setState(() {
+      showInterestPlaces = false;
+      showRoutes = false;
+      showVehicles = false;
       if (mode == 'routes') {
-        showRoutes = true; // Muestra el panel lateral de rutas
-        showInterestPlaces = false; // Oculta el panel lateral de lugares
-      } else {
-        if (mode == 'locations') {
-          showInterestPlaces = true; // Muestra el panel lateral
-          showRoutes = false; // Muestra el panel lateral de rutas
-        } else if (mode == 'vehicles') {
-          showRoutes = false;
-          showInterestPlaces = false;
-          showVehicles = true;
-        } else {
-          showInterestPlaces = false; // Oculta todos los paneles
-          showRoutes = false;
-          showVehicles = false;
-        }
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MapScreen(),
-          ),
-        );
+        showRoutes = true;
+      } else if (mode == 'locations') {
+        showInterestPlaces = true;
+      } else if (mode == 'vehicles') {
+        showVehicles = true;
       }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapScreen(),
+        ),
+      );
     });
   }
 
@@ -135,14 +100,13 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
               // Botones de la barra superior
               Row(
                 children: [
-                  _buildTopButton(
-                      'Lugares de interés', transportMode == 'locations', () {
+                  _buildTopButton('Lugares de interés', () {
                     _onModeChanged('locations');
                   }),
-                  _buildTopButton('Rutas', transportMode == 'routes', () {
+                  _buildTopButton('Rutas', () {
                     _onModeChanged('routes');
                   }),
-                  _buildTopButton('Vehículos', transportMode == 'vehicles', () {
+                  _buildTopButton('Vehículos', () {
                     _onModeChanged('vehicles');
                   }),
                 ],
@@ -175,9 +139,9 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Text('Distancia: ${distance.toStringAsFixed(2)} km'),
+                    Text('Distancia: ${distance < 1 ? (distance * 1000).toStringAsFixed(0) + ' m' : distance.toStringAsFixed(2) + ' km'}'),
                     Text(
-                        'Tiempo estimado: ${estimatedTime.toStringAsFixed(2)} horas'),
+                      'Tiempo estimado: ${estimatedTime < 1 ? (estimatedTime * 60).toStringAsFixed(0) + ' minutos' : estimatedTime.toStringAsFixed(2) + ' horas'}'),
                   ],
                 ),
               ),
@@ -246,7 +210,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: points,
+                      points: points
+                          .map((point) =>
+                              LatLng(point.latitude, point.longitude))
+                          .toList(),
                       color: Colors.blue,
                       strokeWidth: 4.0,
                     ),
@@ -262,45 +229,17 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
 
   // Botón superior personalizado
   Widget _buildTopButton(
-      String label, bool isSelected, VoidCallback onPressed) {
+      String label, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          backgroundColor: isSelected
-              ? const Color.fromARGB(71, 203, 220, 228)
-              : Color.fromARGB(0, 153, 210, 229),
           foregroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Text(label),
-      ),
-    );
-  }
-
-  // Widget para cada lugar de interés
-  Widget _buildInterestPlaceItem(String placeName) {
-    return ListTile(
-      leading: const Icon(Icons.star, color: Colors.yellow),
-      title: Text(placeName),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              print('Eliminar $placeName');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              print('Editar $placeName');
-            },
-          ),
-        ],
       ),
     );
   }
