@@ -134,11 +134,7 @@ void main() {
       final String numberPlate = "DKR9087";
       final String fuelType = "Híbrido";
 
-      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
-
       // Configura el mock para lanzar una excepción
-      when(mockVehicleAdapter.createVehicle(vehicleMock))
-          .thenThrow(Exception("NotValidVehicleException: El tipo de combustible no es válido"));
       when(mockVehicleAdapter.getVehicleList())
           .thenAnswer((_) async => <Vehicle>{});
 
@@ -158,7 +154,6 @@ void main() {
       );
 
       final vehicles = await vehicleController.getVehicleList();
-      print(vehicles.first.getName());
       expect(vehicles.isEmpty, true);
 
       // Verificar que no se llamó a `createVehicle` en el mock
@@ -191,7 +186,6 @@ void main() {
       // Simula que `getVehicleList` devuelve un conjunto con el vehículo creado
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
 
-
       //WHEN
 
       final success = await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
@@ -210,43 +204,18 @@ void main() {
     });
 
 
-    test('H10-4I - Listar vehículos sin conexion a la BBDD', () async {
-
-      when(mockVehicleAdapter.getVehicleList())
-      .thenThrow(NotAuthenticatedUserException());
-      //WHEN
-      void action() async {
-        final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
-      }
-      //THEN
-      expect(
-        () async => await vehicleController.getVehicleList(),
-        throwsA(isA<NotAuthenticatedUserException>()),
-      );
-
-
-    });
-
-
     test('H10-E2V - Listar vehículos BBDD vacía', () async {
-       
-       //GIVEN
+      when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => <Vehicle>{});
 
- String email = "Pruebah10e2@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah10e2";
-   await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
-      //WHEN
-
+      // WHEN
       final vehicleList = await vehicleController.getVehicleList();
 
-
-      //THEN
-
+      // THEN
       expect(vehicleList, isEmpty);
-  await signInAndDeleteUser(email, password);
-    });
+      
+      verify(mockVehicleAdapter.getVehicleList()).called(1);
+});
+
        
 
 

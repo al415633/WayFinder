@@ -12,17 +12,22 @@ class VehicleController {
     late Future<Set<Vehicle>> vehicleList;
     final DbAdapterVehicle _dbAdapter;
 
-    VehicleController._internal(this._dbAdapter) {
+    VehicleController(this._dbAdapter) {
       vehicleList = Future.value(<Vehicle>{}); // Inicializa con un conjunto vacío
     }
 
     static VehicleController? _instance;
 
 
-  factory VehicleController(DbAdapterVehicle dbAdapter) {
-    _instance ??= VehicleController._internal(dbAdapter);
+  static VehicleController getInstance(DbAdapterVehicle dbAdapter) {
+    _instance ??= VehicleController(dbAdapter);
     return _instance!;
   }
+
+  //factory VehicleController(DbAdapterVehicle dbAdapter) {
+  //  _instance ??= VehicleController._internal(dbAdapter);
+  //  return _instance!;
+  //}
 
 
 
@@ -54,11 +59,8 @@ class VehicleController {
 
       bool success =  await _dbAdapter.createVehicle(vehicle);
       
-      if (success){
-        final currentSet = await vehicleList;
-        currentSet.add(vehicle);
-
-        vehicleList = Future.value(currentSet);  // Actualizar el future con el nuevo set
+      if (!success) {
+        throw Exception("Failed to create vehicle");
       }
       
       return success;
