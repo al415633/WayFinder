@@ -149,12 +149,12 @@ void main() {
      String name1 = "ruta 1";
 
 
-     Routes firstRouteh13e1 = routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
+     Routes firstRouteh13e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
   
 
       //THEN
-     expect(firstRouteh13e1.getStart(), equals(ini)); // Verifica el Location inicial
-     expect(firstRouteh13e1.getEnd(), equals(fin)); // Verifica el Location final
+     expect(firstRouteh13e1.getStart, equals(ini)); // Verifica el Location inicial
+     expect(firstRouteh13e1.getEnd, equals(fin)); // Verifica el Location final
 
      await signInAndDeleteUser(emailh13e1, passwordh13e1);
      await _deleteRoute(name1);

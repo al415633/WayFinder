@@ -10,7 +10,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'UserAppController_Itest.mocks.dart';
+import 'R1_Itest.mocks.dart';
 
 
 @GenerateMocks([FirebaseAuth, DbAdapterUserApp])
