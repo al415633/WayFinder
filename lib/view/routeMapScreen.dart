@@ -139,9 +139,9 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Text('Distancia: ${distance.toStringAsFixed(2)} km'),
+                    Text('Distancia: ${distance < 1 ? (distance * 1000).toStringAsFixed(0) + ' m' : distance.toStringAsFixed(2) + ' km'}'),
                     Text(
-                        'Tiempo estimado: ${estimatedTime.toStringAsFixed(2)} horas'),
+                      'Tiempo estimado: ${estimatedTime < 1 ? (estimatedTime * 60).toStringAsFixed(0) + ' minutos' : estimatedTime.toStringAsFixed(2) + ' horas'}'),
                   ],
                 ),
               ),
