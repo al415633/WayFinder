@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
@@ -92,7 +93,7 @@ class RouteController {
   }
 
   Future<Routes> createRoute(String name, Location start, Location end,
-      TransportMode transportMode, String routeMode) async {
+      TransportMode transportMode, RouteMode routeMode) async {
     LatLng initialPoint =
         LatLng(start.getCoordinate().getLat(), start.getCoordinate().getLong());
     LatLng destination =

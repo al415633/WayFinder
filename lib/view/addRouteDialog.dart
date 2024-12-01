@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
@@ -11,7 +12,7 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
   Location? startLocationInput;
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
-  String routeModeInput = 'Rápida'; // Default value
+  RouteMode routeModeInput = RouteMode.rapida; // Default value
 
   // Mensajes de error
   String errorMessage = '';
@@ -80,12 +81,12 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                   });
                   },
                 ),
-                DropdownButton<String>(
+                DropdownButton<RouteMode>(
                   value: routeModeInput,
-                  items: ['Rápida', 'Corta'].map((mode) {
-                    return DropdownMenuItem<String>(
+                  items: RouteMode.values.map((mode) {
+                    return DropdownMenuItem<RouteMode>(
                       value: mode,
-                      child: Text(mode),
+                      child: Text(mode.name),
                     );
                   }).toList(),
                   onChanged: (value) {

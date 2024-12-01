@@ -3,6 +3,7 @@ import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/Vehicle.dart';
+import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/addRouteDialog.dart';
 import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
@@ -25,7 +26,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   List listOfPoints = [];
   List<LatLng> points = [];
-  String transportMode = 'car'; // por defecto
+  TransportMode transportMode = TransportMode.coche; // por defecto
   LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
   bool showInterestPlaces = false;
   bool showRoutes = false;

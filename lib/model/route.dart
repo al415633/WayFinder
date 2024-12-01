@@ -1,6 +1,7 @@
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -14,11 +15,11 @@ class Routes implements FavItem {
   List<LatLng> points = [];
   bool fav;
   late TransportMode transportMode;
-  late String routeMode;
+  late RouteMode routeMode;
 
   // Constructor
   Routes(String name, Location start, Location end, List<LatLng> points,
-      double distance, double time, TransportMode transportMode, String routeMode,
+      double distance, double time, TransportMode transportMode, RouteMode routeMode,
       {this.fav = false}) {
     this.name = name;
     this.start = start;
@@ -75,7 +76,7 @@ class Routes implements FavItem {
   double get getTime => time;
   List<LatLng> get getPoints => points;
   TransportMode get getTransportMode => transportMode;
-  String get getRouteMode => routeMode;
+  RouteMode get getRouteMode => routeMode;
 
   set setName(String name) => this.name = name;
   set setStart(Location start) => this.start = start;
@@ -84,7 +85,7 @@ class Routes implements FavItem {
   set setTime(double time) => this.time = time;
   set setPoints(List<LatLng> points) => this.points = points;
   set setTransportMode(TransportMode transportMode) => this.transportMode = transportMode;
-  set setRouteMode(String routeMode) => this.routeMode = routeMode;
+  set setRouteMode(RouteMode routeMode) => this.routeMode = routeMode;
 
   Map<String, dynamic> toMap() {
     return {
