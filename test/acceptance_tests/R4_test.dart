@@ -5,6 +5,7 @@ import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,9 @@ void main() {
 
     late DbAdapterRoute adapterRoute;
     late RouteController routeController;
+
+    late DbAdapterLocation adapterLocation;
+    late LocationController locationController;
 
     late DbAdapterUserApp userAppAdapter;
     late UserAppController userAppController;
@@ -55,6 +59,9 @@ void main() {
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
+
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
 
        // Crear usuario de prueba
       const email = "pruebaR4@gmail.com";
@@ -143,8 +150,8 @@ void main() {
      final double lat2 = 39.8890;
      final double long2 = -0.08499;
      final String apodo2 = "burriana";
-     Location ini = Location(lat1, long1, apodo1);
-     Location fin = Location(lat2, long2, apodo2);
+     Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+     Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
 
      String name1 = "ruta 1";
 

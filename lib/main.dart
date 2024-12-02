@@ -185,7 +185,7 @@ class _InicioState extends State<Inicio> {
         MaterialPageRoute(builder: (context) => CreateUserView()),
       );
     },
-    child: const Text("No tienes cuenta?, ¡Clica aquí para hacerte una!"),
+    child: const Text("¿No tienes cuenta?, ¡Clica aquí para hacerte una!"),
   );
 }
 

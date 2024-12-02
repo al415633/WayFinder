@@ -22,6 +22,7 @@ void main() {
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterLocation = MockDbAdapterLocation();
+      final locationController = LocationController.getInstance(mockDbAdapterLocation);
 
       final double lath5e1 = 39.98567;
       final double longh5e1 = -0.04935;
@@ -29,13 +30,10 @@ void main() {
 
       // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-        (_) async => {
-          Location(lath5e1,longh5e1, aliash5e1),
+        (_) async => { await locationController.createLocationFromCoord(lath5e1, longh5e1, aliash5e1),
+
         },
       );
-
-      // Crear la instancia del controlador
-      final locationController = LocationController(mockDbAdapterLocation);
 
       // GIVEN
       String emailh5e1 = "Pruebah5e1@gmail.com";
@@ -46,7 +44,7 @@ void main() {
       when(userAppController.repository.createUser(emailh5e1, passwordh5e1))
           .thenAnswer((_) async => UserApp("id", nameh5e1, emailh5e1));
 
-      UserApp? newUserApp = await userAppController.createUser(emailh5e1, passwordh5e1, nameh5e1);
+      await userAppController.createUser(emailh5e1, passwordh5e1, nameh5e1);
 
       // WHEN
 
@@ -66,8 +64,8 @@ void main() {
       final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat(), equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong(), equals(longh5e1)); // Verifica la longitud
+      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
+      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
       expect(firstLocationh5e1.getToponym(), equals("")); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
     });
@@ -80,20 +78,16 @@ void main() {
     final mockDbAdapterUserApp = MockDbAdapterUserApp();
     final userAppController = UserAppController(mockDbAdapterUserApp);
     final mockDbAdapterLocation = MockDbAdapterLocation();
-
+    final locationController = LocationController.getInstance(mockDbAdapterLocation);
     final double lath5e3 = 39.98567;
     final double longh5e3 = -0.04935;
     final String aliash5e3 = "prueba 1";
 
     // Configurar el stub de `getLocationList`
     when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-      (_) async => {
-        Location(lath5e3, longh5e3, aliash5e3),
+      (_) async => { await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3),
       },
     );
-
-    // Crear la instancia del controlador
-    final locationController = LocationController(mockDbAdapterLocation);
 
     // GIVEN
     String emailh5e3 = "Pruebah5e3@gmail.com";
@@ -104,7 +98,7 @@ void main() {
     when(userAppController.repository.createUser(emailh5e3, passwordh5e3))
         .thenAnswer((_) async => UserApp("id", nameh5e3, emailh5e3));
 
-    UserApp? newUserApp = await userAppController.createUser(emailh5e3, passwordh5e3, nameh5e3);
+    await userAppController.createUser(emailh5e3, passwordh5e3, nameh5e3);
 
     // Simular la creación de un lugar que arroja una excepción
     when(mockDbAdapterLocation.createLocationFromCoord(any)).thenThrow(Exception("Coordenadas inválidas"));
@@ -123,6 +117,7 @@ void main() {
     final mockDbAdapterUserApp = MockDbAdapterUserApp();
     final userAppController = UserAppController(mockDbAdapterUserApp);
     final mockDbAdapterLocation = MockDbAdapterLocation();
+    final locationController = LocationController.getInstance(mockDbAdapterLocation);
 
     // Simular los datos de los lugares
     final double lat1 = 39.98567;
@@ -135,14 +130,10 @@ void main() {
 
     // Configurar el stub de `getLocationList`
     when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-      (_) async => {
-        Location(lat1, long1, alias1h7e1),
-        Location(lat2, long2, alias2),
+      (_) async => { await locationController.createLocationFromCoord(lat1, long1, alias1h7e1),
+      await locationController.createLocationFromCoord(lat2, long2, alias2)
       },
     );
-
-    // Crear la instancia del controlador
-    final locationController = LocationController(mockDbAdapterLocation);
 
     // Simular la creación del usuario
     String emailh7e1 = "Pruebah7e1@gmail.com";
@@ -152,7 +143,7 @@ void main() {
     when(userAppController.repository.createUser(emailh7e1, passwordh7e1))
         .thenAnswer((_) async => UserApp("id", nameh7e1, emailh7e1));
 
-    UserApp? newUserApp = await userAppController.createUser(emailh7e1, passwordh7e1, nameh7e1);
+    await userAppController.createUser(emailh7e1, passwordh7e1, nameh7e1);
 
     // Simular la creación de lugares en el adaptador
     when(mockDbAdapterLocation.createLocationFromCoord(any)).thenAnswer((_) async => true);
@@ -168,14 +159,14 @@ void main() {
 
     // Verificar que los valores del primer lugar son los esperados
     final firstLocation = locationList[0];
-    expect(firstLocation.getCoordinate().getLat(), equals(lat1)); // Verifica la latitud
-    expect(firstLocation.getCoordinate().getLong(), equals(long1)); // Verifica la longitud
+    expect(firstLocation.getCoordinate().getLat, equals(lat1)); // Verifica la latitud
+    expect(firstLocation.getCoordinate().getLong, equals(long1)); // Verifica la longitud
     expect(firstLocation.getAlias(), equals(alias1h7e1)); // Verifica el alias
 
     // Verificar que los valores del segundo lugar son los esperados
     final secondLocation = locationList[1];
-    expect(secondLocation.getCoordinate().getLat(), equals(lat2)); // Verifica la latitud
-    expect(secondLocation.getCoordinate().getLong(), equals(long2)); // Verifica la longitud
+    expect(secondLocation.getCoordinate().getLat, equals(lat2)); // Verifica la latitud
+    expect(secondLocation.getCoordinate().getLong, equals(long2)); // Verifica la longitud
     expect(secondLocation.getAlias(), equals(alias2)); // Verifica el alias
   });
 
@@ -184,14 +175,13 @@ void main() {
     // Configurar los mocks y el controlador dentro del test
     final mockAuth = MockFirebaseAuth();
     final mockDbAdapterLocation = MockDbAdapterLocation();
+    //final locationController = LocationController.getInstance(mockDbAdapterLocation);
 
     // Simular que no hay usuario autenticado
     when(mockDbAdapterLocation.getLocationList()).thenThrow(
       Exception("Usuario no autenticado"),
     );
 
-    // Crear la instancia del controlador
-    //final locationController = LocationController(mockDbAdapterLocation);
 
     // WHEN
     Future<void> action() async {

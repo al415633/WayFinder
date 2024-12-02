@@ -13,11 +13,11 @@ class Coordinate {
     coordinate = LatLng(lat, long);
   }
 
-  double getLat() {
+  double get getLat {
     return lat;
   }
 
-  double getLong() {
+  double get getLong {
     return long;
   }
 

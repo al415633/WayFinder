@@ -27,11 +27,11 @@ getWalkRouteUrl(String startPoint, String endPoint){
 
 getCoordinatesLocation(String topo){
   return Uri.parse('$urlToponym?api_key=$apiKey&text=$topo&size=1');
-}
+} 
 
 
 getToponymLocation(Coordinate coord) {
-  return Uri.parse('$urlCoordinate?api_key=$apiKey&point.lat=${coord.getLat}&point.lon=${coord.getLong}');
+  return Uri.parse('$urlCoordinate?api_key=$apiKey&point.lon=${coord.getLong.toString()}&point.lat=${coord.getLat.toString()}');
 }
 
 
