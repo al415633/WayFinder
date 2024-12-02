@@ -5,15 +5,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
-import 'package:WayFinder/model/Vehicle.dart';
 import 'package:firebase_auth/firebase_auth.dart' as _i4;
 import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart'
     as _i3;
 import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
-import 'package:WayFinder/model/UserApp.dart' as _i9;
-import 'package:WayFinder/viewModel/UserAppController.dart' as _i8;
+import 'package:WayFinder/model/UserApp.dart' as _i10;
+import 'package:WayFinder/model/vehicle.dart' as _i8;
+import 'package:WayFinder/viewModel/UserAppController.dart' as _i9;
 import 'package:WayFinder/viewModel/VehicleController.dart' as _i7;
 
 // ignore_for_file: type=lint
@@ -609,7 +609,7 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i7.DbAdapterVehicle {
   }
 
   @override
-  _i5.Future<bool> createVehicle(dynamic vehicle) => (super.noSuchMethod(
+  _i5.Future<bool> createVehicle(_i8.Vehicle? vehicle) => (super.noSuchMethod(
         Invocation.method(
           #createVehicle,
           [vehicle],
@@ -618,13 +618,13 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i7.DbAdapterVehicle {
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<Set<Vehicle>> getVehicleList() => (super.noSuchMethod(
+  _i5.Future<Set<_i8.Vehicle>> getVehicleList() => (super.noSuchMethod(
         Invocation.method(
           #getVehicleList,
           [],
         ),
-        returnValue: _i5.Future<Set<Vehicle>>.value(<Vehicle>{}),
-      ) as _i5.Future<Set<Vehicle>>);
+        returnValue: _i5.Future<Set<_i8.Vehicle>>.value(<_i8.Vehicle>{}),
+      ) as _i5.Future<Set<_i8.Vehicle>>);
 
   @override
   _i5.Future<bool> addFav(
@@ -662,13 +662,13 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i7.DbAdapterVehicle {
 /// A class which mocks [DbAdapterUserApp].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDbAdapterUserApp extends _i1.Mock implements _i8.DbAdapterUserApp {
+class MockDbAdapterUserApp extends _i1.Mock implements _i9.DbAdapterUserApp {
   MockDbAdapterUserApp() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i9.UserApp?> createUser(
+  _i5.Future<_i10.UserApp?> createUser(
     String? email,
     String? password,
   ) =>
@@ -680,11 +680,11 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i8.DbAdapterUserApp {
             password,
           ],
         ),
-        returnValue: _i5.Future<_i9.UserApp?>.value(),
-      ) as _i5.Future<_i9.UserApp?>);
+        returnValue: _i5.Future<_i10.UserApp?>.value(),
+      ) as _i5.Future<_i10.UserApp?>);
 
   @override
-  _i5.Future<_i9.UserApp?> logInCredenciales(
+  _i5.Future<_i10.UserApp?> logInCredenciales(
     String? email,
     String? password,
   ) =>
@@ -696,8 +696,8 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i8.DbAdapterUserApp {
             password,
           ],
         ),
-        returnValue: _i5.Future<_i9.UserApp?>.value(),
-      ) as _i5.Future<_i9.UserApp?>);
+        returnValue: _i5.Future<_i10.UserApp?>.value(),
+      ) as _i5.Future<_i10.UserApp?>);
 
   @override
   _i5.Future<bool> logOut() => (super.noSuchMethod(

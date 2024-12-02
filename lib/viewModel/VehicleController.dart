@@ -1,6 +1,6 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
-import 'package:WayFinder/model/Vehicle.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
