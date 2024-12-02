@@ -21,6 +21,10 @@ void main() {
     late DbAdapterUserApp adapterUserApp;
     late UserAppController userAppController;
 
+    late FirebaseAuth auth;
+    late UserApp? userApp;
+
+
    setUpAll(() async {
       // Inicializar el entorno de pruebas
 
@@ -44,131 +48,139 @@ void main() {
         ),
       );
 
-       //GIVEN
 
-      //Loguear usuario
-      String email = "miguel@gmail.com";
-      String password = "Maaaa,.8";
-      String nameU = "Msa";
-
-      Future<UserApp?> user = userAppController.createUser(email, password, nameU);
-      user = userAppController.logInCredenciales(email, password);
-    });
-
-    setUp(() async {
       adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
-      locationController = LocationController(adapterLocation);
+      locationController = LocationController.getInstance(adapterLocation);
 
       adapterUserApp = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(adapterUserApp);
-      
+
+      // Crear usuario de prueba
+      const email = "pruebaR5@gmail.com";
+      const password = "Qaaaa,.8";
+      const nameU = "Qsa";
+
+      try {
+        await userAppController.createUser(email, password, nameU);
+      } catch (e) {
+        if (e is FirebaseAuthException && e.code != 'email-already-in-use') {
+          rethrow;
+        }
+      }
+
+      // Iniciar sesión
+      await userAppController.logInCredenciales(email, password);
 
     });
 
-    tearDownAll(() async {
+     tearDownAll(() async {
+        // Borrar todos los documentos de testCollection
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get();
+
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete();
+        }
+
+        // Eliminar el usuario
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await user.delete();
+        }
+      });   
 
 
-        FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-          try {
-            if (user != null) {
-              // Si ya hay un usurio borro documnetos testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
+      Future<void> deleteLocation(String alias) async {
+        var collectionRef = FirebaseFirestore.instance.collection('location');
+        var querySnapshot = await collectionRef.where('alias', isEqualTo: alias).get();
 
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); 
-              }
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete();
+        }
 
-              // Eliminar el usuario
-              await user.delete();
-              print('Usuario y documentos eliminados con éxito.');
+        // Actualizar la lista de ubicaciones si es necesario, similar a como se hacía en el ejemplo del vehículo
+        locationController.locationList = Future.value(<Location>{});
+    }
 
-            } else {
-              // Si el usuario no está autenticado, intentar iniciar sesión
-              UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                email: "miguel@gmail.com",
-                password: "Maaaa,.8", 
-              );
 
-              // Eliminar todos los documentos de la colección testCollection
-              var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-              var querySnapshot = await collectionRef.get(); 
 
-              for (var doc in querySnapshot.docs) {
-                await doc.reference.delete(); // Eliminar cada documento
-              }
+      // Helper para limpiar la colección y eliminar usuario
+      Future<void> cleanUp() async {
+        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var querySnapshot = await collectionRef.get();
+        for (var doc in querySnapshot.docs) {
+          await doc.reference.delete(); 
+        }
+      }
 
-              // Eliminar el usuario
-              await userCredential.user!.delete();
-              print('Usuario y documentos eliminados con éxito.');
-            }
-          } catch (e) {
-            print('Error durante la autenticación o eliminación: $e');
-          }
-        });
-    });
 
+      Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await cleanUp();
+        await userCredential.user!.delete();
+        return null;
+      }
+
+  
     test('H20-E1V - Marcar como favorito un lugar', () async {
+      // GIVEN 
+      String emailh20e1 = "Pruebah20e1@gmail.com";
+      String passwordh20e1 = "Aaaaa,.8";
+      String nameh20e1 = "Pruebah20e1";
+      await userAppController.createUser(emailh20e1, passwordh20e1, nameh20e1);
+      userApp = await userAppController.logInCredenciales(emailh20e1, passwordh20e1);
 
-      //GIVEN 
-      //Hecho en el SetUpAll
-
-
-      //WHEN
-
+      // WHEN
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String apodo1 = "castellon";
 
-
       await locationController.createLocationFromCoord(lat1, long1, apodo1);
-      locationController.addFav("Castelló de la Plana", apodo1);
 
-
-      //THEN
-
+      // Verificar que la ubicación se ha añadido correctamente
+      await locationController.addFav("", apodo1);
+      
       final Set<Location> locations = await locationController.getLocationList();
+      expect(locations.isNotEmpty, true);  // Asegúrate de que no esté vacío
 
-      // Convertir el set a una lista para acceder al primer elemento
+
+      // THEN
       final locationList = locations.toList();
-      
-      // Acceder al primer objeto en la lista
-      final primerLugar = locationList[0];
+      print(locationList.toString());
+      print(locationList[0].toString());
+      final Location primerLugar = locationList[0];
 
-      // Verificar que los valores del primer lugar son los esperados
-      expect(primerLugar.getFav(), equals(true)); // Verifica el Lugar inicial
-     
-      
+      print(primerLugar.getFav());
 
+      expect(primerLugar.getFav(), equals(true)); // Verifica que el lugar se haya marcado como favorito
 
+      await signInAndDeleteUser(emailh20e1, passwordh20e1);
+      await deleteLocation(apodo1);
     });
+
 
 
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
-      //GIVEN 
-      //Hecho en el SetUpAll
+        // GIVEN 
+      String emailh20e2 = "Pruebah20e2@gmail.com";
+      String passwordh20e2 = "Aaaaa,.8";
+      String nameh20e2 = "Pruebah20e2";
+      await userAppController.createUser(emailh20e2, passwordh20e2, nameh20e2);
+      userApp = await userAppController.logInCredenciales(emailh20e2, passwordh20e2);
 
+ 
 
+      // WHEN Y THEN
+      expect(
+    () async =>  await locationController.addFav("Castellónaef", "Hola"),
+    throwsA(isA<Exception>()),
+  );
 
-
-      //WHEN
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-
-      await locationController.createLocationFromCoord(lat1, long1, apodo1);
-
-      //THEN
-     
-     expect(() {
-      locationController.addFav("Castelló de la Plana", apodo1);
-    }, throwsException);
-
-
-     
+    
 
     });
 

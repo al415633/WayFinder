@@ -31,4 +31,23 @@ class Coordinate {
 
   @override
   int get hashCode => lat.hashCode ^ long.hashCode;
+
+
+    Map<String, dynamic> toMap() {
+    return {
+      //'coord': coordinate,
+      'lat':lat,
+      'long' : long,
+    };
+  }
+
+  Coordinate.fromMap(Map<String, dynamic> mapa) {
+  
+  lat = mapa['lat'] ;
+  long = mapa['long'] ;
+
+  coordinate = LatLng(lat, long);
+ 
+}
+
 }

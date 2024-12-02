@@ -1,23 +1,27 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'R1_Itest.mocks.dart';
+
+
+@GenerateMocks([FirebaseAuth, DbAdapterUserApp])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
 
-  late FirebaseAuth auth;
+  late MockFirebaseAuth mockAuth;
+  late MockDbAdapterUserApp mockDbAdapterUserApp;
   late UserAppController userAppController;
   late UserApp? userApp;
 
-  // Helper para limpiar la colección y eliminar usuario
   Future<void> cleanUp() async {
     var collectionRef = FirebaseFirestore.instance.collection('testCollection');
     var querySnapshot = await collectionRef.get();
@@ -37,29 +41,22 @@ void main() {
     return null;
   }
 
-  setUpAll(() async {
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-        authDomain: "wayfinder-df8eb.firebaseapp.com",
-        projectId: "wayfinder-df8eb",
-        storageBucket: "wayfinder-df8eb.appspot.com",
-        messagingSenderId: "571791500413",
-        appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-        measurementId: "G-TZLW8P5J8V",
-      ),
-    );
-    final adapter = FirestoreAdapterUserApp(collectionName: "testCollection");
-    userAppController = UserAppController(adapter);
+  setUp(() async {
+    mockAuth = MockFirebaseAuth();
+    mockDbAdapterUserApp = MockDbAdapterUserApp();
+    userAppController = UserAppController(mockDbAdapterUserApp);
   });
 
   group('UserAppController Test', () {
+
     test('H1-E1V - Guardar Datos Usuario', () async {
       // GIVEN
       String email = "pruebah1E1@gmail.com";
       String password = "Abbbbaa,.8";
       String name = "PruebaH1E1";
 
+      when(userAppController.repository.createUser(email, password))
+      .thenAnswer((_) async => UserApp("id", name, email));
       // WHEN
       UserApp? newUserApp = await userAppController.createUser(email, password, name);
 
@@ -67,14 +64,17 @@ void main() {
       expect(newUserApp, isNotNull);
       expect(newUserApp?.email, equals(email));
 
-      await signInAndDeleteUser(email, password);
+      //await signInAndDeleteUser(email, password);
     });
+
 
     test('H1-E2I - Password no cumple reglas de negocio', () async {
       // GIVEN
       String email = "Pruebah1e2@gmail.com";
       String password = "1";
       String name = "Pruebah1e2";
+
+      when(mockDbAdapterUserApp.createUser(email, password)).thenThrow(IncorrectPasswordException());
 
       // WHEN
       Future<void> action() async {
@@ -83,7 +83,7 @@ void main() {
 
       // THEN
       expect(action(), throwsA(isA<IncorrectPasswordException>()));
-
+      verifyNever(mockDbAdapterUserApp.createUser(email, password));
 
     });
 
@@ -92,7 +92,9 @@ void main() {
       String email = "Pruebah2e2@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah2e2";
-      await userAppController.createUser(email, password, name);
+
+      when(userAppController.repository.logInCredenciales(email, password))
+      .thenAnswer((_) async => UserApp("id", name, email));
 
 
       // WHEN
@@ -101,10 +103,8 @@ void main() {
       // THEN
       expect(userApp, isNotNull);
       expect(userApp?.email, equals(email));
+      verify(userAppController.repository.logInCredenciales(email, password)).called(1);
       
-    
-      await signInAndDeleteUser(email, password);
-
 
     });
 
@@ -114,8 +114,12 @@ void main() {
       String email = "Pruebah2e3@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah2e3";
-      await userAppController.createUser(email, password, name);
+      String wrongPassword = "aaaaaaaaaa";
 
+      when(userAppController.repository.logInCredenciales(email, password))
+      .thenAnswer((_) async => UserApp("id", name, email));
+
+      when(userAppController.repository.logInCredenciales(email, wrongPassword)).thenThrow(IncorrectPasswordException());
       // WHEN
       Future<void> action() async {
         await userAppController.logInCredenciales(email, "aaaaaaaaaa");
@@ -123,9 +127,8 @@ void main() {
 
       // THEN
       expect(action(), throwsA(isA<IncorrectPasswordException>()));
+      verifyNever(userAppController.repository.logInCredenciales(email, password));
       
-      await signInAndDeleteUser(email, password);
-
     });
 
     test('H3-E1V - Cerrar sesion valido', () async {
@@ -136,38 +139,48 @@ void main() {
       String email = "Pruebae3e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah3e1";
-      await userAppController.createUser(email, password, name);
+
+
+      when(userAppController.repository.logOut()).thenAnswer((_) async => true);
+      when(userAppController.repository.logInCredenciales(email, password))
+      .thenAnswer((_) async => UserApp("id", name, email));
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
 
       // WHEN
-      UserApp? closedSession = await userAppController.logOut(userApp!);
+      bool closedSession = await userAppController.logOut();
 
       // THEN
-      expect(closedSession, isNotNull);
-
-      await signInAndDeleteUser(email, password);
+      expect(userApp, isNotNull);
+      expect(closedSession, isTrue);
+      verify(userAppController.repository.logInCredenciales(email, password)).called(1);
+      verify(userAppController.repository.logOut()).called(1);
 
     });
 
-    test('H3-E4I - Cerrar sesion sin conexion a la BBDD', () async {
+    test('H3-E4I - Cerrar sesion sin estar conectado', () async {
       // GIVEN
  
-      String email = "pruebah3e2@gmail.com";
+      String email = "pruebah3e4@gmail.com";
       String password = "Aaaaacccccc,.8";
       String name = "pruebah3e2";
 
-      await userAppController.createUser(email, password, name);
+      when(userAppController.repository.logOut()).thenThrow(UserNotAuthenticatedException());
+
       //Pero no logeado
 
       // WHEN
        Future<void> action() async {
-          await userAppController.logOut(null); 
+          await userAppController.logOut(); 
         }
 
  
        expect(() async => await action(), throwsA(isA<UserNotAuthenticatedException>()));
+       verify(userAppController.repository.logOut()).called(1);
+       verifyNever(userAppController.repository.logInCredenciales(email, password));
 
 
-      await signInAndDeleteUser(email, password);
 
     });
   });
