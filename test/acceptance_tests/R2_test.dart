@@ -94,7 +94,7 @@ void main() {
 
 
 
-    test('H5-E1V - Crear lugar', () async {
+    test('H5-E1V - Crear lugar por coordenadas', () async {
 
       //GIVEN
 
@@ -166,12 +166,10 @@ void main() {
       expect(
     () async => await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3),
     throwsA(isA<Exception>()),
-  );
+    );
 
     await signInAndDeleteUser(emailh5e3, passwordh5e3);
     await deleteLocation(aliash5e3);
-
-
 
     });
 

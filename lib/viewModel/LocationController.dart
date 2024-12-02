@@ -1,3 +1,4 @@
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -182,6 +183,13 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
   @override
   Future<Set<Location>> getLocationList() async {
+
+    /*
+    if(_currentUser == null){
+        throw UserNotAuthenticatedException();
+    }
+    */
+
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -196,7 +204,6 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return locations;
     } catch (e) {
-      print("llega aqui");
       throw Exception(
           'No se pudo obtener la lista de ubicaciones. Verifica la conexión.');
     }

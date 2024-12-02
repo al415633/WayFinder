@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -26,13 +27,12 @@ void main() {
 
       final double lath5e1 = 39.98567;
       final double longh5e1 = -0.04935;
-      final String aliash5e1 = "prueba 1";    
+      final String aliash5e1 = "prueba 1";  
+      final String topoh5e1 = "";  
 
       // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-        (_) async => { await locationController.createLocationFromCoord(lath5e1, longh5e1, aliash5e1),
-
-        },
+        (_) async => {Location(Coordinate(lath5e1, longh5e1), topoh5e1, aliash5e1)},
       );
 
       // GIVEN
@@ -66,7 +66,7 @@ void main() {
       // Verificar que los valores del primer lugar son los esperados
       expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
       expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
-      expect(firstLocationh5e1.getToponym(), equals("")); // Verifica el topónimo
+      expect(firstLocationh5e1.getToponym(), equals(topoh5e1)); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
     });
  
@@ -82,11 +82,12 @@ void main() {
     final double lath5e3 = 39.98567;
     final double longh5e3 = -0.04935;
     final String aliash5e3 = "prueba 1";
+    final String topoh5e3 = "";  
+
 
     // Configurar el stub de `getLocationList`
     when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-      (_) async => { await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3),
-      },
+      (_) async => {Location(Coordinate(lath5e3, longh5e3), topoh5e3, aliash5e3)},
     );
 
     // GIVEN
