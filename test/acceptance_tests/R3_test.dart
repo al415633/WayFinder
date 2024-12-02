@@ -1,6 +1,5 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';

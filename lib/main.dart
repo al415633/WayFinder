@@ -32,7 +32,7 @@ void main() async {
 
 Future<void> initializeControllers() async {
   final repository = FirestoreAdapterUserApp(collectionName: "production");
-  userAppController = UserAppController(repository);
+  userAppController = UserAppController.getInstance(repository);
 }
 
 class MiApp extends StatelessWidget {

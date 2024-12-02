@@ -13,19 +13,20 @@ class UserAppController {
   final DbAdapterUserApp repository;
 
   // Constructor privado
-  UserAppController._internal(this.repository);
+  UserAppController(this.repository);
 
   // Instancia única
   static UserAppController? _instance;
 
-  factory UserAppController(DbAdapterUserApp repository) {
-    _instance ??= UserAppController._internal(repository);
+  static UserAppController getInstance([DbAdapterUserApp? repository]) {
+    if (repository != null) {
+        _instance ??= UserAppController(repository);
+    }
     return _instance!;
-  }
+}
 
-  static UserAppController? getInstance() {
-    return _instance;
-  }
+  
+
 
   bool isValidEmail(String email) {
     final emailRegex =

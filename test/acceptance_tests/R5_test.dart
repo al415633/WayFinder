@@ -180,8 +180,7 @@ void main() {
     throwsA(isA<Exception>()),
   );
 
-      await signInAndDeleteUser(emailh20e2, passwordh20e2);
-      await _deleteLocation(apodo1);
+    
 
     });
 
