@@ -21,8 +21,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Cargar la configuración desde firebase_config.json
-  final response = await http.get(Uri.parse('/firebase_config.json'));
-  final config = json.decode(response.body);
+  //final response = await http.get(Uri.parse('/firebase_config.json'));
+  //final config = json.decode(response.body);
     
   await firebaseConnection();
   await initializeControllers();
