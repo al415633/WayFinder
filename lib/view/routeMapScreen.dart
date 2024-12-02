@@ -26,6 +26,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   bool showVehicles = false;
   double distance = 0.0;
   double estimatedTime = 0.0;
+  FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
     void fetchCoordinates() async {
-    var result = await RouteController.getInstance()!.getPoints(initialPoint, destination, transportMode);
+    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode);
     setState(() {
       points = result['points'];
       distance = result['distance'];
@@ -51,9 +52,9 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
   void calculateDistanceAndTime() {
-    distance = RouteController.getInstance()!.calculateDistance(points);
+    distance = RouteController.getInstance(routeAdapter).calculateDistance(points);
     widget.route.setDistance = distance;
-    estimatedTime = RouteController.getInstance()!.calculateTime(transportMode, distance);
+    estimatedTime = RouteController.getInstance(routeAdapter).calculateTime(transportMode, distance);
     widget.route.setTime = estimatedTime;
   }
 

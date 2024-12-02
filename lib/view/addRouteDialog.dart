@@ -13,6 +13,8 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
   RouteMode routeModeInput = RouteMode.rapida; // Default value
+  FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
+
 
   // Mensajes de error
   String errorMessage = '';
@@ -122,7 +124,7 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                     });
                   } else {
                     // Crear la ruta
-                    Routes newRoute = await RouteController.getInstance()!.createRoute(
+                    Routes newRoute = await RouteController.getInstance(routeAdapter).createRoute(
                       routeNameInput,
                       startLocationInput!,
                       endLocationInput!,

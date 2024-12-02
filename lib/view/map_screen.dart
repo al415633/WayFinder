@@ -35,11 +35,11 @@ class _MapScreenState extends State<MapScreen> {
       false; // Nuevo estado para habilitar la selección en el mapa
   String? locationName;
   final LocationController locationController =
-      LocationController(FirestoreAdapterLocation());
+      LocationController.getInstance(FirestoreAdapterLocation());
   List<Location> locations = [];
   List<Routes> routes = [];
   final RouteController routeController =
-      RouteController(FirestoreAdapterRoute());
+      RouteController.getInstance(FirestoreAdapterRoute());
   String? routeName;
   final VehicleController vehicleController =
       VehicleController(FirestoreAdapterVehiculo());

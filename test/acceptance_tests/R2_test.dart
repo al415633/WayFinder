@@ -50,7 +50,7 @@ void main() {
       );
 
       locationAdapter = FirestoreAdapterLocation(collectionName: "testCollection");
-      locationController = LocationController(locationAdapter);
+      locationController = LocationController.getInstance(locationAdapter);
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
