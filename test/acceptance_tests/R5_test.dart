@@ -90,7 +90,7 @@ void main() {
       });   
 
 
-      Future<void> _deleteLocation(String alias) async {
+      Future<void> deleteLocation(String alias) async {
         var collectionRef = FirebaseFirestore.instance.collection('location');
         var querySnapshot = await collectionRef.where('alias', isEqualTo: alias).get();
 
@@ -158,7 +158,7 @@ void main() {
       expect(primerLugar.getFav(), equals(true)); // Verifica que el lugar se haya marcado como favorito
 
       await signInAndDeleteUser(emailh20e1, passwordh20e1);
-      await _deleteLocation(apodo1);
+      await deleteLocation(apodo1);
     });
 
 
@@ -197,7 +197,7 @@ void main() {
       expect(primerLugar.getFav(), equals(false)); // En este caso no se marca como favorito porque no lo encuentra con ese toponimo
 
       await signInAndDeleteUser(emailh20e2, passwordh20e2);
-      await _deleteLocation(apodo1);
+      await deleteLocation(apodo1);
 
     });
 

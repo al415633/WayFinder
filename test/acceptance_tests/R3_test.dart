@@ -1,6 +1,5 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -80,7 +79,7 @@ void main() {
       }
     });
 
- Future<void> _deleteVehicle(String numberPlate) async {
+ Future<void> deleteVehicle(String numberPlate) async {
   var collectionRef = FirebaseFirestore.instance.collection('testCollection');
   var querySnapshot = await collectionRef.where('numberPlate', isEqualTo: numberPlate).get();
 
@@ -146,7 +145,7 @@ void main() {
     
     
     await signInAndDeleteUser(email, password);
-    await _deleteVehicle(numberPlate);
+    await deleteVehicle(numberPlate);
 
 
 
@@ -228,7 +227,7 @@ void main() {
       expect(vehicleList.first.fuelType, equals("Gasolina"));
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
-      await _deleteVehicle(numberPlate);
+      await deleteVehicle(numberPlate);
       await signInAndDeleteUser(email, password);
 
 

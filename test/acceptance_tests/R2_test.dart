@@ -59,7 +59,7 @@ void main() {
 
     });
 
-     Future<void> _deleteLocation(String alias) async {
+     Future<void> deleteLocation(String alias) async {
       var collectionRef = FirebaseFirestore.instance.collection('location');
       var querySnapshot = await collectionRef.where('alias', isEqualTo: alias).get();
 
@@ -134,7 +134,7 @@ void main() {
 
       await signInAndDeleteUser(emailh5e1, passwordh5e1);
 
-      await _deleteLocation(aliash5e1);
+      await deleteLocation(aliash5e1);
 
 
     });
@@ -168,7 +168,7 @@ void main() {
   );
 
     await signInAndDeleteUser(emailh5e3, passwordh5e3);
-    await _deleteLocation(aliash5e3);
+    await deleteLocation(aliash5e3);
 
 
 
@@ -238,8 +238,8 @@ void main() {
       expect(secondLocationh7e1.getAlias(), equals(alias2)); // Verifica el alias
 
       await signInAndDeleteUser(emailh7e1, passwordh7e1);
-      await _deleteLocation(alias1h7e1);
-      await _deleteLocation(alias2);
+      await deleteLocation(alias1h7e1);
+      await deleteLocation(alias2);
 
 
 

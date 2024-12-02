@@ -145,7 +145,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     final user =auth.currentUser;
     
 
-    if (auth == null || user == null) {
+    if (user == null) {
       throw NotAuthenticatedUserException();
     }
 

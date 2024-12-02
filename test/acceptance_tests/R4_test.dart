@@ -1,6 +1,5 @@
 // precio_luz_ContUserController_acceptance_test.dart
 
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
@@ -91,7 +90,7 @@ void main() {
       });   
 
 
-      Future<void> _deleteRoute(String name) async {
+      Future<void> deleteRoute(String name) async {
         var collectionRef = FirebaseFirestore.instance.collection('testCollection');
         var querySnapshot = await collectionRef.where('name', isEqualTo: name).get();
 
@@ -158,7 +157,7 @@ void main() {
      expect(firstRouteh13e1.getEnd, equals(fin)); // Verifica el Location final
 
      await signInAndDeleteUser(emailh13e1, passwordh13e1);
-     await _deleteRoute(name1);
+     await deleteRoute(name1);
 
 
 

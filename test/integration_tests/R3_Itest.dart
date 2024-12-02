@@ -1,14 +1,11 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/Vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
@@ -38,7 +35,7 @@ void main() {
   });
     
 
- Future<void> _deleteVehicle(String numberPlate) async {
+ Future<void> deleteVehicle(String numberPlate) async {
   var collectionRef = FirebaseFirestore.instance.collection('testCollection');
   var querySnapshot = await collectionRef.where('numberPlate', isEqualTo: numberPlate).get();
 

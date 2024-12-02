@@ -19,7 +19,7 @@ class Location implements FavItem{
     //obtainToponym(CoordToToponym(coordinate));
     //toponym =  CoordToToponym(coordinate) as String ;
     this.alias = alias;
-    this.fav = false;
+    fav = false;
   }
 
   // Constructor con fav para los tests
@@ -35,7 +35,7 @@ class Location implements FavItem{
     this.toponym = toponym;
     coordinate = ToponymToCoord(toponym) as Coordinate;
     this.alias = alias;
-    this.fav = false;
+    fav = false;
   }
 
  Location.fromMap(Map<String, dynamic> mapa) {

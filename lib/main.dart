@@ -1,3 +1,4 @@
+import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/view/createUserView.dart';
 import 'package:WayFinder/view/errorPage.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -6,7 +7,7 @@ import 'package:WayFinder/view/map_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
@@ -14,6 +15,7 @@ import 'package:http/http.dart' as http;
 //IMPORT DE LA PLANTILLA
 import 'themes/app_theme.dart';
 
+late UserAppController userAppController;
 void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,23 +23,16 @@ void main() async {
   // Cargar la configuración desde firebase_config.json
   final response = await http.get(Uri.parse('/firebase_config.json'));
   final config = json.decode(response.body);
-
-    await Firebase.initializeApp(
-        options: FirebaseOptions(
-          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU", //Que cojones hace la api key aquí. att Daniel Naranjo
-          authDomain: "wayfinder-df8eb.firebaseapp.com",
-          projectId: "wayfinder-df8eb",
-          storageBucket: "wayfinder-df8eb.appspot.com",
-          messagingSenderId: "571791500413",
-          appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-          measurementId: "G-TZLW8P5J8V",
-        ),
-      );
-  final repository = FirestoreAdapterUserApp(collectionName: "production");
-
- final userAppController = UserAppController(repository);
+    
+  await firebaseConnection();
+  await initializeControllers();
 
   runApp(MiApp(userAppController));
+}
+
+Future<void> initializeControllers() async {
+  final repository = FirestoreAdapterUserApp(collectionName: "production");
+  userAppController = UserAppController(repository);
 }
 
 class MiApp extends StatelessWidget {
