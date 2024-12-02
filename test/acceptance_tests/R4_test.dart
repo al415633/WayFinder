@@ -52,7 +52,7 @@ void main() {
       );
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController(adapterRoute);
+      routeController = RouteController.getInstance(adapterRoute);
 
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);

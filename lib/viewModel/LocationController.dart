@@ -10,21 +10,20 @@ class LocationController {
    final DbAdapterLocation _dbAdapter;
 
 
-    LocationController(this._dbAdapter) {
-    try {
-      locationList = _dbAdapter.getLocationList();
-    } catch (e) {
-      // Manejo de errores durante la inicialización
-      locationList = Future.error(e);
-    }
+  LocationController(this._dbAdapter) {
+    locationList = _dbAdapter.getLocationList();
+  }
+
+  static LocationController? _instance;
+
+  static LocationController getInstance(DbAdapterLocation dbAdapter){
+    _instance ??= LocationController(dbAdapter);
+    return _instance!;
   }
 
   Future<Set<Location>> getLocationList() async {
-    try {
-      return await locationList;
-    } catch (e) {
-      throw Exception("Error al obtener la lista de ubicaciones: $e");
-    }
+    //locationList = _dbAdapter.getLocationList();
+    return locationList;
   }
 
 
@@ -35,7 +34,7 @@ class LocationController {
   long = double.parse(long.toStringAsFixed(6));
 
 
-    if (lat > 90 || lat < -90) {
+  if (lat > 90 || lat < -90) {
    throw Exception("InvalidCoordinatesException: La latitud debe estar entre -90 y 90 grados.");
    }
    if (long > 180 || long < -180) {
@@ -52,6 +51,7 @@ class LocationController {
           final currentSet = await locationList;
           // Agregar el nuevo Location al Set
           currentSet.add(location);
+          locationList = Future.value(currentSet) ;
         }
 
         return success;
@@ -68,12 +68,13 @@ class LocationController {
 
      bool success = await _dbAdapter.createLocationFromTopo(location);
 
-          if (success){
+     if (success){
 
       final currentSet = await locationList;
-
       // Agregar el nuevo Location al Set
       currentSet.add(location);
+      locationList = Future.value(currentSet) ;
+
      }
 
      return success;
@@ -94,6 +95,7 @@ class LocationController {
             for (var location in currentSet) {
               if (location.getToponym() == topo && location.getAlias() == alias) {
                 location.fav = true; // Marcar como favorito en la lista local
+
                 break;
               }
             }
@@ -101,8 +103,7 @@ class LocationController {
 
           return success;
         } catch (e) {
-          print("Error al añadir a favoritos en el controlador: $e");
-          return false;
+          throw Exception("Error al añadir a favoritos en el controlador: $e");
         }
       
    }
@@ -127,9 +128,8 @@ class LocationController {
 
     return success;
   } catch (e) {
-    print("Error al eliminar de favoritos en el controlador: $e");
-    return false;
-  }
+          throw Exception("Error al eliminar de favoritos en el controlador: $e");
+        }
    }
  
 }
@@ -185,6 +185,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
  
   } catch (e) {
+    print("llega aqui");
     throw Exception('No se pudo obtener la lista de ubicaciones. Verifica la conexión.');
   }
 
@@ -229,7 +230,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
  }
   @override
  Future<bool> addFav(String topo, String alias) async {
-   try {
+
     // Obtener la referencia al documento con el topónimo y alias correspondiente
     final querySnapshot = await db
         .collection(_collectionName)
@@ -247,10 +248,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
     await querySnapshot.docs.first.reference.update({"fav": true});
 
     return true;
-  } catch (e) {
-    print("Error al añadir a favoritos: $e");
-    return false;
-  }
+  
  }
 
   @override

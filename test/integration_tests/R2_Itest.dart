@@ -196,11 +196,12 @@ void main() {
     );
 
     // Crear la instancia del controlador
-    final locationController = LocationController(mockDbAdapterLocation);
+    //final locationController = LocationController(mockDbAdapterLocation);
 
     // WHEN
     Future<void> action() async {
-      await locationController.getLocationList();
+      //await locationController.getLocationList();
+      LocationController(mockDbAdapterLocation);
     }
 
     // THEN

@@ -13,7 +13,7 @@ class VehicleController {
     final DbAdapterVehicle _dbAdapter;
 
     VehicleController(this._dbAdapter) {
-      vehicleList = Future.value(<Vehicle>{}); // Inicializa con un conjunto vacío
+      vehicleList = _dbAdapter.getVehicleList(); // Inicializa con un conjunto vacío
     }
 
     static VehicleController? _instance;
@@ -24,18 +24,8 @@ class VehicleController {
     return _instance!;
   }
 
-  //factory VehicleController(DbAdapterVehicle dbAdapter) {
-  //  _instance ??= VehicleController._internal(dbAdapter);
-  //  return _instance!;
-  //}
-
-
-
-
-    Future<Set<Vehicle>> getVehicleList(){ 
-
-  
-      return _dbAdapter.getVehicleList();
+    Future<Set<Vehicle>> getVehicleList() async{ 
+      return vehicleList;
     }
 
     Future<bool> createVehicle(String numberPlate, double consumption, String fuelType, String name) async{
@@ -61,6 +51,13 @@ class VehicleController {
       
       if (!success) {
         throw Exception("Failed to create vehicle");
+      } else{
+
+        final currentSet = await vehicleList;
+        // Agregar el nuevo Location al Set
+        currentSet.add(vehicle);
+        vehicleList = Future.value(currentSet) ;
+
       }
       
       return success;
@@ -70,18 +67,47 @@ class VehicleController {
 
     Future<bool> addFav(String numberPlate, String name) async{
 
-      // habra que modificar tmb la lista que esta siendo actualmente usada
+      try {
+          bool success = await _dbAdapter.addFav(numberPlate, name);
 
-            throw UnimplementedError("Method Not Implemented");
+          if (success) {
+            // Si la operación fue exitosa, actualizar la lista local
+            final currentSet = await vehicleList;
+            for (var vehicle in currentSet) {
+              if (vehicle.numberPlate == numberPlate && vehicle.name == name) {
+                vehicle.fav = true; // Marcar como favorito en la lista local
+                break;
+              }
+            }
+          }
+
+          return success;
+        } catch (e) {
+          throw Exception("Error al añadir a favoritos en el controlador: $e");
+        }
 
     }
 
     Future<bool> removeFav(String numberPlate, String name) async{
 
-      // habra que modificar tmb la lista que esta siendo actualmente usada
+        try {
+          bool success = await _dbAdapter.removeFav(numberPlate, name);
 
+          if (success) {
+            // Si la operación fue exitosa, actualizar la lista local
+            final currentSet = await vehicleList;
+            for (var vehicle in currentSet) {
+              if (vehicle.numberPlate == numberPlate && vehicle.name == name) {
+                vehicle.fav = false; // Marcar como NO favorito en la lista local
+                break;
+              }
+            }
+          }
 
-             throw UnimplementedError("Method Not Implemented");
+          return success;
+        } catch (e) {
+          throw Exception("Error al añadir a favoritos en el controlador: $e");
+        }
 
     }
 
@@ -135,33 +161,46 @@ bool threeDecimalPlacesMax(double value) {
 class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  User? _currentUser; // Propiedad para almacenar el usuario actual
+
 
   FirestoreAdapterVehiculo({String collectionName = "production"})
-      : _collectionName = collectionName;
+      : _collectionName = collectionName{
+        _initializeAuthListener();
+      }
+  
+  // Método para inicializar el listener de autenticación
+  void _initializeAuthListener() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      _currentUser = user; // Actualizar el usuario actual
+      if (user != null) {
+        print('Usuario autenticado: ${user.uid}');
+      } else {
+        print('No hay usuario autenticado.');
+      }
+    });
+  }
 
   @override
   Future<Set<Vehicle>> getVehicleList() async {
-    final auth = FirebaseAuth.instance;
-    final user =auth.currentUser;
-    
 
-    if (auth == null || user == null) {
-      throw NotAuthenticatedUserException();
-    }
+  try {
+    final querySnapshot = await db
+        .collection(_collectionName) 
+        .doc(_currentUser?.uid) 
+        .collection("VehicleList") 
+        .get(); 
 
-    try {
-      final querySnapshot = await db
-          .collection(_collectionName)
-          .doc(user.uid)
-          .collection("VehicleList")
-          .get();
-
-      return querySnapshot.docs.map((doc) {
+    // Convertir cada documento a una instancia de Location
+      Set<Vehicle> vehicles = querySnapshot.docs.map((doc) {
         return Vehicle.fromMap(doc.data());
       }).toSet();
-    } catch (e) {
-      throw ConnectionBBDDException();
-    }
+
+    return vehicles;
+
+ 
+  } catch (e) {
+  throw ConnectionBBDDException();  }
   }
 
   @override
@@ -185,13 +224,45 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   }
 
   @override
-  Future<bool> addFav(String numberPlate, String name) {
-    throw UnimplementedError();
+  Future<bool> addFav(String numberPlate, String name) async {
+    // Obtener la referencia al documento con la matricula y nombre correspondiente
+    final querySnapshot = await db
+        .collection(_collectionName)
+        .doc(_currentUser?.uid)
+        .collection("VehicleList")
+        .where("numberPlate", isEqualTo: numberPlate)
+        .where("name", isEqualTo: name)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw Exception("No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
+    }
+
+    // Actualizar el campo 'fav' a true en el primer documento encontrado
+    await querySnapshot.docs.first.reference.update({"fav": true});
+
+    return true;
   }
 
   @override
-  Future<bool> removeFav(String numberPlate, String name) {
-    throw UnimplementedError();
+  Future<bool> removeFav(String numberPlate, String name) async{
+    // Obtener la referencia al documento con la matricula y nombre correspondiente
+    final querySnapshot = await db
+        .collection(_collectionName)
+        .doc(_currentUser?.uid)
+        .collection("VehicleList")
+        .where("numberPlate", isEqualTo: numberPlate)
+        .where("name", isEqualTo: name)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw Exception("No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
+    }
+
+    // Actualizar el campo 'fav' a true en el primer documento encontrado
+    await querySnapshot.docs.first.reference.update({"fav": false});
+
+    return true;
   }
 }
 

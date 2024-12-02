@@ -17,25 +17,18 @@ class RouteController {
   final DbAdapterRoute repository;
 
   // Constructor privado
-  RouteController._internal(this.repository) {
-    try {
-      routeList = repository.getRouteList();
-    } catch (e) {
-      routeList = Future.error(e);
-    }
+  RouteController(this.repository) {
+    routeList = Future.value(<Routes>{});
   }
 
   // Instancia única
   static RouteController? _instance;
 
-  factory RouteController(DbAdapterRoute repository) {
-    _instance ??= RouteController._internal(repository);
+  static RouteController getInstance(DbAdapterRoute repository) {
+    _instance ??= RouteController(repository);
     return _instance!;
   }
 
-  static RouteController? getInstance() {
-    return _instance;
-  }
 
   Future<Set<Routes>> getRouteList() async {
     try {
@@ -116,6 +109,8 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
+        routeList = currentSet as Future<Set<Routes>> ;
+
       }
 
       return success;
@@ -164,10 +159,10 @@ class RouteController {
       }
 
       return success;
-    } catch (e) {
-      print("Error al añadir la ruta a favoritos: $e");
-      return false;
-    }
+     } catch (e) {
+          throw Exception("Error al añadir el location a favoritos en el controlador: $e");
+        }
+      
   }
 
   Future<bool> removeFav(String routeName) async {
@@ -189,9 +184,8 @@ class RouteController {
 
       return success;
     } catch (e) {
-      print("Error al eliminar la ruta de favoritos: $e");
-      return false;
-    }
+          throw Exception("Error al eliminar el location a favoritos en el controlador: $e");
+        }
   }
 }
 

@@ -121,35 +121,17 @@ void main() {
       UserApp? newUserApp = await userAppController.createUser(emailh20e1, passwordh20e1, nameh20e1);
 
       // WHEN
-
-      // Simular la creación de un lugar
-      when(mockDbAdapterLocation.createLocationFromCoord(any))
-          .thenAnswer((_) async => true);
-
-      await locationController.createLocationFromCoord(lath5e1, longh5e1, aliash5e1);
-
        // Simular que guardamos el lugar en favoritos
       when(mockDbAdapterLocation.addFav("", aliash5e1))
-          .thenAnswer((_) async => false); // Aquí ponemos FALSE porque en este caso no "encuentra" el sitio
-
-      await locationController.addFav("", aliash5e1);
+        .thenThrow(Exception(),);
 
        
       // THEN
-      final Set<Location> location = await mockDbAdapterLocation.getLocationList();
+      expect(
+        () async =>   await locationController.addFav("", aliash5e1),
+        throwsA(isA<Exception>()),
+      );
 
-      // Convertir el set a una lista para acceder al primer elemento
-      final locationListh5e1 = location.toList();
-
-      // Acceder al primer objeto en la lista
-      final firstLocationh5e1 = locationListh5e1[0];
-
-      // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat(), equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong(), equals(longh5e1)); // Verifica la longitud
-      expect(firstLocationh5e1.getToponym(), equals("")); // Verifica el topónimo
-      expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
-      expect(firstLocationh5e1.getFav(), equals(false)); // Verifica el alias
 
     });
 
