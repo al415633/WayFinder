@@ -260,22 +260,15 @@ class _MapScreenState extends State<MapScreen> {
 
       // Llamar al LocationController para guardar la ubicación
       try {
-        bool success = await locationController.createLocationFromCoord(
+        await locationController.createLocationFromCoord(
           initialPoint.latitude,
           initialPoint.longitude,
           locationName!,
-        );
-
-        if (success) {
+        );    
           _fetchLocations(); // Actualizar la lista de ubicaciones
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Ubicación guardada exitosamente.')),
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al guardar la ubicación.')),
-          );
-        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
