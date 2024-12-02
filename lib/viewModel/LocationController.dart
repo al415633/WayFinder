@@ -96,15 +96,13 @@ class LocationController {
   // Método para pasar de coordinates a toponym
   Future<String> CoordToToponym(Coordinate coord) async {
     http.Response? response;
-
     response = await http.get(getToponymLocation(coord));
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
       if (data['features'].isNotEmpty) {
         final name = data['features'][0]['properties']['label'];
-        return name; // Devuelve el nombre del lugar
+        return name;
       } else {
         throw Exception(
             "InvalidCoordinatesException: 'No se encontró ningún lugar para las coordenadas dadas.");

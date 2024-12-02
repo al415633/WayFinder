@@ -33,10 +33,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     super.initState();
     route = widget.route;
     transportMode = route.getTransportMode;
-    initialPoint = LatLng(route.getStart.getCoordinate().getLat(),
-        route.getStart.getCoordinate().getLong());
-    destination = LatLng(route.getEnd.getCoordinate().getLat(),
-        route.getEnd.getCoordinate().getLong());
+    initialPoint = LatLng(route.getStart.getCoordinate().getLat,
+        route.getStart.getCoordinate().getLong);
+    destination = LatLng(route.getEnd.getCoordinate().getLat,
+        route.getEnd.getCoordinate().getLong);
     points = [];
     fetchCoordinates();
   }

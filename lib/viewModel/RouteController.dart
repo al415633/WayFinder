@@ -88,9 +88,9 @@ class RouteController {
   Future<Routes> createRoute(String name, Location start, Location end,
       TransportMode transportMode, RouteMode routeMode) async {
     LatLng initialPoint =
-        LatLng(start.getCoordinate().getLat(), start.getCoordinate().getLong());
+        LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
     LatLng destination =
-        LatLng(end.getCoordinate().getLat(), end.getCoordinate().getLong());
+        LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
     List<LatLng> points =
         await fetchRoutePoints(initialPoint, destination, transportMode);
     double distance = calculateDistance(points);

@@ -288,13 +288,12 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () {
           try {
             if (location.getFav()) {
-              // Si es favorito, lo desmarcamos
               location.removeFav();
             } else {
-              // Si no es favorito, lo marcamos
               location.addFav();
             }
-            _fetchLocations(); // Actualizar la lista de ubicaciones
+            _fetchLocations();
+            print(location.toponym.toString()); // Actualizar la lista de ubicaciones
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -304,6 +303,7 @@ class _MapScreenState extends State<MapScreen> {
         },
       ),
       title: Text(location.getAlias()),
+      subtitle: Text(location.getToponym()),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

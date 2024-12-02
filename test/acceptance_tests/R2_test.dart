@@ -112,6 +112,7 @@ void main() {
       final double lath5e1 = 39.98567;
       final double longh5e1 = -0.04935;
       final String aliash5e1 = "prueba 1";
+      final String topoh5e1 = "Caja Rural, Castellón de la Plana, VC, España";
 
       await locationController.createLocationFromCoord(lath5e1, longh5e1, aliash5e1);
 
@@ -127,9 +128,9 @@ void main() {
       final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat(), equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong(), equals(longh5e1)); // Verifica la longitud
-      expect(firstLocationh5e1.getToponym(), equals("")); // Verifica el topónimo
+      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
+      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
+      expect(firstLocationh5e1.getToponym(), equals(topoh5e1)); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
 
       await signInAndDeleteUser(emailh5e1, passwordh5e1);
@@ -202,12 +203,14 @@ void main() {
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String alias1h7e1 = "Castellon";
+      final String topoh7e1 = "Caja Rural, Castellón de la Plana, VC, España";
 
       await locationController.createLocationFromCoord(lat1, long1, alias1h7e1);
 
       final double lat2 = 39.98567;
       final double long2 = -0.04935;
       final String alias2 = "mi casa";
+      final String topo2 = "Caja Rural, Castellón de la Plana, VC, España";
 
       await locationController.createLocationFromCoord(lat2, long2, alias2);
 
@@ -225,16 +228,16 @@ void main() {
       final secondLocationh7e1 = locationListh7e1[1];
 
       // Verificar que los valores del primer lugar son los esperados
-     expect(firstLocationh7e1.getCoordinate().getLat(), equals(lat1)); // Verifica la latitud
-      expect(firstLocationh7e1.getCoordinate().getLong(), equals(long1)); // Verifica la longitud      
-      expect(firstLocationh7e1.getToponym(), equals("")); // Verifica el toponimo
+     expect(firstLocationh7e1.getCoordinate().getLat, equals(lat1)); // Verifica la latitud
+      expect(firstLocationh7e1.getCoordinate().getLong, equals(long1)); // Verifica la longitud      
+      expect(firstLocationh7e1.getToponym(), equals(topoh7e1)); // Verifica el toponimo
       expect(firstLocationh7e1.getAlias(), equals(alias1h7e1)); // Verifica el alias
 
 
       // Verificar que los valores del segundo lugar son los esperados
-      expect(firstLocationh7e1.getCoordinate().getLat(), equals(lat2)); // Verifica la latitud
-      expect(firstLocationh7e1.getCoordinate().getLong(), equals(long2)); // Verifica la longitud      
-      expect(firstLocationh7e1.getToponym(), equals("")); // Verifica el toponimo
+      expect(firstLocationh7e1.getCoordinate().getLat, equals(lat2)); // Verifica la latitud
+      expect(firstLocationh7e1.getCoordinate().getLong, equals(long2)); // Verifica la longitud      
+      expect(firstLocationh7e1.getToponym(), equals(topo2)); // Verifica el toponimo
       expect(secondLocationh7e1.getAlias(), equals(alias2)); // Verifica el alias
 
       await signInAndDeleteUser(emailh7e1, passwordh7e1);
