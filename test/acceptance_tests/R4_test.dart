@@ -4,6 +4,7 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -149,7 +150,7 @@ void main() {
      String name1 = "ruta 1";
 
 
-     Routes firstRouteh13e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, "rápida");
+     Routes firstRouteh13e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
   
 
       //THEN
