@@ -2,6 +2,7 @@ enum TransportMode {
   coche,
   bicicleta,
   aPie,
+  noSeleccionado
 }
 
 extension TransportModeExtension on TransportMode {
@@ -13,7 +14,7 @@ extension TransportModeExtension on TransportMode {
         return 'Bicicleta';
       case TransportMode.aPie:
         return 'A pie';
-      default:
+      case TransportMode.noSeleccionado:
         return '';
     }
   }
