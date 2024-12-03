@@ -100,6 +100,10 @@ class RouteController {
     return route;
   }
 
+  Future<Routes> deleteRoute(Routes route){
+    throw UnimplementedError();
+  }
+
   Future<bool> saveRoute(Routes route) async {
     try {
       bool success = await repository.saveRoute(route);
@@ -249,6 +253,11 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   }
 
   @override
+   Future<bool> deleteRoute(Routes route) async {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<bool> addFav(String routeName) async {
     try {
       final querySnapshot = await db
@@ -293,6 +302,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 abstract class DbAdapterRoute {
   Future<bool> saveRoute(Routes route);
+  Future<bool> deleteRoute(Routes route);
   Future<Set<Routes>> getRouteList();
   Future<bool> removeFav(String routeName);
   Future<bool> addFav(String routeName);
