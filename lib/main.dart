@@ -83,33 +83,45 @@ class _InicioState extends State<Inicio> {
       appBar: AppBar(
         title: Text('Inicio de sesión'),
       ),
-      body: login(),
-      //body: MapScreen(),
+         body: Stack(
+        children: [
+           Positioned.fill(
+  child: Image.asset(
+    'lib/assets/images/mapa.PNG',
+    fit: BoxFit.cover, // Ajusta para cubrir toda el área disponible.
+  ),            
+          ),
+          Center(
+            child: Container(
+              width: 500, // Dimensiones cuadradas
+              height: 500,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9), // Fondo blanco semitransparente
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: login(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget login() {
-    return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            nombre(),
-            campoUsuario(),
-            const SizedBox(height: 15), // separacion para que quede bonito
-
-            contrasena(),
-            campoContraena(),
-            const SizedBox(height: 15), // separacion para que quede bonito
-            
-            botonEntrar(),
-            const SizedBox(height: 15), // separacion para que quede bonito
-
-            nuevaCuenta(),
-
-          ],
-        ),
-      ),
+Widget login() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        nombre(),
+        campoUsuario(),
+        const SizedBox(height: 15),
+        contrasena(),
+        campoContraena(),
+        const SizedBox(height: 15),
+        botonEntrar(),
+        const SizedBox(height: 15),
+        nuevaCuenta(),
+      ],
     );
   }
 
