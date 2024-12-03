@@ -174,9 +174,9 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
       if (user != null) {
-        print('Usuario autenticado: ${user.uid}');
+        //print('Usuario autenticado: ${user.uid}');
       } else {
-        print('No hay usuario autenticado.');
+        //print('No hay usuario autenticado.');
       }
     });
   }
