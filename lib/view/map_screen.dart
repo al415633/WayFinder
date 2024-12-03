@@ -117,10 +117,10 @@ class _MapScreenState extends State<MapScreen> {
           _buildFlutterMap(),
           if (showInterestPlaces)
             _buildSidePanel(
-                'Lugares de interés',
-                locations,
-                (item) => _buildLocationItem(item as Location),
-                () => showAddLocationDialog(context, _onLocationSelected)),
+              'Lugares de interés',
+              locations,
+              (item) => _buildLocationItem(item as Location),
+              () => showAddLocationDialog(context, _onLocationSelected)),
           if (showRoutes)
             _buildSidePanel('Rutas', routes,
                 (item) => _buildRouteItem(item as Routes),
@@ -430,7 +430,6 @@ class _MapScreenState extends State<MapScreen> {
         locations = sortFavItems(locations);
       });
     } catch (e) {
-      print('Error al obtener las ubicaciones: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar ubicaciones: $e')),
       );
@@ -469,7 +468,6 @@ class _MapScreenState extends State<MapScreen> {
         routes = sortFavItems(routes);
       });
     } catch (e) {
-      print('Error al obtener las rutas: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar rutas: $e')),
       );
@@ -495,7 +493,6 @@ class _MapScreenState extends State<MapScreen> {
         vehicles = sortFavItems(vehicles);
       });
     } catch (e) {
-      print('Error al obtener los vehículos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar vehículos: $e')),
       );
