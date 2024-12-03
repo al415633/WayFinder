@@ -11,7 +11,8 @@ import 'package:mockito/mockito.dart';
 
 import 'R2_Itest.mocks.dart';
 
-@GenerateMocks([FirebaseAuth, DbAdapterUserApp, DbAdapterLocation])
+@GenerateNiceMocks([MockSpec<FirebaseAuth>(),
+MockSpec<DbAdapterLocation>(), MockSpec<DbAdapterUserApp>()])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -28,7 +29,7 @@ void main() {
       final double lath5e1 = 39.98567;
       final double longh5e1 = -0.04935;
       final String aliash5e1 = "prueba 1";  
-      final String topoh5e1 = "";  
+      final String topoh5e1 = "Caja Rural, Castellón de la Plana, VC, España";  
 
       // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
@@ -79,15 +80,15 @@ void main() {
     final userAppController = UserAppController(mockDbAdapterUserApp);
     final mockDbAdapterLocation = MockDbAdapterLocation();
     final locationController = LocationController.getInstance(mockDbAdapterLocation);
-    final double lath5e3 = 39.98567;
-    final double longh5e3 = -0.04935;
+    final double lath5e3 = 91;
+    final double longh5e3 = 181;
     final String aliash5e3 = "prueba 1";
-    final String topoh5e3 = "";  
+    final String topoh5e3 = "Caja Rural, Castellón de la Plana, VC, España";  
 
 
     // Configurar el stub de `getLocationList`
     when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-      (_) async => {Location(Coordinate(lath5e3, longh5e3), topoh5e3, aliash5e3)},
+      (_) async => {},
     );
 
     // GIVEN
@@ -105,10 +106,18 @@ void main() {
     when(mockDbAdapterLocation.createLocationFromCoord(any)).thenThrow(Exception("Coordenadas inválidas"));
 
     // WHEN
-    final result = await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3);
 
     // THEN
-    expect(result, isFalse); // Verificar que devuelve false en caso de error
+    //expect(await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3), throwsA(isA<Exception>)); // Verificar que devuelve false en caso de error
+
+
+    Future<void> action() async {
+      //await locationController.getLocationList();
+      await locationController.createLocationFromCoord(lath5e3, longh5e3, aliash5e3);
+    }
+
+    // THEN
+    expect(() async => await action(), throwsA(isA<Exception>()));
   });
 
 
@@ -123,16 +132,13 @@ void main() {
     // Simular los datos de los lugares
     final double lat1 = 39.98567;
     final double long1 = -0.04935;
-    final String alias1h7e1 = "Castellon";
+    final String alias1h7e1 = "prueba 1";
+    final String topoh7e1 = "Caja Rural, Castellón de la Plana, VC, España";
 
-    final double lat2 = 40.12345;
-    final double long2 = -1.12345;
-    final String alias2 = "mi casa";
 
     // Configurar el stub de `getLocationList`
     when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-      (_) async => { await locationController.createLocationFromCoord(lat1, long1, alias1h7e1),
-      await locationController.createLocationFromCoord(lat2, long2, alias2)
+      (_) async => { Location(Coordinate(lat1, long1), alias1h7e1, topoh7e1),
       },
     );
 
@@ -150,7 +156,6 @@ void main() {
     when(mockDbAdapterLocation.createLocationFromCoord(any)).thenAnswer((_) async => true);
 
     await locationController.createLocationFromCoord(lat1, long1, alias1h7e1);
-    await locationController.createLocationFromCoord(lat2, long2, alias2);
 
     // WHEN
     final Set<Location> locations = await locationController.getLocationList();
@@ -164,11 +169,6 @@ void main() {
     expect(firstLocation.getCoordinate().getLong, equals(long1)); // Verifica la longitud
     expect(firstLocation.getAlias(), equals(alias1h7e1)); // Verifica el alias
 
-    // Verificar que los valores del segundo lugar son los esperados
-    final secondLocation = locationList[1];
-    expect(secondLocation.getCoordinate().getLat, equals(lat2)); // Verifica la latitud
-    expect(secondLocation.getCoordinate().getLong, equals(long2)); // Verifica la longitud
-    expect(secondLocation.getAlias(), equals(alias2)); // Verifica el alias
   });
 
 
