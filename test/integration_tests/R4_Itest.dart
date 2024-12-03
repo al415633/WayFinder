@@ -115,6 +115,104 @@ void main() {
 
             Routes ruta = await mockRouteController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.corta);
 
+
+    test('H18-E1V - Listar rutas', () async {
+      // Configurar los mocks y el controlador dentro del test
+      final mockAuth = MockFirebaseAuth();
+      final mockDbAdapterUserApp = MockDbAdapterUserApp();
+      final userAppController = UserAppController(mockDbAdapterUserApp);
+      final mockDbAdapterRoute = MockDbAdapterRoute();
+      final routeController = RouteController(mockDbAdapterRoute);
+      final mockDbAdapterLocation = MockDbAdapterLocation();
+      final locationController = LocationController(mockDbAdapterLocation);
+
+
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+      final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";  
+
+
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      final String topo2 = "Caja Rural, Castellón de la Plana, VC, España";  
+
+      Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
+      Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
+
+      String name1 = "ruta 1";
+
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+
+       // Configurar el stub de `getRouteList`
+      when(mockDbAdapterRoute.getRouteList()).thenAnswer(
+        (_) async => {ruta},
+      );
+
+      // GIVEN
+      String emailh18e1 = "Pruebah18e1@gmail.com";
+      String passwordh18e1 = "Aaaaa,.8";
+      String nameh18e1="Pruebah18e1";
+
+      // Simular la creación del usuario
+      when(userAppController.repository.createUser(emailh18e1, passwordh18e1))
+          .thenAnswer((_) async => UserApp("id", nameh18e1, emailh18e1));
+
+      await userAppController.createUser(emailh18e1, passwordh18e1, nameh18e1);
+
+      // WHEN
+
+      // Simular la creación de un lugar
+      //when(mockRouteController.createRoute(nameh13e1, ini, fin, TransportMode.aPie, RouteMode.corta))
+         // .thenReturn((_) => ruta);
+
+     final Set<Routes> route = await routeController.getRouteList();
+
+      // THEN
+      final locationListh18e1 = route.toList();
+      
+      // Acceder al primer objeto en la lista
+      final firstRoute = locationListh18e1[0];
+
+
+      expect(firstRoute.getStart, equals(ini)); // Verifica el Location inicial
+      expect(firstRoute.getEnd, equals(fin)); // Verifica el Location final
+
+    });
+
+    test('H18-E3I - Listar rutas inálida, usuario no registrado', () async {
+      // Configurar los mocks y el controlador dentro del test
+      final mockDbAdapterRoute = MockDbAdapterRoute();
+      final routeController = RouteController(mockDbAdapterRoute);
+
+
+
+       // Configurar el stub de `getRouteList`
+      when(mockDbAdapterRoute.getRouteList()).thenThrow(
+      Exception("Usuario no autenticado"),
+      );
+
+      // GIVEN
+      // no registramos usuario
+
+      // WHEN
+
+
+      Future<void> action() async {
+      //await locationController.getLocationList();
+      routeController.getRouteList();
+      }
+
+      // THEN
+      expect(action(), throwsA(isA<Exception>()));
+      });
+
+   });
+
+
       // Configurar el stub de `getRouteList`
       when(mockDbAdapterRoute.getRouteList()).thenAnswer(
         (_) async => {ruta},
