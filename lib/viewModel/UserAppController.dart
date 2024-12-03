@@ -30,7 +30,7 @@ class UserAppController {
 
   bool isValidEmail(String email) {
     final emailRegex =
-        RegExp(r'^[a-zA-Z0-9_]+@(gmail|outlook|hotmail|yahoo)\.(com|es)$');
+        RegExp(r'^[a-zA-Z0-9]+@(gmail|outlook|hotmail|yahoo)\.(com|es)$');
     return emailRegex.hasMatch(email);
   }
 

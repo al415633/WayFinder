@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 void showAddLocationDialog(BuildContext context, Function(String) onLocationSelected) {
   String locationNameInput = '';
   String errorMessage = '';
+  String toponym = '';
 
   showDialog(
     context: context,
@@ -52,6 +53,19 @@ void showAddLocationDialog(BuildContext context, Function(String) onLocationSele
                   }
                 },
                 child: const Text('Usar Mapa'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (locationNameInput.isEmpty) {
+                    setDialogState(() {
+                      errorMessage = 'El nombre del lugar no puede estar vacío';
+                    });
+                  } else {
+                    onLocationSelected(locationNameInput);
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                  }
+                },
+                child: const Text('Introducir tóponimo'),
               ),
             ],
           );
