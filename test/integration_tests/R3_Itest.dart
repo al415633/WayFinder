@@ -14,7 +14,9 @@ import 'package:mockito/mockito.dart';
 import 'R3_Itest.mocks.dart';
 
 
-@GenerateMocks([FirebaseAuth, DbAdapterVehicle, DbAdapterUserApp])
+@GenerateNiceMocks([MockSpec<FirebaseAuth>(),
+MockSpec<DbAdapterVehicle>(), MockSpec<DbAdapterUserApp>()])
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R3: Gestión de vehículos', ()  {
@@ -25,7 +27,13 @@ void main() {
 
     late MockDbAdapterUserApp mockUserAppAdapter;
     late UserAppController userAppController;
-    
+
+    setUp(() async {
+    mockUserAppAdapter = MockDbAdapterUserApp();
+    mockVehicleAdapter = MockDbAdapterVehicle();
+    userAppController = UserAppController(mockUserAppAdapter);
+    vehicleController = VehicleController(mockVehicleAdapter);
+  });
 
     test('H9-E1V - Crear vehiculo', () async {
 
@@ -37,10 +45,6 @@ void main() {
       String name="Pruebah9e1";
 
       //WHEN
-      mockUserAppAdapter = MockDbAdapterUserApp();
-      mockVehicleAdapter = MockDbAdapterVehicle();
-      userAppController = UserAppController(mockUserAppAdapter);
-      vehicleController = VehicleController(mockVehicleAdapter);
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
@@ -48,17 +52,11 @@ void main() {
 
       final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
 
-      print("hola");
-
       when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
-      print("hola1");
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
-      print("hola2");
 
       bool success = await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
-      print("hola3");
       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
-      print("hola4");
 
       //THEN
       expect(success, isTrue);
@@ -95,10 +93,6 @@ void main() {
 
 
       //WHEN
-      mockUserAppAdapter = MockDbAdapterUserApp();
-      mockVehicleAdapter = MockDbAdapterVehicle();
-      userAppController = UserAppController(mockUserAppAdapter);
-      vehicleController = VehicleController(mockVehicleAdapter);
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
@@ -142,10 +136,6 @@ void main() {
 
 
       //Tiene vehículo {nombre: "Coche Quique", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
-      mockUserAppAdapter = MockDbAdapterUserApp();
-      mockVehicleAdapter = MockDbAdapterVehicle();
-      userAppController = UserAppController(mockUserAppAdapter);
-      vehicleController = VehicleController(mockVehicleAdapter);
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
@@ -179,10 +169,6 @@ void main() {
 
 
     test('H10-E2V - Listar vehículos BBDD vacía', () async {
-      mockUserAppAdapter = MockDbAdapterUserApp();
-      mockVehicleAdapter = MockDbAdapterVehicle();
-      userAppController = UserAppController(mockUserAppAdapter);
-      vehicleController = VehicleController(mockVehicleAdapter);
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => <Vehicle>{});
 
       // WHEN
