@@ -58,6 +58,7 @@ class LocationController {
   }
 
   Future<Location> createLocationFromTopo(String topo, String alias) async {
+
     Coordinate coordinate = await ToponymToCoord(topo);
 
     Location location = Location(coordinate, topo, alias);

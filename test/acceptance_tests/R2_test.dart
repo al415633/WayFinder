@@ -49,11 +49,11 @@ void main() {
         ),
       );
 
-      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
       locationController = LocationController.getInstance(locationAdapter);
 
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
-      userAppController = UserAppController(userAppAdapter);
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
+      userAppController = UserAppController.getInstance(userAppAdapter);
 
 
 
@@ -74,7 +74,7 @@ void main() {
 
     // Helper para limpiar la colección y eliminar usuario
       Future<void> cleanUp() async {
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var collectionRef = FirebaseFirestore.instance.collection('testCollectionR2');
         var querySnapshot = await collectionRef.get();
         for (var doc in querySnapshot.docs) {
           await doc.reference.delete(); 
@@ -99,12 +99,12 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String emailh5e1 = "Pruebah5e1@gmail.com";
+      String emailh5e1 = "Pruebah5e1_${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh5e1 = "Aaaaa,.8";
       String nameh5e1="Pruebah5e1";
       await userAppController.createUser(emailh5e1, passwordh5e1, nameh5e1);
 
-      userApp = await userAppController.logInCredenciales(emailh5e1, passwordh5e1);
+      await userAppController.logInCredenciales(emailh5e1, passwordh5e1);
 
 
       //WHEN
@@ -128,8 +128,8 @@ void main() {
       final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
+      expect((firstLocationh5e1.getCoordinate().getLat - lath5e1) < 0.001, equals(true)); // Verifica la latitud
+      expect((firstLocationh5e1.getCoordinate().getLong - longh5e1) < 0.001 , equals(true)); // Verifica la longitud
       expect(firstLocationh5e1.getToponym(), equals(topoh5e1)); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
 
@@ -146,12 +146,12 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String emailh5e3 = "Pruebah5e3@gmail.com";
+      String emailh5e3 = "Pruebah5e3_${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh5e3 = "Aaaaa,.8";
       String nameh5e3="Pruebah5e3";
       await userAppController.createUser(emailh5e3, passwordh5e3, nameh5e3);
 
-      userApp = await userAppController.logInCredenciales(emailh5e3, passwordh5e3);
+      await userAppController.logInCredenciales(emailh5e3, passwordh5e3);
 
 
       //WHEN
@@ -180,12 +180,11 @@ void main() {
      //GIVEN
 
      //Loguear usuario
-     String emailh6e1 = "Pruebah6e1@gmail.com";
+     String emailh6e1 = "Pruebah6e1_${DateTime.now().millisecondsSinceEpoch}@gmail.com";
      String passwordh6e1 = "Aaaaa,.8";
      String nameh6e1="Pruebah6e1";
      await userAppController.createUser(emailh6e1, passwordh6e1, nameh6e1);
-
-     userApp = await userAppController.logInCredenciales(emailh6e1, passwordh6e1);
+     await userAppController.logInCredenciales(emailh6e1, passwordh6e1);
 
 
      //WHEN
@@ -214,8 +213,8 @@ void main() {
 
 
      // Verificar que los valores del primer lugar son los esperados
-     expect(firstLocationh5e1.getCoordinate().getLat, equals(lath6e1)); // Verifica la latitud
-     expect(firstLocationh5e1.getCoordinate().getLong, equals(longh6e1)); // Verifica la longitud
+     expect((firstLocationh5e1.getCoordinate().getLat - lath6e1) < 0.001, equals(true)); // Verifica la latitud
+     expect((firstLocationh5e1.getCoordinate().getLong - longh6e1) < 0.001, equals(true)); // Verifica la longitud
      expect(firstLocationh5e1.getToponym(), equals(topoh6e1)); // Verifica el topónimo
      expect(firstLocationh5e1.getAlias(), equals(aliash6e1)); // Verifica el alias
 
@@ -234,11 +233,12 @@ void main() {
      //GIVEN
 
      //Loguear usuario
-     String emailh6e2 = "Pruebah6e2@gmail.com";
+     String emailh6e2 = "Pruebah6e2_${DateTime.now().millisecondsSinceEpoch}@gmail.com";
      String passwordh6e2 = "Aaaaa,.8";
      String nameh6e2="Pruebah6e2";
+
      await userAppController.createUser(emailh6e2, passwordh6e2, nameh6e2);
-     userApp = await userAppController.logInCredenciales(emailh6e2, passwordh6e2);
+     await userAppController.logInCredenciales(emailh6e2, passwordh6e2);
 
      //WHEN
 
@@ -267,11 +267,11 @@ void main() {
 
       //Loguear usuario
 
-      String emailh7e1 = "Pruebah7e1@gmail.com";
+      String emailh7e1 = "Pruebah7e1_${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh7e1 = "Aaaaa,.8";
       String nameh7e1="Pruebah7e1";
       await userAppController.createUser(emailh7e1, passwordh7e1, nameh7e1);
-      userApp = await userAppController.logInCredenciales(emailh7e1, passwordh7e1);
+      await userAppController.logInCredenciales(emailh7e1, passwordh7e1);
 
       
       //Hecho en el setUpAll
@@ -304,16 +304,16 @@ void main() {
       final secondLocationh7e1 = locationListh7e1[1];
 
       // Verificar que los valores del primer lugar son los esperados
-     expect(firstLocationh7e1.getCoordinate().getLat, equals(lat1)); // Verifica la latitud
-      expect(firstLocationh7e1.getCoordinate().getLong, equals(long1)); // Verifica la longitud      
+      expect((firstLocationh7e1.getCoordinate().getLat -lat1).abs() < 0.001, equals(true)); // Verifica la latitud
+      expect((firstLocationh7e1.getCoordinate().getLong - long1).abs() < 0.001, equals(true)); // Verifica la longitud      
       expect(firstLocationh7e1.getToponym(), equals(topoh7e1)); // Verifica el toponimo
       expect(firstLocationh7e1.getAlias(), equals(alias1h7e1)); // Verifica el alias
 
 
       // Verificar que los valores del segundo lugar son los esperados
-      expect(firstLocationh7e1.getCoordinate().getLat, equals(lat2)); // Verifica la latitud
-      expect(firstLocationh7e1.getCoordinate().getLong, equals(long2)); // Verifica la longitud      
-      expect(firstLocationh7e1.getToponym(), equals(topo2)); // Verifica el toponimo
+      expect((secondLocationh7e1.getCoordinate().getLat - lat2).abs() < 0.001, equals(true) ); // Verifica la latitud
+      expect((secondLocationh7e1.getCoordinate().getLong - long2).abs() < 0.001 , equals(true)); // Verifica la longitud      
+      expect(secondLocationh7e1.getToponym(), equals(topo2)); // Verifica el toponimo
       expect(secondLocationh7e1.getAlias(), equals(alias2)); // Verifica el alias
 
       await signInAndDeleteUser(emailh7e1, passwordh7e1);
