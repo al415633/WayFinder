@@ -85,7 +85,7 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   Future<UserApp?> createUser(String email, String password) async {
     //Ver si user ya en BBDD
     var existingUser = await auth.fetchSignInMethodsForEmail(email);
-    if (existingUser.isNotEmpty) {
+    if (existingUser.isNotEmpty ) {
       throw UserAlreadyExistsException();
     }
 

@@ -44,12 +44,33 @@ class _CreateUserViewState extends State<CreateUserView> {
 
 
   @override
-  Widget build(BuildContext context) {
-     return Scaffold(
+    Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         title: Text('Registro nuevo usuario'),
       ),
-      body: registro(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'lib/assets/images/mapa.PNG',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Center(
+            child: Container(
+              width: 600,
+              height: 600,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: registro(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -203,7 +224,7 @@ class _CreateUserViewState extends State<CreateUserView> {
         controller: _confirmPasswordEnter,
         obscureText: true,
         decoration: const InputDecoration(
-          hintText: "Password",
+          hintText: "Contraseña",
           fillColor: Colors.white,
           filled: true,
         ),
@@ -300,28 +321,15 @@ class _CreateUserViewState extends State<CreateUserView> {
     MaterialPageRoute(builder: (context) => MapScreen()),
   );
 } on NotValidEmailException {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'Email no válido')),
-  );
+  _errorMessage = 'Email no valido';
 } on IncorrectPasswordException {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'Contraseña no válida')),
-  );
-} on UserAlreadyExistsException {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'El usuario ya existe')),
-  );
-} catch (e) {
-  // Manejar cualquier otro error
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'Error desconocido')),
-  );
+  _errorMessage = 'Contraseña no válida';
+}  catch (e) {
+  _errorMessage = 'El usuario ya existe';
 }
+
   }
+
 
 
 

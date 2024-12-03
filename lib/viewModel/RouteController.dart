@@ -38,6 +38,10 @@ class RouteController {
     }
   }
 
+  double calculateCostKCal(Routes? route) {
+    throw UnimplementedError("Este método no está implementado");
+  }
+
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
       LatLng destination, TransportMode transportMode) async {
     //más adelante se tnedrá que tener en cuenta el tipo de ruta
@@ -98,6 +102,10 @@ class RouteController {
     Routes route = Routes(
         name, start, end, points, distance, time, transportMode, routeMode);
     return route;
+  }
+
+  Future<Routes> deleteRoute(Routes route){
+    throw UnimplementedError();
   }
 
   Future<bool> saveRoute(Routes route) async {
@@ -205,11 +213,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-      if (user != null) {
-        print('Usuario autenticado: ${user.uid}');
-      } else {
-        print('No hay usuario autenticado.');
-      }
     });
   }
 
@@ -246,6 +249,11 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       print("Error al guardar la ruta: $e");
       return false;
     }
+  }
+
+  @override
+   Future<bool> deleteRoute(Routes route) async {
+    throw UnimplementedError();
   }
 
   @override
@@ -293,6 +301,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 abstract class DbAdapterRoute {
   Future<bool> saveRoute(Routes route);
+  Future<bool> deleteRoute(Routes route);
   Future<Set<Routes>> getRouteList();
   Future<bool> removeFav(String routeName);
   Future<bool> addFav(String routeName);
