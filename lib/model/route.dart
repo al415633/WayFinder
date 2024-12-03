@@ -65,8 +65,7 @@ class Routes implements FavItem {
   }
 
   double calculateCostKCal() {
-    double avgConsumption = 55;
-    return distance * avgConsumption;
+    throw UnimplementedError("Este método no está implementado");
   }
 
   String get getName => name;
