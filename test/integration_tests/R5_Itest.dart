@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -23,14 +24,18 @@ void main() {
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterLocation = MockDbAdapterLocation();
 
-      final double lath5e1 = 39.98567;
-      final double longh5e1 = -0.04935;
-      final String aliash5e1 = "prueba 1";    
+      final double lath20e1 = 39.98567;
+      final double longh20e1 = -0.04935;
+      final String aliash20e1 = "prueba 1";   
+      final String topoh20e1 =  "Caja Rural, Castellón de la Plana, VC, España";
+
+      Location loc = Location(Coordinate(lath20e1, longh20e1), topoh20e1, aliash20e1);
+      loc.addFav;
 
       // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
         (_) async => {
-          Location.conFav(lath5e1,longh5e1, aliash5e1, true),
+          loc,
         },
       );
 
@@ -55,13 +60,13 @@ void main() {
       when(mockDbAdapterLocation.createLocationFromCoord(any))
           .thenAnswer((_) async => true);
 
-      await locationController.createLocationFromCoord(lath5e1, longh5e1, aliash5e1);
+      await locationController.createLocationFromCoord(lath20e1, longh20e1, aliash20e1);
 
        // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav("", aliash5e1))
+      when(mockDbAdapterLocation.addFav(topoh20e1, aliash20e1))
           .thenAnswer((_) async => true);
 
-      await locationController.addFav("", aliash5e1);
+      await locationController.addFav(topoh20e1, aliash20e1);
 
        
       // THEN
@@ -74,10 +79,10 @@ void main() {
       final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
-      expect(firstLocationh5e1.getToponym(), equals("")); // Verifica el topónimo
-      expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
+      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath20e1)); // Verifica la latitud
+      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh20e1)); // Verifica la longitud
+      expect(firstLocationh5e1.getToponym(), equals(topoh20e1)); // Verifica el topónimo
+      expect(firstLocationh5e1.getAlias(), equals(aliash20e1)); // Verifica el alias
       expect(firstLocationh5e1.getFav(), equals(true)); // Verifica el alias
 
     });
@@ -92,11 +97,16 @@ void main() {
       final double lath5e1 = 39.98567;
       final double longh5e1 = -0.04935;
       final String aliash5e1 = "prueba 1";    
+      final String topoh5e1 = "Caja Rural, Castellón de la Plana, VC, España";    
+
+      Location loca = Location(Coordinate(lath5e1, longh5e1), topoh5e1, aliash5e1);
+      loca.addFav;
+
 
       // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
         (_) async => {
-          Location.conFav(lath5e1,longh5e1, aliash5e1, false),
+          loca,
         },
       );
 
@@ -117,13 +127,13 @@ void main() {
 
       // WHEN
        // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav("", aliash5e1))
+      when(mockDbAdapterLocation.addFav(topoh5e1, "sdg resgw"))
         .thenThrow(Exception(),);
 
        
       // THEN
       expect(
-        () async =>   await locationController.addFav("", aliash5e1),
+        () async =>   await locationController.addFav(topoh5e1, "sdg resgw"),
         throwsA(isA<Exception>()),
       );
 
