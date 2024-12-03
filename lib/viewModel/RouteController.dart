@@ -209,11 +209,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-      if (user != null) {
-        print('Usuario autenticado: ${user.uid}');
-      } else {
-        print('No hay usuario autenticado.');
-      }
+   
     });
   }
 

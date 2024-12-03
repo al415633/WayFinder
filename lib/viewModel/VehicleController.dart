@@ -1,5 +1,9 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
+import 'package:WayFinder/model/DieselCar.dart';
+import 'package:WayFinder/model/ElectricCar.dart';
+import 'package:WayFinder/model/GasolineCar.dart';
+import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +22,10 @@ class VehicleController {
 
     static VehicleController? _instance;
 
+String capitalizeFirstLetter(String input) {
+  if (input.isEmpty) return input;
+  return input[0].toUpperCase() + input.substring(1).toLowerCase();
+}
 
   static VehicleController getInstance(DbAdapterVehicle dbAdapter) {
     _instance ??= VehicleController(dbAdapter);
@@ -40,13 +48,32 @@ class VehicleController {
      }
 
 
+
+
+
      if(!validateFuelType(fuelType)){
        throw Exception("NotValidVehicleException: El tipo de combustible no es válido");
      }
 
 
-      Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
+Vehicle vehicle;
 
+ String normalizedFuelType = capitalizeFirstLetter(fuelType);
+  switch (normalizedFuelType) {
+    case 'Gasolina':
+      vehicle = Gasolinecar(normalizedFuelType,consumption, numberPlate, name);
+      break;
+    case 'Diésel':
+    case 'Diesel': 
+      vehicle = Dieselcar(normalizedFuelType,consumption, numberPlate, name);
+      break;
+    case 'Eléctrico':
+    case 'Electrico': 
+      vehicle = Electriccar(normalizedFuelType,consumption, numberPlate, name);
+      break;
+    default:
+      throw Exception("NotValidVehicleException: Tipo de combustible no reconocido");
+  }
       bool success =  await _dbAdapter.createVehicle(vehicle);
       
       if (!success) {
@@ -62,6 +89,16 @@ class VehicleController {
       
       return success;
     }
+
+    double calculatePrice(Routes? route, Vehicle vehiculo) {
+      //Llamar a price
+      //Y price segun el tipo que sea que llame a un Diesel, Electric o Petrol cal
+        throw UnimplementedError("Este método no está implementado");
+  }
+
+
+
+    
 
 
 
@@ -173,11 +210,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-      if (user != null) {
-        //print('Usuario autenticado: ${user.uid}');
-      } else {
-        //print('No hay usuario autenticado.');
-      }
+
     });
   }
 
@@ -271,6 +304,10 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
     return true;
   }
+
+
+
+  
 }
 
 
