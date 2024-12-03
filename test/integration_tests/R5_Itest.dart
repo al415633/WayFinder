@@ -74,8 +74,8 @@ void main() {
       final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat(), equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong(), equals(longh5e1)); // Verifica la longitud
+      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
+      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
       expect(firstLocationh5e1.getToponym(), equals("")); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
       expect(firstLocationh5e1.getFav(), equals(true)); // Verifica el alias
