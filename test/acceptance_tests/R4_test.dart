@@ -27,7 +27,6 @@ void main() {
 
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('R4: Gestión de Routes', () {
-
     late DbAdapterRoute adapterRoute;
     late RouteController routeController;
 
@@ -52,18 +51,16 @@ void main() {
       // Cargar la configuración desde firebase_config.json
 
       //google ContUserControllerds
-      
 
       await Firebase.initializeApp(
         options: FirebaseOptions(
-          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-          authDomain: "wayfinder-df8eb.firebaseapp.com",
-          projectId: "wayfinder-df8eb",
-          storageBucket: "wayfinder-df8eb.appspot.com",
-          messagingSenderId: "571791500413",
-          appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-          measurementId: "G-TZLW8P5J8V"
-        ),
+            apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+            authDomain: "wayfinder-df8eb.firebaseapp.com",
+            projectId: "wayfinder-df8eb",
+            storageBucket: "wayfinder-df8eb.appspot.com",
+            messagingSenderId: "571791500413",
+            appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+            measurementId: "G-TZLW8P5J8V"),
       );
 
       
@@ -86,62 +83,63 @@ void main() {
  }
 
 
-      tearDownAll(() async {
-        // Borrar todos los documentos de testCollection
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-        var querySnapshot = await collectionRef.get();
+    tearDownAll(() async {
+      // Borrar todos los documentos de testCollection
+      var collectionRef =
+          FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot = await collectionRef.get();
 
-        for (var doc in querySnapshot.docs) {
-          await doc.reference.delete();
-        }
-
-        // Eliminar el usuario
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          await user.delete();
-        }
-      });   
-
-
-      Future<void> deleteRoute(String name) async {
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-        var querySnapshot = await collectionRef.where('name', isEqualTo: name).get();
-
-        for (var doc in querySnapshot.docs) {
-          await doc.reference.delete();
-        }
-        routeController.routeList = Future.value(<Routes>{});
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
       }
 
-     // Helper para limpiar la colección y eliminar usuario
-      Future<void> cleanUp() async {
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-        var querySnapshot = await collectionRef.get();
-        for (var doc in querySnapshot.docs) {
-          await doc.reference.delete(); 
-        }
+      // Eliminar el usuario
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.delete();
       }
+    });
 
+    Future<void> deleteRoute(String name) async {
+      var collectionRef =
+          FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot =
+          await collectionRef.where('name', isEqualTo: name).get();
 
-      Future<UserApp?> signInAndDeleteUser(String email, String password) async {
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        await cleanUp();
-        await userCredential.user!.delete();
-        return null;
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
       }
+      routeController.routeList = Future.value(<Routes>{});
+    }
 
+    // Helper para limpiar la colección y eliminar usuario
+    Future<void> cleanUp() async {
+      var collectionRef =
+          FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot = await collectionRef.get();
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+    }
+
+    Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await cleanUp();
+      await userCredential.user!.delete();
+      return null;
+    }
 
     test('H13-E1V - Crear ruta', () async {
-
       //GIVEN
 
       //Loguear usuario
       String emailh13e1 = "Pruebah13e1@gmail.com";
       String passwordh13e1 = "Aaaaa,.8";
-      String nameh13e1="Pruebah13e1";
+      String nameh13e1 = "Pruebah13e1";
       await userAppController.createUser(emailh13e1, passwordh13e1, nameh13e1);
 
       userApp = await userAppController.logInCredenciales(emailh13e1, passwordh13e1);
@@ -157,39 +155,34 @@ adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       vehicleController = VehicleController(adapterVehicle);
 
       //WHEN
-      
-     final double lat1 = 39.98567;
-     final double long1 = -0.04935;
-     final String apodo1 = "castellon";
 
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
 
-     final double lat2 = 39.8890;
-     final double long2 = -0.08499;
-     final String apodo2 = "burriana";
-     Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
-     Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Location ini =
+          await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      Location fin =
+          await locationController.createLocationFromCoord(lat2, long2, apodo2);
 
-     String name1 = "ruta 1";
+      String name1 = "ruta 1";
 
-
-     Routes firstRouteh13e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
-  
+      Routes firstRouteh13e1 = await routeController.createRoute(
+          name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
 
       //THEN
-     expect(firstRouteh13e1.getStart, equals(ini)); // Verifica el Location inicial
-     expect(firstRouteh13e1.getEnd, equals(fin)); // Verifica el Location final
+      expect(firstRouteh13e1.getStart,
+          equals(ini)); // Verifica el Location inicial
+      expect(firstRouteh13e1.getEnd, equals(fin)); // Verifica el Location final
 
-     await signInAndDeleteUser(emailh13e1, passwordh13e1);
-     await deleteRoute(name1);
-
-
-
-
+      await signInAndDeleteUser(emailh13e1, passwordh13e1);
+      await deleteRoute(name1);
     });
 
-
     test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
-
 /*
       //GIVEN
       //Loguear usuario
@@ -239,10 +232,7 @@ adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
      await _deleteRoute(name1);
 
      */
-
-
     });
-
 
     test('H14 - E1V Precio de una ruta', () async {
        //GIVEN

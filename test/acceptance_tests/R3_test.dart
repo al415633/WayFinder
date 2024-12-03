@@ -37,10 +37,6 @@ void main() {
         ),
       );
 
-      // Inicializar controladores
-      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
-      vehicleController = VehicleController(vehicleAdapter);
-
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
 
@@ -101,6 +97,9 @@ void main() {
 
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
+
+      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(vehicleAdapter);
       //WHEN
 
       final String namec = "Coche Quique";
@@ -143,6 +142,9 @@ void main() {
       String name="Pruebah9e3";
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
+
+      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(vehicleAdapter);
 
       //Loguear usuario
       //Hecho en el SetUpAll
@@ -189,6 +191,9 @@ void main() {
       String name="Pruebah10e1";
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
+
+      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(vehicleAdapter);
 
       //Tiene vehículo {nombre: "Coche Quique", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
       final String namec = "Coche Quique";
@@ -245,6 +250,9 @@ void main() {
       String name="Pruebah10e2";
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
+
+      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(vehicleAdapter);
       //WHEN
 
       final vehicleList = await vehicleController.getVehicleList();
