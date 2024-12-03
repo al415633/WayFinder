@@ -44,21 +44,6 @@ void main() {
       userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
 
-      // Crear usuario de prueba
-      const email = "quique@gmail.com";
-      const password = "Qaaaa,.8";
-      const nameU = "Qsa";
-
-      try {
-        await userAppController.createUser(email, password, nameU);
-      } catch (e) {
-        if (e is FirebaseAuthException && e.code != 'email-already-in-use') {
-          rethrow;
-        }
-      }
-
-      // Iniciar sesión
-      await userAppController.logInCredenciales(email, password);
     });
     
 
