@@ -1,0 +1,3 @@
+class Invalidcaloriecalculationexception {
+  //TODO
+}

@@ -38,6 +38,10 @@ class RouteController {
     }
   }
 
+  double calculateCostKCal(Routes? route) {
+    throw UnimplementedError("Este método no está implementado");
+  }
+
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
       LatLng destination, TransportMode transportMode) async {
     //más adelante se tnedrá que tener en cuenta el tipo de ruta
@@ -209,7 +213,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-   
     });
   }
 
