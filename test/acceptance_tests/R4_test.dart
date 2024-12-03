@@ -244,6 +244,91 @@ void main() {
    
 
 
+
+
+   test('H18-E1V - Listar rutas', () async {
+
+
+     //GIVEN
+
+
+     //Loguear usuario
+     String emailh18e1 = "Pruebah18e1@gmail.com";
+     String passwordh18e1 = "Aaaaa,.8";
+     String nameh18e1="Pruebah18e1";
+     await userAppController.createUser(emailh18e1, passwordh18e1, nameh18e1);
+
+     userApp = await userAppController.logInCredenciales(emailh18e1, passwordh18e1);
+
+
+     final double lat1 = 39.98567;
+     final double long1 = -0.04935;
+     final String apodo1 = "castellon";
+
+
+     final double lat2 = 39.8890;
+     final double long2 = -0.08499;
+     final String apodo2 = "burriana";
+     Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+     Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+
+     String name1 = "ruta 1";
+
+     Routes firstRouteh18e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+     bool success = await routeController.saveRoute(firstRouteh18e1);
+
+
+     //WHEN
+
+
+     final Set<Routes> route = await routeController.getRouteList();
+  
+
+     //THEN
+
+
+     // Convertir el set a una lista para acceder al primer elemento
+     final locationListh18e1 = route.toList();
+      
+     // Acceder al primer objeto en la lista
+     final firstRoute = locationListh18e1[0];
+
+
+     expect(firstRoute.getStart, equals(ini)); // Verifica el Location inicial
+     expect(firstRoute.getEnd, equals(fin)); // Verifica el Location final
+
+
+     await signInAndDeleteUser(emailh18e1, passwordh18e1);
+     await deleteRoute(name1);
+
+
+   });
+
+
+
+   test('H18-E3I - Listar rutas inálida, usuario no registrado', () async {
+
+
+     //GIVEN
+     // No registramos usuario
+
+
+     //WHEN
+    
+     //THEN
+
+
+    expect(
+       () async => await routeController.getRouteList(),
+       throwsA(isA<Exception>()),
+      
+     );
+
+
+
+
+   });
    
 
     test('H19', () async {
