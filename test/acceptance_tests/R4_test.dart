@@ -8,7 +8,7 @@ import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
+import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
@@ -93,11 +93,6 @@ void main() {
         await doc.reference.delete();
       }
 
-      // Eliminar el usuario
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await user.delete();
-      }
     });
 
     Future<void> deleteRoute(String name) async {
@@ -335,7 +330,7 @@ test('H14 - E2I Precio de una Ruta calculada incorrectamente', () async {
 
   String name1 = "Ruta h14 e 1";
 
-      final String numberPlate = "DKR9997";
+  final String numberPlate = "DKR9997";
 
   // WHEN
   Future<void> action() async {
@@ -348,7 +343,7 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
   }
 
   // THEN
-  expect(() async => await action(), throwsA(isA<Incorrectcalculationexception>()));
+  expect(() async => await action(), throwsA(isA<Invalidcaloriecalculationexception>()));
   await deleteVehicle(numberPlate);
   await userAppController.logOut();
 
@@ -357,15 +352,98 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
 });
 
+    test('H15 - E1V', () async {
+      //GIVEN
+      //Loguear usuario
+      String email = "Pruebah15e1@gmail.com";
+      String password = "Aaaaa,.8";
 
+      userApp = await userAppController.logInCredenciales(email, password);
 
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController.getInstance(adapterRoute);
 
-
-
-    test('H15', () async {
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
       
+      adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(adapterVehicle);
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final Coordinate coord1 = Coordinate(lat1, long1);
+      final String toponym1 = "Castellón de la Plana";
+      final String apodo1 = "castellon";
+
+      Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String toponym2 = "Burriana";
+      final String apodo2 = "burriana";
+      
+      Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+
+      String name1 = "Ruta h15 e1";
+
+      Routes ruta = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+      double coste = 0;
+      //WHEN
+      coste = ruta.calculateCostKCal();
+
+
+      //THEN
+      expect(coste, 123344.1); // Verifica el Location inicial
     });
 
+
+    test('H15 - E3I', () async {
+      //GIVEN
+      //Loguear usuario
+      String email = "Pruebah15e3@gmail.com";
+      String password = "Aaaaa,.8";
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController.getInstance(adapterRoute);
+
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+      
+      adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(adapterVehicle);
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      
+      Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+      String name1 = "Ruta h15 e3";
+      Routes? ruta = null;
+
+      double coste = 0;
+
+      //WHEN
+      void action() async {
+        coste =  routeController.calculateCostKCal(ruta);
+      }
+
+      //THEN
+
+      expect(() async => action(), throwsA(isA<Invalidcaloriecalculationexception>()));
+      //Crear excepcion IncorrectCalculationException
+
+    });
 
     test('H16', () async {
       
