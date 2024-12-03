@@ -33,7 +33,8 @@ void main() {
 
       // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-        (_) async => {Location(Coordinate(lath5e1, longh5e1), topoh5e1, aliash5e1)},
+        (_) async => {
+          Location(Coordinate(lath5e1, longh5e1), topoh5e1, aliash5e1)},
       );
 
       // GIVEN
