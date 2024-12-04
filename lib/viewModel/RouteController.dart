@@ -1,3 +1,4 @@
+import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
@@ -39,8 +40,22 @@ class RouteController {
   }
 
   double calculateCostKCal(Routes? route) {
-    throw UnimplementedError("Este método no está implementado");
-  }
+    
+if (route == null || route.transportMode==TransportMode.coche) {
+      throw Invalidcaloriecalculationexception();
+    }
+
+    const double walkingKCalPerKMeter = 50.0; //50.0 si es por km 
+    const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
+
+    switch (route.transportMode) {
+      case TransportMode.aPie:
+        return route.distance * walkingKCalPerKMeter;
+      case TransportMode.bicicleta:
+        return route.distance * bikingKCalPerKMeter;
+      default:
+        throw Invalidcaloriecalculationexception();
+    }  }
 
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
       LatLng destination, TransportMode transportMode) async {

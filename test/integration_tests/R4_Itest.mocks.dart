@@ -789,6 +789,16 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
       ) as _i7.Future<Set<_i6.Routes>>);
 
   @override
+  double calculateCostKCal(_i6.Routes? route) => (super.noSuchMethod(
+        Invocation.method(
+          #calculateCostKCal,
+          [route],
+        ),
+        returnValue: 0.0,
+        returnValueForMissingStub: 0.0,
+      ) as double);
+
+  @override
   _i7.Future<Map<String, dynamic>> getPoints(
     _i9.LatLng? initialPoint,
     _i9.LatLng? destination,
@@ -877,6 +887,28 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
       ) as _i7.Future<_i6.Routes>);
 
   @override
+  _i7.Future<_i6.Routes> deleteRoute(_i6.Routes? route) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteRoute,
+          [route],
+        ),
+        returnValue: _i7.Future<_i6.Routes>.value(_FakeRoutes_5(
+          this,
+          Invocation.method(
+            #deleteRoute,
+            [route],
+          ),
+        )),
+        returnValueForMissingStub: _i7.Future<_i6.Routes>.value(_FakeRoutes_5(
+          this,
+          Invocation.method(
+            #deleteRoute,
+            [route],
+          ),
+        )),
+      ) as _i7.Future<_i6.Routes>);
+
+  @override
   _i7.Future<bool> saveRoute(_i6.Routes? route) => (super.noSuchMethod(
         Invocation.method(
           #saveRoute,
@@ -942,6 +974,16 @@ class MockDbAdapterRoute extends _i1.Mock implements _i5.DbAdapterRoute {
   _i7.Future<bool> saveRoute(_i6.Routes? route) => (super.noSuchMethod(
         Invocation.method(
           #saveRoute,
+          [route],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<bool> deleteRoute(_i6.Routes? route) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteRoute,
           [route],
         ),
         returnValue: _i7.Future<bool>.value(false),
