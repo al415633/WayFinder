@@ -54,13 +54,13 @@ void main() {
         ),
       );
 
-      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollectionR4");
       routeController = RouteController.getInstance(adapterRoute);
 
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR4");
       userAppController = UserAppController(userAppAdapter);
 
-      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollectionR4");
       locationController = LocationController(adapterLocation);
 
        // Crear usuario de prueba
@@ -82,7 +82,7 @@ void main() {
 
       tearDownAll(() async {
         // Borrar todos los documentos de testCollection
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var collectionRef = FirebaseFirestore.instance.collection('testCollectionR4');
         var querySnapshot = await collectionRef.get();
 
         for (var doc in querySnapshot.docs) {
@@ -98,7 +98,7 @@ void main() {
 
 
       Future<void> deleteRoute(String name) async {
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var collectionRef = FirebaseFirestore.instance.collection('testCollectionR4');
         var querySnapshot = await collectionRef.where('name', isEqualTo: name).get();
 
         for (var doc in querySnapshot.docs) {
@@ -109,7 +109,7 @@ void main() {
 
      // Helper para limpiar la colección y eliminar usuario
       Future<void> cleanUp() async {
-        var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+        var collectionRef = FirebaseFirestore.instance.collection('testCollectionR4');
         var querySnapshot = await collectionRef.get();
         for (var doc in querySnapshot.docs) {
           await doc.reference.delete(); 
@@ -133,7 +133,7 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String emailh13e1 = "Pruebah13e1@gmail.com";
+      String emailh13e1 = "Pruebah13e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh13e1 = "Aaaaa,.8";
       String nameh13e1="Pruebah13e1";
       await userAppController.createUser(emailh13e1, passwordh13e1, nameh13e1);
@@ -249,7 +249,7 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String emailh17e1 = "Pruebah17e1@gmail.com";
+      String emailh17e1 = "Pruebah17e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
       String passwordh17e1 = "Aaaaa,.8";
       String nameh17e1="Pruebah17e1";
       await userAppController.createUser(emailh17e1, passwordh17e1, nameh17e1);
@@ -310,8 +310,14 @@ void main() {
 
      //GIVEN
 
+    //Loguear usuario
+    String emailh17e3 = "Pruebah17e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+    String passwordh17e3 = "Aaaaa,.8";
+    String nameh17e3="Pruebah17e3";
+    await userAppController.createUser(emailh17e3, passwordh17e3, nameh17e3);
 
-     //no nos registramos para que lance el error
+    userApp = await userAppController.logInCredenciales(emailh17e3, passwordh17e3);
+
 
 
      //WHEN
@@ -333,19 +339,17 @@ void main() {
     String name1 = "ruta 1";
 
 
-
-
     Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
-      //THEN
+      
+    await signInAndDeleteUser(emailh17e3, passwordh17e3); 
 
+    //THEN
 
      expect(
        () async => await routeController.saveRoute(firstRouteh17e1),
        throwsA(isA<Exception>()),
       
      );
-
-
 
 
    });
