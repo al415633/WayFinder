@@ -1,8 +1,10 @@
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
@@ -14,7 +16,9 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
   TransportMode transportModeInput = TransportMode.coche; // Default value
   RouteMode routeModeInput = RouteMode.rapida; // Default value
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
-
+  Vehicle? selectedVehicle;
+  VehicleController vehicleController =
+      VehicleController(FirestoreAdapterVehiculo());
 
   // Mensajes de error
   String errorMessage = '';
@@ -72,17 +76,57 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                 DropdownButton<TransportMode>(
                   value: transportModeInput,
                   items: TransportMode.values.map((mode) {
-                  return DropdownMenuItem<TransportMode>(
-                    value: mode,
-                    child: Text(mode.name),
-                  );
+                    return DropdownMenuItem<TransportMode>(
+                      value: mode,
+                      child: Text(mode.name),
+                    );
                   }).toList(),
                   onChanged: (value) {
-                  setDialogState(() {
-                    transportModeInput = value!;
-                  });
+                    setDialogState(() {
+                      transportModeInput = value!;
+                    });
                   },
                 ),
+                if (transportModeInput == TransportMode.coche)
+                  FutureBuilder<Set<Vehicle>>(
+                    future: vehicleController.getVehicleList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'Error al cargar los vehículos',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'El usuario no tiene coches dados de alta',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        );
+                      } else {
+                        return DropdownButton<Vehicle>(
+                          value: selectedVehicle,
+                          items: snapshot.data!.map((vehicle) {
+                            return DropdownMenuItem<Vehicle>(
+                              value: vehicle,
+                              child: Text(vehicle.name),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              selectedVehicle = value;
+                            });
+                          },
+                        );
+                      }
+                    },
+                  ),
                 DropdownButton<RouteMode>(
                   value: routeModeInput,
                   items: RouteMode.values.map((mode) {
@@ -124,7 +168,9 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                     });
                   } else {
                     // Crear la ruta
-                    Routes newRoute = await RouteController.getInstance(routeAdapter).createRoute(
+                    Routes newRoute =
+                        await RouteController.getInstance(routeAdapter)
+                            .createRoute(
                       routeNameInput,
                       startLocationInput!,
                       endLocationInput!,
