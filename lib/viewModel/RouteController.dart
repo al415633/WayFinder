@@ -18,7 +18,7 @@ class RouteController {
 
   // Constructor privado
   RouteController(this.repository) {
-    routeList = Future.value(<Routes>{});
+    routeList = repository.getRouteList();
   }
 
   // Instancia única
@@ -31,11 +31,7 @@ class RouteController {
 
 
   Future<Set<Routes>> getRouteList() async {
-    try {
-      return await routeList;
-    } catch (e) {
-      throw Exception("Error al obtener la lista de rutas: $e");
-    }
+    return routeList;
   }
 
   double calculateCostKCal(Routes? route) {
