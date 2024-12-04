@@ -42,9 +42,9 @@ class Routes implements FavItem {
         .map((point) => Coordinate.fromMap(point)).cast<LatLng>()
         .toList();
     fav = fav;
-    transportMode = mapa['transportMode'];
-    routeMode = mapa['routeMode'];
-  }
+    transportMode = TransportMode.values.firstWhere((e) => e.toString().split('.').last == mapa['transportMode']);
+    routeMode = RouteMode.values.firstWhere((e) => e.toString().split('.').last == mapa['routeMode']);
+ }
 
   @override
   bool getFav() => fav;
@@ -93,8 +93,8 @@ class Routes implements FavItem {
       'time': time,
       'points': points.map((point) => {'latitude': point.latitude, 'longitude': point.longitude}).toList(),
       'fav': fav,
-      'transportMode': transportMode,
-      'routeMode': routeMode,
-    };
+      'transportMode': transportMode.toString().split('.').last,  // Convertimos el enum a string
+      'routeMode': routeMode.toString().split('.').last,  // Convertimos el enum a string
+  };
   }
 }
