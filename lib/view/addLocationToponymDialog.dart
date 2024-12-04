@@ -1,12 +1,12 @@
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:flutter/material.dart';
 
-void showAddLocationToponymDialog(BuildContext context, String alias) {
-  String locationNameInput = '';
+Future<Map<String, String>?> showAddLocationToponymDialog(BuildContext context, String alias) async {
+  String toponymInput = '';
   String errorMessage = '';
   LocationController locationController = LocationController.getInstance(FirestoreAdapterLocation());
 
-  showDialog(
+  return showDialog<Map<String, String>>(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
@@ -20,7 +20,7 @@ void showAddLocationToponymDialog(BuildContext context, String alias) {
                   decoration: const InputDecoration(labelText: 'Topónimo'),
                   onChanged: (value) {
                     setDialogState(() {
-                      locationNameInput = value; // Actualizar el valor del nombre
+                      toponymInput = value; // Actualizar el valor del topónimo
                       errorMessage = ''; // Limpiar el mensaje de error
                     });
                   },
@@ -44,13 +44,12 @@ void showAddLocationToponymDialog(BuildContext context, String alias) {
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (locationNameInput.isEmpty) {
+                  if (toponymInput.isEmpty) {
                     setDialogState(() {
                       errorMessage = 'El campo no puede estar vacío';
                     });
                   } else {
-                    locationController.createLocationFromTopo(locationNameInput, alias);
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop({'alias': alias, 'toponym': toponymInput});
                   }
                 },
                 child: const Text('Crear Lugar'),

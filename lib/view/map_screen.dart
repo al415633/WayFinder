@@ -152,16 +152,29 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-    void _onLocationSelected(String locationNameInput) {
-    setState(() {
-      locationName = locationNameInput; // Guardar el nombre del lugar
-      isSelectingLocation = true; // Activar modo de selección
-    });
-
-    // Mostrar mensaje para guiar al usuario
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Selecciona una ubicación en el mapa.')),
-    );
+  Future<void> _onLocationSelected(String alias, String? toponym) async {
+    if (toponym == null) {
+      setState(() {
+        locationName = alias; // Guardar el nombre del lugar
+        isSelectingLocation = true; // Activar modo de selección
+      });
+      // Mostrar mensaje para guiar al usuario
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona una ubicación en el mapa.')),
+      );
+    } else {
+      try {
+        await locationController.createLocationFromTopo(toponym, alias);
+        _fetchLocations(); // Actualizar la lista de ubicaciones
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ubicación guardada exitosamente.')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar la ubicación: $e')),
+        );
+      }
+    }
   }
 
   Widget _buildSidePanel(String title, List items,
@@ -418,24 +431,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
-  void _fetchLocations() async {
-    try {
-      // Llamada asíncrona al ViewModel para obtener las ubicaciones
-      final fetchedLocations = await locationController
-          .getLocationList(); // Esperar el resultado del Future
-      setState(() {
-        locations = fetchedLocations
-            .toList(); // Convertir el Set a una lista y actualizar el estado
-        locations = sortFavItems(locations);
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar ubicaciones: $e')),
-      );
-    }
-  }
-
   List<T> sortFavItems<T extends FavItem>(List<T> items) {
     // Crea una copia de la lista original
     List<T> sortedItems = List.from(items);
@@ -455,6 +450,23 @@ class _MapScreenState extends State<MapScreen> {
 
     // Devuelve la lista ordenada
     return sortedItems;
+  }
+
+    void _fetchLocations() async {
+    try {
+      // Llamada asíncrona al ViewModel para obtener las ubicaciones
+      final fetchedLocations = await locationController
+          .getLocationList(); // Esperar el resultado del Future
+      setState(() {
+        locations = fetchedLocations
+            .toList(); // Convertir el Set a una lista y actualizar el estado
+        locations = sortFavItems(locations);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar ubicaciones: $e')),
+      );
+    }
   }
 
   void _fetchRoutes() async {

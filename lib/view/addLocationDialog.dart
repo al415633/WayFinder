@@ -1,10 +1,9 @@
 import 'package:WayFinder/view/addLocationToponymDialog.dart';
 import 'package:flutter/material.dart';
 
-void showAddLocationDialog(BuildContext context, Function(String) onLocationSelected) {
+void showAddLocationDialog(BuildContext context, Function(String, String?) onLocationSelected) {
   String locationNameInput = '';
   String errorMessage = '';
-  String toponym = '';
 
   showDialog(
     context: context,
@@ -49,21 +48,24 @@ void showAddLocationDialog(BuildContext context, Function(String) onLocationSele
                       errorMessage = 'El nombre del lugar no puede estar vacío';
                     });
                   } else {
-                    onLocationSelected(locationNameInput);
+                    onLocationSelected(locationNameInput, null);
                     Navigator.of(context).pop(); // Cerrar el diálogo
                   }
                 },
                 child: const Text('Usar Mapa'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (locationNameInput.isEmpty) {
                     setDialogState(() {
                       errorMessage = 'El nombre del lugar no puede estar vacío';
                     });
                   } else {
-                    Navigator.of(context).pop();
-                    showAddLocationToponymDialog(context, locationNameInput); // Cerrar el diálogo y abre el del toponimo
+                    final result = await showAddLocationToponymDialog(context, locationNameInput);
+                    if (result != null) {
+                      onLocationSelected(result['alias']!, result['toponym']);
+                    }
+                    Navigator.of(context).pop(); // Cerrar el diálogo
                   }
                 },
                 child: const Text('Introducir tóponimo'),
