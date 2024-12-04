@@ -18,7 +18,7 @@ class RouteController {
 
   // Constructor privado
   RouteController(this.repository) {
-    routeList = Future.value(<Routes>{});
+    routeList = repository.getRouteList();
   }
 
   // Instancia única
@@ -31,11 +31,7 @@ class RouteController {
 
 
   Future<Set<Routes>> getRouteList() async {
-    try {
-      return await routeList;
-    } catch (e) {
-      throw Exception("Error al obtener la lista de rutas: $e");
-    }
+    return routeList;
   }
 
   double calculateCostKCal(Routes? route) {
@@ -117,14 +113,13 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
-        routeList = currentSet as Future<Set<Routes>> ;
+        routeList = Future.value(currentSet)  ;
 
       }
 
       return success;
     } catch (e) {
-      print("Error al crear la ruta: $e");
-      return false;
+      throw("Error al crear la ruta: $e");
     }
   }
 
@@ -218,6 +213,13 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<Set<Routes>> getRouteList() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el location.');
+    }
+
+
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -238,6 +240,13 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<bool> saveRoute(Routes route) async {
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el location.');
+    }
+
     try {
       await db
           .collection(_collectionName)
