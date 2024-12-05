@@ -16,11 +16,12 @@ class Routes implements FavItem {
   bool fav;
   late TransportMode transportMode;
   late RouteMode routeMode;
+  late double calories;
 
   // Constructor
   Routes(String name, Location start, Location end, List<LatLng> points,
       double distance, double time, TransportMode transportMode, RouteMode routeMode,
-      {this.fav = false}) {
+      {this.fav = false, this.calories = 0.0}) {
     this.name = name;
     this.start = start;
     this.end = end;
@@ -30,6 +31,7 @@ class Routes implements FavItem {
     fav = false;
     this.transportMode = transportMode;
     this.routeMode = routeMode;
+    this.calories = 0.0;
   }
 
   Routes.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {
@@ -44,6 +46,7 @@ class Routes implements FavItem {
     fav = fav;
     transportMode = TransportMode.values.firstWhere((e) => e.toString().split('.').last == mapa['transportMode']);
     routeMode = RouteMode.values.firstWhere((e) => e.toString().split('.').last == mapa['routeMode']);
+    calories = mapa['calories'] ?? 0.0;
  }
 
   @override
@@ -74,6 +77,7 @@ class Routes implements FavItem {
   List<LatLng> get getPoints => points;
   TransportMode get getTransportMode => transportMode;
   RouteMode get getRouteMode => routeMode;
+  double get getCalories => calories;
 
   set setName(String name) => this.name = name;
   set setStart(Location start) => this.start = start;
@@ -83,6 +87,7 @@ class Routes implements FavItem {
   set setPoints(List<LatLng> points) => this.points = points;
   set setTransportMode(TransportMode transportMode) => this.transportMode = transportMode;
   set setRouteMode(RouteMode routeMode) => this.routeMode = routeMode;
+  set setCalories(double calories) => this.calories = calories;
 
   Map<String, dynamic> toMap() {
     return {
@@ -95,6 +100,7 @@ class Routes implements FavItem {
       'fav': fav,
       'transportMode': transportMode.toString().split('.').last,  // Convertimos el enum a string
       'routeMode': routeMode.toString().split('.').last,  // Convertimos el enum a string
+      'calories' : calories,
   };
   }
 }

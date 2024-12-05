@@ -48,6 +48,19 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       distance = result['distance'];
       estimatedTime = result['duration'];
       print('Distance: $distance, Estimated Time: $estimatedTime'); // Debugging statement
+
+      if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta){
+        try{
+          route.setCalories = RouteController.getInstance(routeAdapter).calculateCostKCal(route);
+        }catch (e){
+          route.setCalories = 0.0;
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al calcular calorías: $e')),
+          );
+        }
+      } else {
+        route.setCalories = 0.0;
+      }
     });
   }
 
@@ -145,6 +158,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                     Text('Distancia: ${distance < 1 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km'}'),
                     Text(
                       'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
+                      if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta)
+                        Text('Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
                   ],
                 ),
               ),
