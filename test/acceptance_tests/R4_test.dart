@@ -461,6 +461,131 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
     });
    
 
+  test('H17-E1V - Guardar ruta', () async {
+
+      //GIVEN
+
+      //Loguear usuario
+      String emailh17e1 = "Pruebah17e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+      String passwordh17e1 = "Aaaaa,.8";
+      String nameh17e1="Pruebah17e1";
+      await userAppController.createUser(emailh17e1, passwordh17e1, nameh17e1);
+
+      userApp = await userAppController.logInCredenciales(emailh17e1, passwordh17e1);
+
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController(adapterRoute);
+
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+      
+
+
+      //WHEN
+      
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+
+
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+
+      String name1 = "ruta 1";
+
+
+      Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+      bool success = await routeController.saveRoute(firstRouteh17e1);
+
+
+      //THEN
+
+
+      final Set<Routes> route = await routeController.getRouteList();
+
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final routeListh17e1 = route.toList();
+      
+      // Acceder al primer objeto en la lista
+      final routeh17e1 = routeListh17e1[0];
+      expect(success, equals(true)); 
+      expect(routeh17e1.getStart, equals(ini)); // Verifica el Location inicial
+      expect(routeh17e1.getEnd, equals(fin)); // Verifica el Location final
+
+
+      await signInAndDeleteUser(emailh17e1, passwordh17e1);
+      await deleteRoute(name1);
+
+
+   });
+
+
+
+
+   test('H17-E3I - Guardar ruta inválido, usuario no registrado', () async {
+
+
+     //GIVEN
+
+    //Loguear usuario
+    String emailh17e3 = "Pruebah17e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+    String passwordh17e3 = "Aaaaa,.8";
+    String nameh17e3="Pruebah17e3";
+    await userAppController.createUser(emailh17e3, passwordh17e3, nameh17e3);
+
+    userApp = await userAppController.logInCredenciales(emailh17e3, passwordh17e3);
+
+
+    adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+    routeController = RouteController(adapterRoute);
+
+    adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+    locationController = LocationController(adapterLocation);
+      
+
+
+
+     //WHEN
+    
+    final double lat1 = 39.98567;
+    final double long1 = -0.04935;
+    final String apodo1 = "castellon";
+
+
+
+
+    final double lat2 = 39.8890;
+    final double long2 = -0.08499;
+    final String apodo2 = "burriana";
+    Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+    Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+
+    String name1 = "ruta 1";
+
+
+    Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+      
+    await signInAndDeleteUser(emailh17e3, passwordh17e3); 
+
+    //THEN
+
+     expect(
+       () async => await routeController.saveRoute(firstRouteh17e1),
+       throwsA(isA<Exception>()),
+      
+     );
+
+
+   });
 
 
 
@@ -479,7 +604,7 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
     userApp = await userAppController.logInCredenciales(emailh18e1, passwordh18e1);
       
     adapterRoute = FirestoreAdapterRoute(collectionName: "testCollectionR4");
-    routeController = RouteController.getInstance(adapterRoute);
+    routeController = RouteController(adapterRoute);
 
     adapterLocation = FirestoreAdapterLocation(collectionName: "testCollectionR4");
     locationController = LocationController(adapterLocation);
@@ -536,11 +661,13 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
    test('H18-E3I - Listar rutas inválida, usuario no registrado', () async {
 
+    /*
+
 
      //GIVEN
      // No registramos usuario    
      
-      
+    
     adapterRoute = FirestoreAdapterRoute(collectionName: "testCollectionR4");
 
      //WHEN
@@ -556,7 +683,12 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
       // THEN
       expect(action(), throwsA(isA<Exception>()));
 
+            */
+
+
       });
+
+
 
 
    

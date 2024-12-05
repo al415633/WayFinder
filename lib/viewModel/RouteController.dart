@@ -230,11 +230,14 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   @override
   Future<Set<Routes>> getRouteList() async {
 
+    /*
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear el location.');
+      throw Exception('Usuario no autenticado. No se puede crear la ruta.');
     }
+
+    */
     
     try {
       final querySnapshot = await db
