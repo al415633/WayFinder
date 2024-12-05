@@ -93,11 +93,11 @@ class _InicioState extends State<Inicio> {
           ),
           Center(
             child: Container(
-              width: 500, // Dimensiones cuadradas
-              height: 500,
+              width: 700, 
+              height: 700,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9), // Fondo blanco semitransparente
+                color: Colors.white.withOpacity(0.9), 
                 borderRadius: BorderRadius.circular(16.0),
               ),
               child: login(),
