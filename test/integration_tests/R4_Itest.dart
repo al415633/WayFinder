@@ -123,7 +123,7 @@ void main() {
         (_) async => {ruta},
       );
 
-      when( mockDbAdapterRoute.deleteRoute(ruta)).thenAnswer((_) async  => true);
+      when(mockDbAdapterRoute.deleteRoute(ruta)).thenAnswer((_) async => true);
 
 
       //GIVEN
@@ -142,21 +142,24 @@ void main() {
 
       //WHEN
 
-      Routes firstRouteh19e1 = await routeController.deleteRoute(ruta);
+      bool success = await routeController.deleteRoute(ruta);
 
       // THEN
-      expect(firstRouteh19e1.getStart,equals(ini)); // Verifica el Location inicial
-      expect(firstRouteh19e1.getEnd, equals(fin)); // Verifica el Location final
+      expect(success,equals(true)); // Verifica que se ha eliminado
+
+      when(mockDbAdapterRoute.getRouteList()).thenAnswer(
+        (_) async => {},
+      );
 
 
-   //THEN
+      //THEN
 
-   final Set<Routes> route = await routeController.getRouteList();
+      final Set<Routes> route = await routeController.getRouteList();
 
-   // Convertir el set a una lista para acceder al primer elemento
-   final routeListh19e1 = route.toList();
-  
-   expect(routeListh19e1.length, equals(0)); // Verifica el Location inicial
+      // Convertir el set a una lista para acceder al primer elemento
+      final routeListh19e1 = route.toList();
+      
+      expect(routeListh19e1.length, equals(0)); // Verifica el Location inicial
 
 
 
@@ -169,10 +172,30 @@ void main() {
       // Configurar los mocks y el controlador dentro del test
     final mockAuth = MockFirebaseAuth();
     final mockDbAdapterRoute = MockDbAdapterRoute();
-    //final locationController = LocationController.getInstance(mockDbAdapterLocation);
+    final routeController = RouteController(mockDbAdapterRoute);
+
+       //simular los datos de la ruta
+    final double lat1 = 39.98567;
+    final double long1 = -0.04935;
+    final String apodo1 = "castellon";
+    final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";
+
+    final double lat2 = 39.8890;
+    final double long2 = -0.08499;
+    final String apodo2 = "burriana";
+    final String topo2 = "Caja Rural, Castellón de la Plana, VC, España";
+
+    Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
+    Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
+
+    String name1 = "ruta 1";
+
+    Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+
+
 
     // Simular que no hay usuario autenticado
-    when(mockDbAdapterRoute.getRouteList()).thenThrow(
+    when( await mockDbAdapterRoute.deleteRoute(ruta)).thenThrow(
       Exception("Usuario no autenticado"),
     );
 
@@ -180,7 +203,7 @@ void main() {
     // WHEN
     Future<void> action() async {
       //await locationController.getLocationList();
-      RouteController(mockDbAdapterRoute);
+      routeController.deleteRoute(ruta);
     }
 
     // THEN
