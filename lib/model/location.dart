@@ -52,10 +52,6 @@ class Location implements FavItem{
     return alias;
   }
 
-    void setFav(bool b) {
-     fav = b;
-  }
-
   Map<String, dynamic> toMap() {
     return {
       //'coord': coordinate,

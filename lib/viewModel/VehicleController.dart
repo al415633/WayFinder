@@ -83,8 +83,6 @@ class VehicleController {
       currentSet.add(vehicle);
       vehicleList = Future.value(currentSet);
       print(currentSet);
-      final currentSet2 = await vehicleList;
-      print(currentSet2);
     }
 
     return success;
