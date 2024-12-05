@@ -115,7 +115,7 @@ class RouteController {
     return route;
   }
 
-  Future<Routes> deleteRoute(Routes route){
+  Future<bool> deleteRoute(Routes route){
     throw UnimplementedError();
   }
 

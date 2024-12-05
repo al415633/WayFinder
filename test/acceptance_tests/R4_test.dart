@@ -132,7 +132,7 @@ void main() {
       //GIVEN
 
       //Loguear usuario
-      String emailh13e1 = "Pruebah13e1@gmail.com";
+      String emailh13e1 = "Pruebah13e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh13e1 = "Aaaaa,.8";
       String nameh13e1 = "Pruebah13e1";
       await userAppController.createUser(emailh13e1, passwordh13e1, nameh13e1);
@@ -691,11 +691,117 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
 
 
-   
+  test('H19-E1V - Eliminar ruta', () async {
 
-    test('H19', () async {
-      
-    });
+  //GIVEN
+
+ //Loguear usuario
+    String emailh19e1 = "Pruebah19e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+    String passwordh19e1 = "Aaaaa,.8";
+    String nameh19e1="Pruebah19e1";
+    await userAppController.createUser(emailh19e1, passwordh19e1, nameh19e1);
+
+    userApp = await userAppController.logInCredenciales(emailh19e1, passwordh19e1);
+
+
+    adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+    routeController = RouteController.getInstance(adapterRoute);
+
+    adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+    locationController = LocationController(adapterLocation);
+    
+    adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollection");
+    vehicleController = VehicleController(adapterVehicle);
+
+    //WHEN
+  
+   final double lat1 = 39.98567;
+   final double long1 = -0.04935;
+   final String apodo1 = "castellon";
+
+  final double lat2 = 39.8890;
+   final double long2 = -0.08499;
+   final String apodo2 = "burriana";
+   Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+   Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+   String name1 = "ruta 1";
+
+   Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+   bool success = await routeController.saveRoute(firstRouteh17e1);
+   bool success2 = await routeController.deleteRoute(firstRouteh17e1);
+
+   //THEN
+
+   final Set<Routes> route = await routeController.getRouteList();
+
+   // Convertir el set a una lista para acceder al primer elemento
+   final routeListh19e1 = route.toList();
+  
+   expect(routeListh19e1.length, equals(0)); // Verifica el Location inicial
+
+   await signInAndDeleteUser(emailh19e1, passwordh19e1);
+   await deleteRoute(name1);
+
+
+  });
+
+
+
+
+
+
+
+
+  test('H19-E4I - Eliminar ruta inválida, usuario no registrado', () async {
+
+    //GIVEN
+    //Loguear usuario
+    String emailh19e4 = "Pruebah19e4${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+    String passwordh19e4 = "Aaaaa,.8";
+    String nameh19e4="Pruebah19e4";
+    await userAppController.createUser(emailh19e4, passwordh19e4, nameh19e4);
+
+    userApp = await userAppController.logInCredenciales(emailh19e4, passwordh19e4);
+
+
+    adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+    routeController = RouteController.getInstance(adapterRoute);
+
+    adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+    locationController = LocationController(adapterLocation);
+    
+    adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollection");
+    vehicleController = VehicleController(adapterVehicle);
+
+    //WHEN
+  
+   final double lat1 = 39.98567;
+   final double long1 = -0.04935;
+   final String apodo1 = "castellon";
+
+   final double lat2 = 39.8890;
+   final double long2 = -0.08499;
+   final String apodo2 = "burriana";
+   Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+   Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+   String name1 = "ruta 1";
+
+   Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+   bool success = await routeController.saveRoute(firstRouteh17e1);
+   bool success2 = await routeController.deleteRoute(firstRouteh17e1);
+
+   await signInAndDeleteUser(emailh19e4, passwordh19e4);
+
+   //THEN
+   expect(
+       () async => await routeController.deleteRoute(firstRouteh17e1),
+       throwsA(isA<Exception>()),
+   );
+
+
+  });
 
   });
    
