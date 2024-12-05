@@ -134,14 +134,13 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
-        routeList = Future.value(currentSet);
+        routeList = currentSet as Future<Set<Routes>> ;
 
       }
 
       return success;
     } catch (e) {
-      print("Error al crear la ruta: $e");
-      return false;
+      throw Exception("Error al crear la ruta: $e");
     }
   }
 
@@ -255,6 +254,12 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<bool> saveRoute(Routes route) async {
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el location.');
+    }
     try {
       await db
           .collection(_collectionName)
