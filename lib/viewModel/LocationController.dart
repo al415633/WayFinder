@@ -184,11 +184,12 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
   @override
   Future<Set<Location>> getLocationList() async {
 
-    /*
-    if(_currentUser == null){
-        throw UserNotAuthenticatedException();
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el location.');
     }
-    */
+
 
     try {
       final querySnapshot = await db

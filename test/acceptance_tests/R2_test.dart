@@ -49,13 +49,7 @@ void main() {
         ),
       );
 
-      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
-      locationController = LocationController.getInstance(locationAdapter);
-
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
-      userAppController = UserAppController.getInstance(userAppAdapter);
-
-
+     
 
     });
 
@@ -95,6 +89,14 @@ void main() {
 
 
     test('H5-E1V - Crear lugar por coordenadas', () async {
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
+      userAppController = UserAppController(userAppAdapter);
+
+
 
       //GIVEN
 
@@ -143,6 +145,14 @@ void main() {
 
     test('H5-E3I - Coordenadas del Lugar incorrectas', () async {
 
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
+      userAppController = UserAppController(userAppAdapter);
+
+
+
       //GIVEN
 
       //Loguear usuario
@@ -176,6 +186,11 @@ void main() {
 
    test('H6-E1V - Crear lugar por toponimo', () async {
 
+    locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+    locationController = LocationController(locationAdapter);
+
+    userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
+    userAppController = UserAppController(userAppAdapter);
 
      //GIVEN
 
@@ -229,6 +244,13 @@ void main() {
 
    test('H6-E2I - Topónimo lugar inválido', () async {
 
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
+      userAppController = UserAppController(userAppAdapter);
+
+
 
      //GIVEN
 
@@ -263,6 +285,14 @@ void main() {
 
 
     test('H7-E1V - Listar lugares', () async {
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR2");
+      userAppController = UserAppController(userAppAdapter);
+
+
        //GIVEN
 
       //Loguear usuario
@@ -327,6 +357,10 @@ void main() {
 
 
     test('H7-E3I - Listar lugares inválida porque no hay usuario autenticado', () async {
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+
+
        //GIVEN
 
        
@@ -334,7 +368,7 @@ void main() {
 
       
           expect(
-        () async => await locationController.getLocationList(),
+        () async => LocationController(locationAdapter),
         throwsA(isA<Exception>()),
         
       );
