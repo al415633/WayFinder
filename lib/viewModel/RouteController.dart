@@ -120,12 +120,7 @@ class RouteController {
   }
 
   Future<bool> saveRoute(Routes route) async {
-
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear el location.');
-    }
+    
     try {
       bool success = await repository.saveRoute(route);
 
@@ -134,7 +129,7 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
-        routeList = currentSet as Future<Set<Routes>> ;
+        routeList = Future.value(currentSet) ;
 
       }
 

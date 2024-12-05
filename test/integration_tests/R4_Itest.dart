@@ -219,14 +219,10 @@ test('H15 - E3I', () async {
       final mockDbAdapterLocation = MockDbAdapterLocation();
       final locationController = LocationController(mockDbAdapterLocation);
 
-
-
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String apodo1 = "castellon";
       final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";  
-
-
 
       final double lat2 = 39.8890;
       final double long2 = -0.08499;
@@ -263,6 +259,8 @@ test('H15 - E3I', () async {
           .thenAnswer((_) async => true);
 
       bool success = await routeController.saveRoute(ruta);
+
+      print(success);
 
 
 
