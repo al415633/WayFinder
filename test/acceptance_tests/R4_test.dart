@@ -509,7 +509,7 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
    Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
    bool success = await routeController.saveRoute(firstRouteh17e1);
-   Routes ruta = await routeController.deleteRoute(firstRouteh17e1);
+   bool success2 = await routeController.deleteRoute(firstRouteh17e1);
 
    //THEN
 
@@ -570,13 +570,13 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
    Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
    bool success = await routeController.saveRoute(firstRouteh17e1);
-   Routes ruta = await routeController.deleteRoute(firstRouteh17e1);
+   bool success2 = await routeController.deleteRoute(firstRouteh17e1);
 
    await signInAndDeleteUser(emailh19e4, passwordh19e4);
 
    //THEN
    expect(
-       () async => await routeController.deleteRoute(ruta),
+       () async => await routeController.deleteRoute(firstRouteh17e1),
        throwsA(isA<Exception>()),
    );
 

@@ -99,8 +99,22 @@ class RouteController {
     return route;
   }
 
-  Future<Routes> deleteRoute(Routes route){
-    throw UnimplementedError();
+  Future<bool> deleteRoute(Routes route) async{
+      try {
+      bool success = await repository.deleteRoute(route);
+
+      if (success) {
+        final currentSet = await routeList;
+        // Agregar el nuevo Location al Set
+        currentSet.remove(route);
+        routeList = Future.value(currentSet) ;
+
+      }
+
+      return success;
+    } catch (e) {
+      throw Exception("Error al crear la ruta: $e");
+    }
   }
 
   Future<bool> saveRoute(Routes route) async {
@@ -112,7 +126,7 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
-        routeList = currentSet as Future<Set<Routes>> ;
+        routeList = Future.value(currentSet) ;
 
       }
 
@@ -248,7 +262,38 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
    Future<bool> deleteRoute(Routes route) async {
-    throw UnimplementedError();
+    
+     final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw Exception('Usuario no autenticado. No se puede eliminar la ruta.');
+      }
+
+      try {
+        // Obtener la colección de rutas del usuario
+        var collectionRef = db
+            .collection(_collectionName)
+            .doc(_currentUser?.uid)
+            .collection("RouteList");
+
+        // Buscar el documento por algún atributo único de la ruta, por ejemplo, 'name'
+        var querySnapshot = await collectionRef
+            .where('name', isEqualTo: route.getName)
+            .get();
+
+        // Verificar si se encontró el documento
+        if (querySnapshot.docs.isEmpty) {
+          throw Exception('Ruta no encontrada.');
+        }
+
+        // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
+        await querySnapshot.docs.first.reference.delete();
+
+        return true;
+      } catch (e) {
+        print("Error al eliminar la ruta: $e");
+        return false;
+      }
   }
 
   @override
