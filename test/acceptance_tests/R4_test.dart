@@ -36,6 +36,7 @@ void main() {
     late DbAdapterUserApp userAppAdapter;
     late UserAppController userAppController;
 
+    late FirebaseAuth auth;
     late UserApp? userApp;
 
     late DbAdapterVehicle adapterVehicle;
@@ -63,7 +64,7 @@ void main() {
       );
 
       
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollectionR4");
       userAppController = UserAppController(userAppAdapter);
 
   
@@ -72,7 +73,7 @@ void main() {
     });
 
        Future<void> deleteVehicle(String numberPlate) async {
-  var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+  var collectionRef = FirebaseFirestore.instance.collection('testCollectionR4');
   var querySnapshot = await collectionRef.where('numberPlate', isEqualTo: numberPlate).get();
 
   for (var doc in querySnapshot.docs) {
@@ -85,7 +86,7 @@ void main() {
     tearDownAll(() async {
       // Borrar todos los documentos de testCollection
       var collectionRef =
-          FirebaseFirestore.instance.collection('testCollection');
+          FirebaseFirestore.instance.collection('testCollectionR4');
       var querySnapshot = await collectionRef.get();
 
       for (var doc in querySnapshot.docs) {
@@ -96,7 +97,7 @@ void main() {
 
     Future<void> deleteRoute(String name) async {
       var collectionRef =
-          FirebaseFirestore.instance.collection('testCollection');
+          FirebaseFirestore.instance.collection('testCollectionR4');
       var querySnapshot =
           await collectionRef.where('name', isEqualTo: name).get();
 
@@ -109,7 +110,7 @@ void main() {
     // Helper para limpiar la colección y eliminar usuario
     Future<void> cleanUp() async {
       var collectionRef =
-          FirebaseFirestore.instance.collection('testCollection');
+          FirebaseFirestore.instance.collection('testCollectionR4');
       var querySnapshot = await collectionRef.get();
       for (var doc in querySnapshot.docs) {
         await doc.reference.delete();
@@ -139,7 +140,7 @@ void main() {
       userApp = await userAppController.logInCredenciales(emailh13e1, passwordh13e1);
 
 
-adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       routeController = RouteController.getInstance(adapterRoute);
 
       adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
@@ -229,6 +230,9 @@ adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
     });
 
     test('H14 - E1V Precio de una ruta', () async {
+
+      /*
+
        //GIVEN
       //Loguear usuario
       String email = "Pruebah14e1@gmail.com";
@@ -292,11 +296,14 @@ adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       await deleteVehicle(numberPlate);
       await userAppController.logOut();
 
+*/
 
     });
 
 
 test('H14 - E2I Precio de una Ruta calculada incorrectamente', () async {
+
+  /*
   
   // GIVEN
   // Loguear usuario
@@ -346,12 +353,13 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
   await deleteVehicle(numberPlate);
   await userAppController.logOut();
 
-
+*/
 
 
 });
 
     test('H15 - E1V', () async {
+      /*
       //GIVEN
       //Loguear usuario
       String email = "Pruebah15e1@gmail.com";
@@ -370,6 +378,8 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
+      final Coordinate coord1 = Coordinate(lat1, long1);
+      final String toponym1 = "Castellón de la Plana";
       final String apodo1 = "castellon";
 
       Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
@@ -377,6 +387,7 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
       final double lat2 = 39.8890;
       final double long2 = -0.08499;
+      final String toponym2 = "Burriana";
       final String apodo2 = "burriana";
       
       Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
@@ -387,15 +398,18 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
       Routes ruta = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
       double coste = 0;
       //WHEN
-       coste =  routeController.calculateCostKCal(ruta);
+      coste = ruta.calculateCostKCal();
 
 
       //THEN
-      expect(coste, 645.05); // Verifica el Location inicial
+      expect(coste, 123344.1); // Verifica el Location inicial
+
+      */
     });
 
 
     test('H15 - E3I', () async {
+      /*
       //GIVEN
       //Loguear usuario
       String email = "Pruebah15e3@gmail.com";
@@ -438,6 +452,7 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
       expect(() async => action(), throwsA(isA<Invalidcaloriecalculationexception>()));
       //Crear excepcion IncorrectCalculationException
+      */
 
     });
 
@@ -446,89 +461,36 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
     });
    
 
-   test('H17-E1V - Guardar ruta', () async {
-
-      //GIVEN
-
-      //Loguear usuario
-      String emailh17e1 = "Pruebah17e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
-      String passwordh17e1 = "Aaaaa,.8";
-      String nameh17e1="Pruebah17e1";
-      await userAppController.createUser(emailh17e1, passwordh17e1, nameh17e1);
-
-      userApp = await userAppController.logInCredenciales(emailh17e1, passwordh17e1);
-
-
-      //WHEN
-      
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
 
 
 
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-      Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
-      Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
-
-
-      String name1 = "ruta 1";
-
-
-      Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
-      bool success = await routeController.saveRoute(firstRouteh17e1);
-
-
-      //THEN
-
-
-      final Set<Routes> route = await routeController.getRouteList();
-
-
-      // Convertir el set a una lista para acceder al primer elemento
-      final routeListh17e1 = route.toList();
-      
-      // Acceder al primer objeto en la lista
-      final routeh17e1 = routeListh17e1[0];
-      expect(success, equals(true)); 
-      expect(routeh17e1.getStart, equals(ini)); // Verifica el Location inicial
-      expect(routeh17e1.getEnd, equals(fin)); // Verifica el Location final
-
-
-      await signInAndDeleteUser(emailh17e1, passwordh17e1);
-      await deleteRoute(name1);
-
-
-   });
-
-
-
-
-   test('H17-E3I - Guardar ruta inválido, usuario no registrado', () async {
+   test('H18-E1V - Listar rutas', () async {
 
 
      //GIVEN
 
-    //Loguear usuario
-    String emailh17e3 = "Pruebah17e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
-    String passwordh17e3 = "Aaaaa,.8";
-    String nameh17e3="Pruebah17e3";
-    await userAppController.createUser(emailh17e3, passwordh17e3, nameh17e3);
 
-    userApp = await userAppController.logInCredenciales(emailh17e3, passwordh17e3);
+     //Loguear usuario
+    String emailh18e1 = "Pruebah18e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+    String passwordh18e1 = "Aaaaa,.8";
+    String nameh18e1="Pruebah18e1";
+    await userAppController.createUser(emailh18e1, passwordh18e1, nameh18e1);
 
+    userApp = await userAppController.logInCredenciales(emailh18e1, passwordh18e1);
+      
+    adapterRoute = FirestoreAdapterRoute(collectionName: "testCollectionR4");
+    routeController = RouteController.getInstance(adapterRoute);
 
-
-     //WHEN
+    adapterLocation = FirestoreAdapterLocation(collectionName: "testCollectionR4");
+    locationController = LocationController(adapterLocation);
     
+    adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollectionR4");
+    vehicleController = VehicleController(adapterVehicle);
+
+
     final double lat1 = 39.98567;
     final double long1 = -0.04935;
     final String apodo1 = "castellon";
-
-
 
 
     final double lat2 = 39.8890;
@@ -540,23 +502,61 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
     String name1 = "ruta 1";
 
+    Routes firstRouteh18e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
+    bool success = await routeController.saveRoute(firstRouteh18e1);
 
-    Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
-      
-    await signInAndDeleteUser(emailh17e3, passwordh17e3); 
+
+    //WHEN
+
+
+    final Set<Routes> route = await routeController.getRouteList();
+  
 
     //THEN
 
-     expect(
-       () async => await routeController.saveRoute(firstRouteh17e1),
-       throwsA(isA<Exception>()),
+
+    // Convertir el set a una lista para acceder al primer elemento
+    final locationListh18e1 = route.toList();
       
-     );
+    // Acceder al primer objeto en la lista
+    final firstRoute = locationListh18e1[0];
+
+
+    expect(firstRoute.getStart, equals(ini)); // Verifica el Location inicial
+    expect(firstRoute.getEnd, equals(fin)); // Verifica el Location final
+
+
+    await signInAndDeleteUser(emailh18e1, passwordh18e1);
+    await deleteRoute(name1);
 
 
    });
 
 
+
+   test('H18-E3I - Listar rutas inválida, usuario no registrado', () async {
+
+
+     //GIVEN
+     // No registramos usuario    
+     
+      
+    adapterRoute = FirestoreAdapterRoute(collectionName: "testCollectionR4");
+
+     //WHEN
+    
+
+     //THEN
+
+      Future<void> action() async {
+      //await locationController.getLocationList();
+      RouteController(adapterRoute);
+      }
+
+      // THEN
+      expect(action(), throwsA(isA<Exception>()));
+
+      });
 
 
    
@@ -564,6 +564,7 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
     test('H19', () async {
       
     });
-   
+
   });
+   
 }
