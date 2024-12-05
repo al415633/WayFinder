@@ -350,55 +350,54 @@ void main() {
 
 
   test('H15 - E1V', () async {
-  // Loguear usuario
-  final mockAuth = MockFirebaseAuth();
-  final mockDbAdapterUserApp = MockDbAdapterUserApp();
-  final userAppController = UserAppController(mockDbAdapterUserApp);
-  final mockDbAdapterRoute = MockDbAdapterRoute();
-  final routeController = RouteController(mockDbAdapterRoute);
-  final mockDbAdapterLocation = MockDbAdapterLocation();
-  final locationController = LocationController(mockDbAdapterLocation);
+    // Loguear usuario
+    final mockDbAdapterUserApp = MockDbAdapterUserApp();
+    final userAppController = UserAppController(mockDbAdapterUserApp);
+    final mockDbAdapterRoute = MockDbAdapterRoute();
+    final routeController = RouteController(mockDbAdapterRoute);
+    final mockRouteController = MockRouteController();
 
-  final double lat1 = 39.98567;
-  final double long1 = -0.04935;
-  final Coordinate coord1 = Coordinate(lat1, long1);
-  final String topo1 = "Castellón de la Plana";
-  final String apodo1 = "castellon";
+    final double lat1 = 39.98567;
+    final double long1 = -0.04935;
+    final Coordinate coord1 = Coordinate(lat1, long1);
+    final String topo1 = "Castellón de la Plana";
+    final String apodo1 = "castellon";
 
-  final double lat2 = 39.8890;
-  final double long2 = -0.08499;
-  final String topo2 = "Burriana";
-  final String apodo2 = "burriana";
+    final double lat2 = 39.8890;
+    final double long2 = -0.08499;
+    final String topo2 = "Burriana";
+    final String apodo2 = "burriana";
 
-  String name1 = "Ruta h15 e1";
+    String name1 = "Ruta h15 e1";
 
-  Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
-  Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
+    Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
+    Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
 
-  Routes ruta = Routes(
-      name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+    Routes ruta = Routes(
+        name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
 
-  double coste = 0;
+    double coste = 0;
 
-  // WHEN
-  when(routeController.calculateCostKCal(ruta)).thenReturn(645.05);
+    // WHEN
+    when(mockRouteController.calculateCostKCal(ruta)).thenReturn(645.05);
 
-  // GIVEN
-  String email = "Pruebah15e1@gmail.com";
-  String password = "Aaaaa,.8";
-  String name = "Pruebah15e1";
+    // GIVEN
+    String email = "Pruebah15e1@gmail.com";
+    String password = "Aaaaa,.8";
+    String name = "Pruebah15e1";
 
-  // Simular la creación del usuario
-  when(userAppController.repository.createUser(email, password))
-      .thenAnswer((_) async => UserApp("id", name, email));
+    // Simular la creación del usuario
+    when(userAppController.repository.createUser(email, password))
+        .thenAnswer((_) async => UserApp("id", name, email));
 
-  await userAppController.createUser(email, password, name);
+    await userAppController.createUser(email, password, name);
 
-  // Llamar al método stubbed
-  coste = routeController.calculateCostKCal(ruta);
+    // Llamar al método stubbed
+    coste = mockRouteController.calculateCostKCal(ruta);
 
-  // THEN
-  expect(coste, 645.05);
+    // THEN
+    expect(coste, 645.05);
+    verify(mockRouteController.calculateCostKCal(ruta)).called(1);
 });
 
 test('H15 - E3I', () async {
@@ -409,16 +408,12 @@ test('H15 - E3I', () async {
       String name="Pruebah15e3";
 
 
-      final mockAuth = MockFirebaseAuth();
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
-      final mockDbAdapterRoute = MockDbAdapterRoute();
-      final routeController = RouteController(mockDbAdapterRoute);
-      final mockDbAdapterLocation = MockDbAdapterLocation();
-      final locationController = LocationController(mockDbAdapterLocation);
+      final mockRouteController = MockRouteController();
 
 
-            final double lat1 = 39.98567;
+      final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final Coordinate coord1 = Coordinate(lat1, long1);
       final String topo1 = "Castellón de la Plana";
@@ -443,7 +438,7 @@ test('H15 - E3I', () async {
           name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);      double coste = 0;
       //WHEN
 
-       when(routeController.calculateCostKCal(ruta)).thenThrow(
+       when(mockRouteController.calculateCostKCal(ruta)).thenThrow(
      Invalidcaloriecalculationexception(),);
 
    
@@ -458,13 +453,13 @@ test('H15 - E3I', () async {
         await userAppController.createUser(email, password, name);
 
         void action() async {
-        coste =  routeController.calculateCostKCal(ruta);
+        coste =  mockRouteController.calculateCostKCal(ruta);
       }
 
       //THEN
 
       expect(() async => action(), throwsA(isA<Invalidcaloriecalculationexception>()));
-
+      verify(mockRouteController.calculateCostKCal(ruta)).called(1);
 
 
 
