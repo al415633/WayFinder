@@ -80,60 +80,114 @@ void main() {
           nameh13e1, ini, fin, TransportMode.aPie, RouteMode.corta);
 
       // THEN
-      expect(firstRouteh13e1.getStart,
-          equals(ini)); // Verifica el Location inicial
+      expect(firstRouteh13e1.getStart,equals(ini)); // Verifica el Location inicial
       expect(firstRouteh13e1.getEnd, equals(fin)); // Verifica el Location final
     });
 
     test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
       //no necesita acceder a la base de datos porque crea la ruta pero no la almacena en la BBDD
     });
-    test('H13-E2V - Eliminar ruta', () async {
-      // Configurar los mocks y el controlador dentro del test
+
+
+    test('H19-E1V - Eliminar ruta', () async {
+
+
       final mockAuth = MockFirebaseAuth();
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterRoute = MockDbAdapterRoute();
-      final mockRouteController = RouteController(mockDbAdapterRoute);
+      final routeController = RouteController(mockDbAdapterRoute);
       final mockDbAdapterLocation = MockDbAdapterLocation();
       final mockDblocationController = LocationController(mockDbAdapterLocation);
 
+      //simular los datos de la ruta
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String apodo1 = "castellon";
-      //final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";
+      final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";
 
-      //final double lat2 = 39.8890;
-      //final double long2 = -0.08499;
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
       final String apodo2 = "burriana";
       final String topo2 = "Caja Rural, Castellón de la Plana, VC, España";
 
-      Location ini = await mockDblocationController.createLocationFromCoord(lat1, long1, apodo1);
-      Location fin = await mockDblocationController.createLocationFromTopo(topo2, apodo2);
+      Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
+      Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
 
       String name1 = "ruta 1";
 
-            Routes ruta = await mockRouteController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.corta);
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
 
       // Configurar el stub de `getRouteList`
       when(mockDbAdapterRoute.getRouteList()).thenAnswer(
         (_) async => {ruta},
       );
 
-      // Guardar la ruta
-      await mockRouteController.saveRoute(ruta);
+      when( mockDbAdapterRoute.deleteRoute(ruta)).thenAnswer((_) async  => true);
 
-      // Verificar que la ruta se ha guardado
-      var routeList = await mockRouteController.getRouteList();
-      expect(routeList.contains(ruta), isTrue);
 
-      // Eliminar la ruta
-      await mockRouteController.deleteRoute(ruta);
+      //GIVEN
 
-      // Verificar que la ruta se ha eliminado
-      routeList = await mockRouteController.getRouteList();
-      expect(routeList.contains(ruta), isFalse);
-    });
+      String emailh19e1 = "Pruebah19e1@gmail.com";
+      String passwordh19e1 = "Aaaaa,.8";
+      String nameh19e1 = "Pruebah19e1";
+
+      // Simular la creación del usuario
+      when(userAppController.repository.createUser(emailh19e1, passwordh19e1))
+          .thenAnswer((_) async => UserApp("id", nameh19e1, emailh19e1));
+
+      await userAppController.createUser(emailh19e1, passwordh19e1, nameh19e1);
+
+
+
+      //WHEN
+
+      Routes firstRouteh19e1 = await routeController.deleteRoute(ruta);
+
+      // THEN
+      expect(firstRouteh19e1.getStart,equals(ini)); // Verifica el Location inicial
+      expect(firstRouteh19e1.getEnd, equals(fin)); // Verifica el Location final
+
+
+   //THEN
+
+   final Set<Routes> route = await routeController.getRouteList();
+
+   // Convertir el set a una lista para acceder al primer elemento
+   final routeListh19e1 = route.toList();
+  
+   expect(routeListh19e1.length, equals(0)); // Verifica el Location inicial
+
+
 
   });
+
+
+
+  test('H19-E4I - Eliminar ruta inválida, usuario no registrado', () async {
+
+      // Configurar los mocks y el controlador dentro del test
+    final mockAuth = MockFirebaseAuth();
+    final mockDbAdapterRoute = MockDbAdapterRoute();
+    //final locationController = LocationController.getInstance(mockDbAdapterLocation);
+
+    // Simular que no hay usuario autenticado
+    when(mockDbAdapterRoute.getRouteList()).thenThrow(
+      Exception("Usuario no autenticado"),
+    );
+
+
+    // WHEN
+    Future<void> action() async {
+      //await locationController.getLocationList();
+      RouteController(mockDbAdapterRoute);
+    }
+
+    // THEN
+    expect(action(), throwsA(isA<Exception>()));
+  });
+
+
+  });
+
 }
