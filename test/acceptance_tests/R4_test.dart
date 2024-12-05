@@ -453,9 +453,11 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
       //GIVEN
 
       //Loguear usuario
-      String emailh17e1 = "Pruebah17e1@gmail.com";
+      String emailh17e1 = "Pruebah17e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
       String passwordh17e1 = "Aaaaa,.8";
       String nameh17e1="Pruebah17e1";
+      await userAppController.createUser(emailh17e1, passwordh17e1, nameh17e1);
+
       userApp = await userAppController.logInCredenciales(emailh17e1, passwordh17e1);
 
 
@@ -512,13 +514,18 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
      //GIVEN
 
+    //Loguear usuario
+    String emailh17e3 = "Pruebah17e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";      
+    String passwordh17e3 = "Aaaaa,.8";
+    String nameh17e3="Pruebah17e3";
+    await userAppController.createUser(emailh17e3, passwordh17e3, nameh17e3);
 
-     //no nos registramos para que lance el error
+    userApp = await userAppController.logInCredenciales(emailh17e3, passwordh17e3);
+
 
 
      //WHEN
     
-
     final double lat1 = 39.98567;
     final double long1 = -0.04935;
     final String apodo1 = "castellon";
@@ -536,20 +543,17 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
     String name1 = "ruta 1";
 
 
-
-
     Routes firstRouteh17e1 = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
-      //THEN
+      
+    await signInAndDeleteUser(emailh17e3, passwordh17e3); 
 
+    //THEN
 
      expect(
        () async => await routeController.saveRoute(firstRouteh17e1),
-
        throwsA(isA<Exception>()),
       
      );
-
-
 
 
    });
