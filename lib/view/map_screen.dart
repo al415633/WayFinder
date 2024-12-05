@@ -497,9 +497,11 @@ class _MapScreenState extends State<MapScreen> {
 
   void _fetchVehicles() async {
     try {
+      print("entra en fetchvehicles"); //sí que entra
       final fetchedVehicles =
           await vehicleController.getVehicleList(); // Obtener la lista de rutas
       setState(() {
+        print(fetchedVehicles); //esto da vacío no sé why
         vehicles = fetchedVehicles
             .toList(); // Convertir a lista y actualizar el estado
         vehicles = sortFavItems(vehicles);
