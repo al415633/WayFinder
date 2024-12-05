@@ -391,11 +391,11 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
       Routes ruta = await routeController.createRoute(name1, ini, fin, TransportMode.aPie, RouteMode.rapida);
       double coste = 0;
       //WHEN
-      coste = ruta.calculateCostKCal();
+       coste =  routeController.calculateCostKCal(ruta);
 
 
       //THEN
-      expect(coste, 123344.1); // Verifica el Location inicial
+      expect(coste, 645.05); // Verifica el Location inicial
     });
 
 
@@ -460,8 +460,6 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
       String emailh17e1 = "Pruebah17e1@gmail.com";
       String passwordh17e1 = "Aaaaa,.8";
       String nameh17e1="Pruebah17e1";
-      await userAppController.createUser(emailh17e1, passwordh17e1, nameh17e1);
-
       userApp = await userAppController.logInCredenciales(emailh17e1, passwordh17e1);
 
 

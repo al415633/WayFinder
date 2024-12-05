@@ -64,9 +64,7 @@ class Routes implements FavItem {
     return 0;
   }
 
-  double calculateCostKCal() {
-    throw UnimplementedError("Este método no está implementado");
-  }
+ 
 
   String get getName => name;
   Location get getStart => start;

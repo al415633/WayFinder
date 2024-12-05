@@ -130,7 +130,7 @@ class _MapScreenState extends State<MapScreen> {
                 'Vehículos',
                 vehicles,
                 (item) => _buildVehicleItem(item as Vehicle),
-                () => showAddVehicleDialog(context)),
+                () => showAddVehicleDialog(context, _fetchVehicles)),
         ],
       ),
     );
