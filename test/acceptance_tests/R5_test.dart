@@ -21,9 +21,7 @@ void main() {
     late DbAdapterUserApp adapterUserApp;
     late UserAppController userAppController;
 
-    late FirebaseAuth auth;
     late UserApp? userApp;
-
 
    setUpAll(() async {
       // Inicializar el entorno de pruebas

@@ -6,9 +6,6 @@ import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/view/map_screen.dart';
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
 
@@ -212,7 +209,7 @@ void _login() async {
     
     UserAppController? userAppController = UserAppController.getInstance();
 
-    await userAppController?.logInCredenciales(email, password);
+    await userAppController.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
 

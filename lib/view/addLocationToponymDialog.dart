@@ -1,10 +1,9 @@
-import 'package:WayFinder/viewModel/LocationController.dart';
+
 import 'package:flutter/material.dart';
 
 Future<Map<String, String>?> showAddLocationToponymDialog(BuildContext context, String alias) async {
   String toponymInput = '';
   String errorMessage = '';
-  LocationController locationController = LocationController.getInstance(FirestoreAdapterLocation());
 
   return showDialog<Map<String, String>>(
     context: context,

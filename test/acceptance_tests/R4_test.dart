@@ -36,7 +36,6 @@ void main() {
     late DbAdapterUserApp userAppAdapter;
     late UserAppController userAppController;
 
-    late FirebaseAuth auth;
     late UserApp? userApp;
 
     late DbAdapterVehicle adapterVehicle;
@@ -371,8 +370,6 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
-      final Coordinate coord1 = Coordinate(lat1, long1);
-      final String toponym1 = "Castellón de la Plana";
       final String apodo1 = "castellon";
 
       Location ini = await locationController.createLocationFromCoord(lat1, long1, apodo1);
@@ -380,7 +377,6 @@ Gasolinecar vehiculo =Gasolinecar(fuelType, consumption, numberPlate, namec);
 
       final double lat2 = 39.8890;
       final double long2 = -0.08499;
-      final String toponym2 = "Burriana";
       final String apodo2 = "burriana";
       
       Location fin = await locationController.createLocationFromCoord(lat2, long2, apodo2);
