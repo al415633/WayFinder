@@ -428,7 +428,7 @@ void main() {
       });
 
 
-          test('H19-E1V - Eliminar ruta', () async {
+     test('H19-E1V - Eliminar ruta', () async {
 
 
       final mockAuth = MockFirebaseAuth();
@@ -542,7 +542,7 @@ void main() {
     // WHEN
     Future<void> action() async {
       //await locationController.getLocationList();
-      routeController.deleteRoute(ruta);
+      await routeController.deleteRoute(ruta);
     }
 
     // THEN
