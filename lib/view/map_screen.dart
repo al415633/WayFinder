@@ -127,7 +127,7 @@ class _MapScreenState extends State<MapScreen> {
                 'Rutas',
                 routes,
                 (item) => _buildRouteItem(item as Routes),
-                () => showAddRouteDialog(context, locations, _onRouteSelected)),
+                () => showAddRouteDialog(context, locations,vehicles,  _onRouteSelected)),
           if (showVehicles)
             _buildSidePanel(
                 'Vehículos',
