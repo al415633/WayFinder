@@ -1,21 +1,18 @@
-import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/view/routeMapScreen.dart';
-import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
-void showAddRouteDialog(BuildContext context, List<Location> locations) {
+void showAddRouteDialog(BuildContext context, List<Location> locations,
+    Function(String, Location, Location, TransportMode, RouteMode, bool) onRouteSelected) {
   // Variables para los datos de la ruta
   String routeNameInput = '';
   Location? startLocationInput;
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
   RouteMode routeModeInput = RouteMode.rapida; // Default value
-  FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
   Vehicle? selectedVehicle;
   VehicleController vehicleController =
       VehicleController(FirestoreAdapterVehiculo());
@@ -167,27 +164,28 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                       errorMessage = 'Por favor, complete todos los campos.';
                     });
                   } else {
-                    // Crear la ruta
-                    Routes newRoute =
-                        await RouteController.getInstance(routeAdapter)
-                            .createRoute(
-                      routeNameInput,
-                      startLocationInput!,
-                      endLocationInput!,
-                      transportModeInput,
-                      routeModeInput,
-                    );
-
-                    // Navegar a RouteMapScreen
+                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, true);
                     Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RouteMapScreen(route: newRoute),
-                      ),
-                    );
                   }
                 },
-                child: const Text('Crear'),
+                child: const Text('Guardar y generar ruta'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (routeNameInput.isEmpty ||
+                      startLocationInput == null ||
+                      endLocationInput == null) {
+                    setDialogState(() {
+                      errorMessage = 'Por favor, complete todos los campos.';
+                    });
+                  } else {
+
+                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, false); 
+                    // Navegar a RouteMapScreen
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Generar ruta'),
               ),
             ],
           );
