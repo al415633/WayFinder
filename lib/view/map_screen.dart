@@ -220,11 +220,7 @@ class _MapScreenState extends State<MapScreen> {
         SnackBar(content: Text('Error al guardar la ubicación: $e')),
       );
     }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => RouteMapScreen(route: route),
-      ),
-    );
+    _showRoutes(route);
   }
 
   Widget _buildSidePanel(String title, List items,
@@ -420,6 +416,8 @@ class _MapScreenState extends State<MapScreen> {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
+              routeController.deleteRoute(route);
+              _fetchRoutes();
               print('Eliminar ruta');
             },
           ),
