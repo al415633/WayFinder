@@ -4,6 +4,8 @@ import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
+import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
@@ -103,7 +105,7 @@ class RouteController {
   }
 
   Future<Routes> createRoute(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode) async {
+      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle) async {
     LatLng initialPoint =
         LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
     LatLng destination =
@@ -113,7 +115,7 @@ class RouteController {
     double distance = calculateDistance(points);
     double time = calculateTime(transportMode, distance);
     Routes route = Routes(
-        name, start, end, points, distance, time, transportMode, routeMode);
+        name, start, end, points, distance, time, transportMode, routeMode, vehicle);
     return route;
   }
 

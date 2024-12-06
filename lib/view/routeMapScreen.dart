@@ -28,6 +28,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   bool showVehicles = false;
   double distance = 0.0;
   double estimatedTime = 0.0;
+  double cost = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
   FirestoreAdapterVehiculo vehicleAdapter = FirestoreAdapterVehiculo();
 
@@ -52,6 +53,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       distance = result['distance'];
       estimatedTime = result['duration'];
       print('Distance: $distance, Estimated Time: $estimatedTime'); // Debugging statement
+      
+      });
 
       if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta){
         try{
@@ -62,10 +65,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           SnackBar(content: Text('Error al calcular calorías: $e')),
           );
         }
-      } else {
-        // VehicleController.getInstance(vehicleAdapter).calculatePrice(route, vehiculo);
-      }
-    });
+      } else if (transportMode == TransportMode.coche){
+          cost = await VehicleController.getInstance(vehicleAdapter).calculatePrice(route, route.getVehicle!);      }
   }
 
   void calculateDistanceAndTime() {
@@ -164,6 +165,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
                       if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta)
                         Text('Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
+                      if (transportMode == TransportMode.coche)
+                        Text('Coste: ${cost.toStringAsFixed(2)} €'), // Mostrar el coste
                   ],
                 ),
               ),

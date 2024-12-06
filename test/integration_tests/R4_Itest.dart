@@ -5,9 +5,12 @@ import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -21,7 +24,9 @@ import 'R4_Itest.mocks.dart';
   MockSpec<RouteController>(),
   MockSpec<DbAdapterRoute>(),
   MockSpec<DbAdapterUserApp>(),
-  MockSpec<DbAdapterLocation>()
+  MockSpec<DbAdapterLocation>(),
+  MockSpec<Electriccarprice>(),
+  MockSpec<DbAdapterVehicle>(),
   
 ])
 void main() {
@@ -54,7 +59,7 @@ void main() {
       String name1 = "ruta 1";
 
       Routes ruta = Routes(
-          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
 
       // Configurar el stub de `getRouteList`
       when(mockDbAdapterRoute.getRouteList()).thenAnswer(
@@ -79,7 +84,7 @@ void main() {
       // .thenReturn((_) => ruta);
 
       Routes firstRouteh13e1 = await mockRouteController.createRoute(
-          nameh13e1, ini, fin, TransportMode.aPie, RouteMode.corta);
+          nameh13e1, ini, fin, TransportMode.aPie, RouteMode.corta, null);
 
       // THEN
       expect(firstRouteh13e1.getStart,
@@ -98,11 +103,12 @@ void main() {
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterRoute = MockDbAdapterRoute();
       final routeController = RouteController(mockDbAdapterRoute);
-      final mockRouteController = MockRouteController();
+      final mockDbAdapterVehicle = MockDbAdapterVehicle();
+      final vehicleController = VehicleController(mockDbAdapterVehicle);
+      final mockElectricCarPrice = MockElectriccarprice();
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
-      final Coordinate coord1 = Coordinate(lat1, long1);
       final String topo1 = "Castellón de la Plana";
       final String apodo1 = "castellon";
 
@@ -111,18 +117,26 @@ void main() {
       final String topo2 = "Burriana";
       final String apodo2 = "burriana";
 
-      String name1 = "Ruta h15 e1";
+      String name1 = "Ruta h14 e1";
 
       Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
       Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
 
       Routes ruta = Routes(
-          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
+
+      final String namec = "Coche Quique";
+      final double consumption = 24.3;
+      final String numberPlate = "DKR9087";
+      final String fuelType = 'Eléctrico';
+
+      Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 
       double coste = 0;
 
       // WHEN
-      when(mockRouteController.calculateCostKCal(ruta)).thenReturn(645.05);
+      when(mockElectricCarPrice.fetchElectricityPrice())
+         .thenAnswer((_) async => 0.12);
 
       // GIVEN
       String email = "Pruebah15e1@gmail.com";
@@ -135,12 +149,12 @@ void main() {
 
       await userAppController.createUser(email, password, name);
 
-      // Llamar al método stubbed
-      coste = mockRouteController.calculateCostKCal(ruta);
+      coste = await vehicleController.calculatePrice(ruta, vehicle);
 
       // THEN
-      expect(coste, 645.05);
-      verify(mockRouteController.calculateCostKCal(ruta)).called(1);
+      expect(coste, isNotNull);
+      expect(coste, inExclusiveRange(0.20, 2.3));
+      verify(mockElectricCarPrice.calculatePrice(ruta, vehicle)).called(1);
     });
 
     test('H14 - E2I - Calculo del precio ruta que es incorrecto', () async {
@@ -177,7 +191,7 @@ void main() {
       Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
 
 
-      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);      
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);      
       
       double coste = 0;
       
@@ -235,7 +249,7 @@ void main() {
 
       String name1 = "ruta 1";
 
-      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
 
        // Configurar el stub de `getRouteList`
       when(mockDbAdapterRoute.getRouteList()).thenAnswer(
@@ -307,7 +321,7 @@ void main() {
 
       String name1 = "ruta 1";
 
-      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
 
       // GIVEN
       // no registramos usuario 
@@ -360,7 +374,7 @@ void main() {
 
       String name1 = "ruta 1";
 
-      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
 
        // Configurar el stub de `getRouteList`
       when(mockDbAdapterRoute.getRouteList()).thenAnswer(
@@ -455,7 +469,7 @@ void main() {
 
       String name1 = "ruta 1";
 
-      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
 
       // Configurar el stub de `getRouteList`
       when(mockDbAdapterRoute.getRouteList()).thenAnswer(
@@ -529,7 +543,7 @@ void main() {
 
     String name1 = "ruta 1";
 
-    Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta);
+    Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
 
 
 
