@@ -1,3 +1,4 @@
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
@@ -5,8 +6,12 @@ import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
-void showAddRouteDialog(BuildContext context, List<Location> locations,
-    Function(String, Location, Location, TransportMode, RouteMode, bool) onRouteSelected) {
+void showAddRouteDialog(
+    BuildContext context,
+    List<Location> locations,
+    List<Vehicle> vehicles,
+    Function(String, Location, Location, TransportMode, RouteMode, bool)
+        onRouteSelected) {
   // Variables para los datos de la ruta
   String routeNameInput = '';
   Location? startLocationInput;
@@ -17,8 +22,10 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
   VehicleController vehicleController =
       VehicleController(FirestoreAdapterVehiculo());
 
+
   // Mensajes de error
   String errorMessage = '';
+
 
   showDialog(
     context: context,
@@ -85,31 +92,10 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
                   },
                 ),
                 if (transportModeInput == TransportMode.coche)
-                  FutureBuilder<Set<Vehicle>>(
-                    future: vehicleController.getVehicleList(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            'Error al cargar los vehículos',
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        );
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            'El usuario no tiene coches dados de alta',
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        );
-                      } else {
-                        return DropdownButton<Vehicle>(
+                  vehicles.isNotEmpty
+                      ? DropdownButton<Vehicle>(
                           value: selectedVehicle,
-                          items: snapshot.data!.map((vehicle) {
+                          items: vehicles.map((vehicle) {
                             return DropdownMenuItem<Vehicle>(
                               value: vehicle,
                               child: Text(vehicle.name),
@@ -120,10 +106,14 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
                               selectedVehicle = value;
                             });
                           },
-                        );
-                      }
-                    },
-                  ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'El usuario no tiene coches dados de alta',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
                 DropdownButton<RouteMode>(
                   value: routeModeInput,
                   items: RouteMode.values.map((mode) {
@@ -164,7 +154,13 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
                       errorMessage = 'Por favor, complete todos los campos.';
                     });
                   } else {
-                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, true);
+                    onRouteSelected(
+                        routeNameInput,
+                        startLocationInput!,
+                        endLocationInput!,
+                        transportModeInput,
+                        routeModeInput,
+                        true);
                     Navigator.of(context).pop();
                   }
                 },
@@ -179,8 +175,13 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
                       errorMessage = 'Por favor, complete todos los campos.';
                     });
                   } else {
-
-                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, false); 
+                    onRouteSelected(
+                        routeNameInput,
+                        startLocationInput!,
+                        endLocationInput!,
+                        transportModeInput,
+                        routeModeInput,
+                        false);
                     // Navegar a RouteMapScreen
                     Navigator.of(context).pop();
                   }
