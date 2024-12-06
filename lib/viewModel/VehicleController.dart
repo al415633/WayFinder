@@ -1,39 +1,48 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
-import 'package:WayFinder/model/DieselCar.dart';
-import 'package:WayFinder/model/ElectricCar.dart';
-import 'package:WayFinder/model/GasolineCar.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/DieselCarPrice.dart';
+import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
+import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
+import 'package:WayFinder/viewModel/Price.dart';
+import 'package:WayFinder/viewModel/PriceProxy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+
 class VehicleController {
   // Propiedades
-
   late Future<Set<Vehicle>> vehicleList;
   final DbAdapterVehicle _dbAdapter;
+
 
   VehicleController(this._dbAdapter) {
     vehicleList =
         _dbAdapter.getVehicleList(); // Inicializa con un conjunto vacío
   }
 
+
   static VehicleController? _instance;
+
 
   String capitalizeFirstLetter(String input) {
     if (input.isEmpty) return input;
     return input[0].toUpperCase() + input.substring(1).toLowerCase();
   }
 
+
   static VehicleController getInstance(DbAdapterVehicle dbAdapter) {
     _instance ??= VehicleController(dbAdapter);
     return _instance!;
   }
 
+
   Future<Set<Vehicle>> getVehicleList() async {
     return vehicleList;
   }
+
 
   Future<bool> createVehicle(String numberPlate, double consumption,
       String fuelType, String name) async {
@@ -42,61 +51,69 @@ class VehicleController {
           "NotValidVehicleException: El formato de la matrícula no es correcto");
     }
 
+
     if (!threeDecimalPlacesMax(consumption)) {
       throw Exception(
           "NotValidVehicleException: El formato del consumo no es correcto");
     }
+
 
     if (!validateFuelType(fuelType)) {
       throw Exception(
           "NotValidVehicleException: El tipo de combustible no es válido");
     }
 
-    Vehicle vehicle;
 
-    String normalizedFuelType = capitalizeFirstLetter(fuelType);
-    switch (normalizedFuelType) {
-      case 'Gasolina':
-        vehicle =
-            Gasolinecar(normalizedFuelType, consumption, numberPlate, name);
-        break;
-      case 'Diésel':
-      case 'Diesel':
-        vehicle = Dieselcar(normalizedFuelType, consumption, numberPlate, name);
-        break;
-      case 'Eléctrico':
-      case 'Electrico':
-        vehicle =
-            Electriccar(normalizedFuelType, consumption, numberPlate, name);
-        break;
-      default:
-        throw Exception(
-            "NotValidVehicleException: Tipo de combustible no reconocido");
-    }
+    Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
+
+
     bool success = await _dbAdapter.createVehicle(vehicle);
+
 
     if (!success) {
       throw Exception("Failed to create vehicle");
     } else {
       final currentSet = await vehicleList;
-      // Agregar el nuevo Vehicle al Set
+      // Agregar el nuevo Location al Set
       currentSet.add(vehicle);
       vehicleList = Future.value(currentSet);
-      print(currentSet);
     }
+
 
     return success;
   }
 
-  double calculatePrice(Routes? route, Vehicle vehiculo) {
-    //Llamar a price
-    //Y price segun el tipo que sea que llame a un Diesel, Electric o Petrol cal
-    throw UnimplementedError("Este método no está implementado");
+
+  Future<double> calculatePrice(Routes? route, Vehicle vehiculo) {
+    if (route == null) {
+      throw Incorrectcalculationexception();
+    }
+
+
+    switch (vehiculo.fuelType.toLowerCase()) {
+      case 'gasolina':
+        vehiculo.setPriceStrategy(PriceProxy(vehiculo.price));
+        break;
+      case 'eléctrico':
+        vehiculo.setPriceStrategy(PriceProxy(vehiculo.price));
+        break;
+      case 'diésel':
+        vehiculo.setPriceStrategy(PriceProxy(vehiculo.price));
+        break;
+      default:
+        throw ArgumentError(
+            "Tipo de combustible no soportado: ${vehiculo.fuelType}");
+    }
+
+
+    return vehiculo.price!.calculatePrice(route, vehiculo);
   }
+
 
   Future<bool> addFav(String numberPlate, String name) async {
     try {
       bool success = await _dbAdapter.addFav(numberPlate, name);
+
 
       if (success) {
         // Si la operación fue exitosa, actualizar la lista local
@@ -109,15 +126,18 @@ class VehicleController {
         }
       }
 
+
       return success;
     } catch (e) {
       throw Exception("Error al añadir a favoritos en el controlador: $e");
     }
   }
 
+
   Future<bool> removeFav(String numberPlate, String name) async {
     try {
       bool success = await _dbAdapter.removeFav(numberPlate, name);
+
 
       if (success) {
         // Si la operación fue exitosa, actualizar la lista local
@@ -130,14 +150,17 @@ class VehicleController {
         }
       }
 
+
       return success;
     } catch (e) {
       throw Exception("Error al añadir a favoritos en el controlador: $e");
     }
   }
 
+
   bool validNumberPlate(String? numberPlate) {
     if (numberPlate == null) return false;
+
 
     // Formatos existentes
     final format1 = RegExp(r'^[A-Z]{3}\d{4}$'); // Ejemplo: ABC1234
@@ -145,8 +168,10 @@ class VehicleController {
     final format3 =
         RegExp(r'^[A-Z]{1,2}\d{4}[A-Z]{2}$'); // Ejemplo: A1234BC, AB1234XY
 
+
     // Formato para números seguidos de letras (como 1879ABC)
     final format4 = RegExp(r'^\d{4}[A-Z]{3}$'); // Ejemplo: 1879ABC
+
 
     // Verifica si alguna de las expresiones regulares coincide
     return format1.hasMatch(numberPlate) ||
@@ -155,14 +180,18 @@ class VehicleController {
         format4.hasMatch(numberPlate);
   }
 
+
   bool validateFuelType(String? fuelType) {
     const validFuelTypes = ['Gasolina', 'Diésel', 'Eléctrico'];
 
+
     if (fuelType == null) return false;
+
 
     return validFuelTypes.contains(fuelType);
   }
 }
+
 
 bool threeDecimalPlacesMax(double value) {
   // Convierte el número a String
@@ -175,15 +204,18 @@ bool threeDecimalPlacesMax(double value) {
   return divisions[1].length <= 3;
 }
 
+
 class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
   User? _currentUser; // Propiedad para almacenar el usuario actual
 
+
   FirestoreAdapterVehiculo({String collectionName = "production"})
       : _collectionName = collectionName {
     _initializeAuthListener();
   }
+
 
   // Método para inicializar el listener de autenticación
   void _initializeAuthListener() {
@@ -192,14 +224,17 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     });
   }
 
+
   @override
   Future<Set<Vehicle>> getVehicleList() async {
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
 
+
     if (user == null) {
       throw NotAuthenticatedUserException();
     }
+
 
     try {
       final querySnapshot = await db
@@ -208,10 +243,12 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
           .collection("VehicleList")
           .get();
 
-      // Convertir cada documento a una instancia de Vehicle
+
+      // Convertir cada documento a una instancia de Location
       Set<Vehicle> vehicles = querySnapshot.docs.map((doc) {
         return Vehicle.fromMap(doc.data());
       }).toSet();
+
 
       return vehicles;
     } catch (e) {
@@ -219,13 +256,16 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     }
   }
 
+
   @override
   Future<bool> createVehicle(Vehicle vehicle) async {
     final user = FirebaseAuth.instance.currentUser;
 
+
     if (user == null) {
       throw Exception('Usuario no autenticado. No se puede crear el vehículo.');
     }
+
 
     try {
       await db
@@ -239,6 +279,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     }
   }
 
+
   @override
   Future<bool> addFav(String numberPlate, String name) async {
     // Obtener la referencia al documento con la matricula y nombre correspondiente
@@ -250,16 +291,20 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
         .where("name", isEqualTo: name)
         .get();
 
+
     if (querySnapshot.docs.isEmpty) {
       throw Exception(
           "No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
     }
 
+
     // Actualizar el campo 'fav' a true en el primer documento encontrado
     await querySnapshot.docs.first.reference.update({"fav": true});
 
+
     return true;
   }
+
 
   @override
   Future<bool> removeFav(String numberPlate, String name) async {
@@ -272,17 +317,21 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
         .where("name", isEqualTo: name)
         .get();
 
+
     if (querySnapshot.docs.isEmpty) {
       throw Exception(
           "No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
     }
 
+
     // Actualizar el campo 'fav' a true en el primer documento encontrado
     await querySnapshot.docs.first.reference.update({"fav": false});
+
 
     return true;
   }
 }
+
 
 abstract class DbAdapterVehicle {
   Future<bool> createVehicle(Vehicle vehicle);
@@ -290,3 +339,5 @@ abstract class DbAdapterVehicle {
   Future<bool> addFav(String numberPlate, String name);
   Future<bool> removeFav(String numberPlate, String name);
 }
+
+

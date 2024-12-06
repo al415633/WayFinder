@@ -31,7 +31,7 @@ class Routes implements FavItem {
     fav = false;
     this.transportMode = transportMode;
     this.routeMode = routeMode;
-    this.calories = 0.0;
+    calories = 0.0;
   }
 
   Routes.fromMap(Map<String, dynamic> mapa) : fav = mapa['fav'] ?? false {

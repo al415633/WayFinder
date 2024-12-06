@@ -1,7 +1,9 @@
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -27,6 +29,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   double distance = 0.0;
   double estimatedTime = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
+  FirestoreAdapterVehiculo vehicleAdapter = FirestoreAdapterVehiculo();
+
 
   @override
   void initState() {
@@ -59,7 +63,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           );
         }
       } else {
-        route.setCalories = 0.0;
+        // VehicleController.getInstance(vehicleAdapter).calculatePrice(route, vehiculo);
       }
     });
   }

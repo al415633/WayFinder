@@ -92,7 +92,7 @@ void main() {
     });
 
 
-    test('H15 - E1V', () async {
+    test('H14 - E1V - Calculo precio ruta', () async {
       // Loguear usuario
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
@@ -143,7 +143,7 @@ void main() {
       verify(mockRouteController.calculateCostKCal(ruta)).called(1);
     });
 
-    test('H15 - E3I', () async {
+    test('H14 - E2I - Calculo del precio ruta que es incorrecto', () async {
       //GIVEN
       //Loguear usuario
       String email = "Pruebah15e3@gmail.com";

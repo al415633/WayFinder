@@ -506,7 +506,7 @@ class _MapScreenState extends State<MapScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RouteMapScreen(route: route),
+        builder: (context) => RouteMapScreen(route: route, ),
       ),
     );
   }

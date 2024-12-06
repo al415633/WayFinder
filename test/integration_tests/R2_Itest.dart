@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
