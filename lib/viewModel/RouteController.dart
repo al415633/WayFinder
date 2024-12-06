@@ -30,18 +30,16 @@ class RouteController {
     return _instance!;
   }
 
-
   Future<Set<Routes>> getRouteList() async {
     return routeList;
   }
 
   double calculateCostKCal(Routes? route) {
-    
-    if (route == null || route.transportMode==TransportMode.coche) {
+    if (route == null || route.transportMode == TransportMode.coche) {
       throw Invalidcaloriecalculationexception();
     }
 
-    const double walkingKCalPerKMeter = 50.0; //50.0 si es por km 
+    const double walkingKCalPerKMeter = 50.0; //50.0 si es por km
     const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
 
     switch (route.transportMode) {
@@ -51,7 +49,8 @@ class RouteController {
         return route.distance * bikingKCalPerKMeter;
       default:
         throw Invalidcaloriecalculationexception();
-    }  }
+    }
+  }
 
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
       LatLng destination, TransportMode transportMode) async {
@@ -91,9 +90,12 @@ class RouteController {
       };
     }
   }
-  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination, TransportMode transportMode) async {
+
+  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination,
+      TransportMode transportMode) async {
     try {
-      Map<String, dynamic> pointsData = await getPoints(initialPoint, destination, transportMode);
+      Map<String, dynamic> pointsData =
+          await getPoints(initialPoint, destination, transportMode);
       return pointsData['points'] as List<LatLng>;
     } catch (e) {
       throw Exception("Error al obtener los puntos de la ruta: $e");
@@ -143,8 +145,7 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
-        routeList = Future.value(currentSet) ;
-
+        routeList = Future.value(currentSet);
       }
 
       return success;
@@ -192,10 +193,10 @@ class RouteController {
       }
 
       return success;
-     } catch (e) {
-          throw Exception("Error al añadir el location a favoritos en el controlador: $e");
-        }
-      
+    } catch (e) {
+      throw Exception(
+          "Error al añadir el location a favoritos en el controlador: $e");
+    }
   }
 
   Future<bool> removeFav(String routeName) async {
@@ -217,8 +218,9 @@ class RouteController {
 
       return success;
     } catch (e) {
-          throw Exception("Error al eliminar el location a favoritos en el controlador: $e");
-        }
+      throw Exception(
+          "Error al eliminar el location a favoritos en el controlador: $e");
+    }
   }
 }
 
@@ -273,7 +275,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<bool> saveRoute(Routes route) async {
-
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
