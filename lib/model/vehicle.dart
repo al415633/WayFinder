@@ -18,8 +18,8 @@ late bool fav;
   }
 
   @override
-  bool getFav() => fav; // Implementación del método de la interfaz FavItem
-  
+  bool getFav() => fav;
+
   @override
   void addFav() {
     fav = true;

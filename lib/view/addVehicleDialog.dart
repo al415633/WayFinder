@@ -1,13 +1,12 @@
-import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 
-void showAddVehicleDialog(BuildContext context, Function onVehicleAdded) {
+void showAddVehicleDialog(BuildContext context, Function(String, String, double, String) onVehicleSelected) {
   // Variables para los datos del vehículo
   String vehicleNameInput = '';
   String fuelTypeInput = '';
   double consumptionInput = 0.0;
   String numberPlateInput = '';
-  VehicleController vehicleController = VehicleController.getInstance(FirestoreAdapterVehiculo());
+
 
   // Mensajes de error
   String errorMessage = '';
@@ -23,7 +22,8 @@ void showAddVehicleDialog(BuildContext context, Function onVehicleAdded) {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Nombre del vehículo'),
+                  decoration:
+                      const InputDecoration(labelText: 'Nombre del vehículo'),
                   onChanged: (value) {
                     setDialogState(() {
                       vehicleNameInput = value;
@@ -31,11 +31,14 @@ void showAddVehicleDialog(BuildContext context, Function onVehicleAdded) {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Tipo de combustible'),
+                  decoration:
+                      const InputDecoration(labelText: 'Tipo de combustible'),
                   items: const [
-                    DropdownMenuItem(value: 'Gasolina', child: Text('Gasolina')),
+                    DropdownMenuItem(
+                        value: 'Gasolina', child: Text('Gasolina')),
                     DropdownMenuItem(value: 'Diésel', child: Text('Diésel')),
-                    DropdownMenuItem(value: 'Eléctrico', child: Text('Eléctrico')),
+                    DropdownMenuItem(
+                        value: 'Eléctrico', child: Text('Eléctrico')),
                   ],
                   onChanged: (value) {
                     setDialogState(() {
@@ -45,7 +48,8 @@ void showAddVehicleDialog(BuildContext context, Function onVehicleAdded) {
                   value: fuelTypeInput.isEmpty ? null : fuelTypeInput,
                 ),
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Consumo (L/100km)'),
+                  decoration:
+                      const InputDecoration(labelText: 'Consumo (L/100km)'),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setDialogState(() {
@@ -54,7 +58,8 @@ void showAddVehicleDialog(BuildContext context, Function onVehicleAdded) {
                   },
                 ),
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Número de placa'),
+                  decoration:
+                      const InputDecoration(labelText: 'Número de placa'),
                   onChanged: (value) {
                     setDialogState(() {
                       numberPlateInput = value;
@@ -88,20 +93,8 @@ void showAddVehicleDialog(BuildContext context, Function onVehicleAdded) {
                       errorMessage = 'Por favor, completa todos los campos.';
                     });
                   } else {
-                    try {
-                      await vehicleController.createVehicle(
-                        numberPlateInput,
-                        consumptionInput,
-                        fuelTypeInput,
-                        vehicleNameInput,
-                      );
-                      onVehicleAdded(); // Notifica a la pantalla principal
-                      Navigator.of(context).pop();
-                    } catch (e) {
-                      setDialogState(() {
-                        errorMessage = 'Error al guardar el vehículo: $e';
-                      });
-                    }
+                    onVehicleSelected(vehicleNameInput, fuelTypeInput, consumptionInput, numberPlateInput); // Notifica a la pantalla principal
+                    Navigator.of(context).pop();
                   }
                 },
                 child: const Text('Crear'),
