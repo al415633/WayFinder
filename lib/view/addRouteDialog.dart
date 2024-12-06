@@ -164,7 +164,7 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
                       errorMessage = 'Por favor, complete todos los campos.';
                     });
                   } else {
-                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, false);
+                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, true);
                     Navigator.of(context).pop();
                   }
                 },
@@ -180,7 +180,7 @@ void showAddRouteDialog(BuildContext context, List<Location> locations,
                     });
                   } else {
 
-                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, true); 
+                    onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!, transportModeInput, routeModeInput, false); 
                     // Navegar a RouteMapScreen
                     Navigator.of(context).pop();
                   }

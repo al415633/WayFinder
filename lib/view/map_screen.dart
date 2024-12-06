@@ -398,13 +398,11 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () async {
           try {
             if (route.getFav()) {
-              // Si es favorito, lo desmarcamos
               route.removeFav();
             } else {
-              // Si no es favorito, lo marcamos
               route.addFav();
             }
-            _fetchRoutes(); // Actualizar la lista de rutas
+            _fetchRoutes();
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

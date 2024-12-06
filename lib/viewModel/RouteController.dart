@@ -136,7 +136,6 @@ class RouteController {
   }
 
   Future<bool> saveRoute(Routes route) async {
-    
     try {
       bool success = await repository.saveRoute(route);
 
