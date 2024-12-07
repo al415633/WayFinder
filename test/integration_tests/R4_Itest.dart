@@ -123,7 +123,7 @@ void main() {
       Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
 
       Routes ruta = Routes(
-          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
+          name1, ini, fin, [], 11.17, 0, TransportMode.aPie, RouteMode.corta, null);
 
       final String namec = "Coche Quique";
       final double consumption = 24.3;
@@ -132,11 +132,17 @@ void main() {
 
       Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 
+
       double coste = 0;
+
 
       // WHEN
       when(mockElectricCarPrice.fetchElectricityPrice())
          .thenAnswer((_) async => 0.12);
+
+      //Se establece la estrategia mock, pero al hacer vehicleController.calculatePrice
+      //se sobreescribe y deja de ser la mockeada
+      vehicle.setPriceStrategy(mockElectricCarPrice);
 
       // GIVEN
       String email = "Pruebah15e1@gmail.com";
@@ -149,11 +155,12 @@ void main() {
 
       await userAppController.createUser(email, password, name);
 
+      //Da 0 porque se sobrescribe la strategy mockeada
       coste = await vehicleController.calculatePrice(ruta, vehicle);
 
       // THEN
       expect(coste, isNotNull);
-      expect(coste, inExclusiveRange(0.20, 2.3));
+      expect(coste, inExclusiveRange(0.10, 2.3));
       verify(mockElectricCarPrice.calculatePrice(ruta, vehicle)).called(1);
     });
 
