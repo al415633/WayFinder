@@ -12,7 +12,7 @@ late double consumption;
 late String numberPlate;
 late String name;
 late bool fav;
-Price? price;
+Price? price; //para hacer el stategy de si es gasolina, gasoil o electrico
 
 
   // Constructor
@@ -36,7 +36,7 @@ Price? price;
   }
   
 void setPriceStrategy(Price priceStrategy) {
-    this.price = priceStrategy;
+    price = priceStrategy;
   }
   @override
   bool getFav() => fav;

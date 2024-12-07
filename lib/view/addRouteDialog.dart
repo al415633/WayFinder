@@ -1,4 +1,3 @@
-import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';

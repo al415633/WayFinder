@@ -5,7 +5,6 @@ import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';

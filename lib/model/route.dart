@@ -50,7 +50,7 @@ class Routes implements FavItem {
     routeMode = RouteMode.values.firstWhere((e) => e.toString().split('.').last == mapa['routeMode']);
     calories = mapa['calories'] ?? 0.0;
     cost = mapa['cost'] ?? 0.0;
-    vehicle = mapa['vehicle'] ?? null;
+    vehicle = mapa['vehicle'];
  }
 
   @override

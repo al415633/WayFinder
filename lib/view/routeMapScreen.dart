@@ -1,6 +1,5 @@
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/transportMode.dart';
-import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';

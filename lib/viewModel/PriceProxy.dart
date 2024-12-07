@@ -1,39 +1,53 @@
 import 'dart:async';
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/Price.dart';
 
-class PriceProxy implements Price {
-  final Price? realPrice;
-  double? _cachedPrice;
-  DateTime? _lastFetchTime;
+class PriceProxy {
 
-  PriceProxy(this.realPrice);
+   static PriceProxy? _instance;
 
-  @override
-  Future<double> calculatePrice(Routes route, Vehicle vehiculo) async {
-    final currentTime = DateTime.now();
-
-    Duration cacheDuration;
-    if (vehiculo.fuelType == 'Eléctrico') {
-      cacheDuration = Duration(minutes: 60);
-    } else {
-      cacheDuration = Duration(days: 1);
-    }
-
-    int lastFetchHour = _lastFetchTime?.hour ?? -1; 
-    int currentHour = currentTime.hour;
-
-// solo comparo las horas pq si la peticion se ha hecho 11:59 me quiero quedar con el 11 que es cada cuando se actualiza
-    if (_cachedPrice != null && _lastFetchTime != null) {
-      if (currentHour == lastFetchHour) {
-        return _cachedPrice!;
-      }
-    }
-
-    _cachedPrice = await realPrice!.calculatePrice(route, vehiculo);
-    _lastFetchTime = currentTime;
-
-    return _cachedPrice!;
+  static PriceProxy getInstance() {
+    _instance ??= PriceProxy();
+    return _instance!;
   }
+
+
+  static final Map<Routes, ValorFecha> _priceCache = {};
+
+static Future<double> getPrice(Routes route) async {
+
+
+
+  final now = DateTime.now();
+  final cacheEntry = _priceCache[route]?.precio;
+  final lastCalculated = _priceCache[route]?.lastCalculated;
+
+
+  final isElectric = route.vehicle!.fuelType == 'Eléctrico'; 
+
+  final updateInterval = isElectric ? 1 : 24; 
+
+  
+  if (cacheEntry != null) {
+   
+    if (now.difference(lastCalculated!).inHours < updateInterval) {
+      return cacheEntry;
+    }
+  }
+
+  double? valor = await route.vehicle!.price?.calculatePrice(route, route.vehicle!);
+
+  _priceCache[route] = ValorFecha(valor!, now);
+
+
+  return valor;
+
+}
+}
+
+
+class ValorFecha {
+  final double precio;
+  final DateTime lastCalculated;
+
+  ValorFecha(this.precio, this.lastCalculated);
 }

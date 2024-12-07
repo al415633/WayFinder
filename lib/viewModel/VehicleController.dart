@@ -3,10 +3,6 @@ import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/DieselCarPrice.dart';
-import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
-import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
-import 'package:WayFinder/viewModel/Price.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,29 +80,14 @@ class VehicleController {
   }
 
 
-  Future<double> calculatePrice(Routes? route, Vehicle vehiculo) {
+  Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
     if (route == null) {
       throw Incorrectcalculationexception();
     }
+  
+    double num = await  PriceProxy.getPrice(route);
 
-
-    switch (vehiculo.fuelType.toLowerCase()) {
-      case 'gasolina':
-        vehiculo.setPriceStrategy(PriceProxy(vehiculo.price));
-        break;
-      case 'eléctrico':
-        vehiculo.setPriceStrategy(PriceProxy(vehiculo.price));
-        break;
-      case 'diésel':
-        vehiculo.setPriceStrategy(PriceProxy(vehiculo.price));
-        break;
-      default:
-        throw ArgumentError(
-            "Tipo de combustible no soportado: ${vehiculo.fuelType}");
-    }
-
-
-    return vehiculo.price!.calculatePrice(route, vehiculo);
+    return num;
   }
 
 

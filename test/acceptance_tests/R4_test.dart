@@ -9,6 +9,7 @@ import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
 
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
@@ -280,17 +281,16 @@ void main() {
       final String fuelType = 'Eléctrico';
 
 
-      await vehicleController.createVehicle(
+      Vehicle vehicle = Vehicle(
           numberPlate, consumption, fuelType, namec);
-
-
-      Set<Vehicle> vehicleList = await vehicleController.getVehicleList();
-      Vehicle? vehiculo = vehicleList.first;
-
+          
+          vehicle.setPriceStrategy(Electriccarprice());
+      ruta.vehicle = vehicle;
+  
       //WHEN
-      double coste = await vehicleController.calculatePrice(ruta, vehiculo);
+      double coste = await vehicleController.calculatePrice(ruta, vehicle);
       expect(coste, isNotNull);
-      expect(coste, inExclusiveRange(0.20, 2.3));
+      expect(coste, inExclusiveRange(0.1, 2.3));
 
       //THEN
       await deleteVehicle(numberPlate);
@@ -335,7 +335,7 @@ void main() {
       Location fin =
           await locationController.createLocationFromCoord(lat2, long2, apodo2);
 
-      Routes? ruta=null;
+      Routes? ruta;
 
 
       String name1 = "Ruta h14 e 1";

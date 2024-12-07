@@ -31,7 +31,7 @@ class Gasolinecarprice implements Price {
 
         final response = await http.get(
           Uri.parse(
-              'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/FiltroMunicipioProducto/05-12-2024/${idMunicipio}/1'),
+              'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/FiltroMunicipioProducto/05-12-2024/$idMunicipio/1'),
         );
 
         if (response.statusCode == 200) {
