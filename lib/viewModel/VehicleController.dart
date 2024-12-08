@@ -40,44 +40,45 @@ class VehicleController {
   }
 
 
-  Future<bool> createVehicle(String numberPlate, double consumption,
-      String fuelType, String name) async {
-    if (!validNumberPlate(numberPlate)) {
-      throw Exception(
-          "NotValidVehicleException: El formato de la matrícula no es correcto");
-    }
-
-
-    if (!threeDecimalPlacesMax(consumption)) {
-      throw Exception(
-          "NotValidVehicleException: El formato del consumo no es correcto");
-    }
-
-
-    if (!validateFuelType(fuelType)) {
-      throw Exception(
-          "NotValidVehicleException: El tipo de combustible no es válido");
-    }
-
-
-    Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
-
-
-    bool success = await _dbAdapter.createVehicle(vehicle);
-
-
-    if (!success) {
-      throw Exception("Failed to create vehicle");
-    } else {
-      final currentSet = await vehicleList;
-      // Agregar el nuevo Location al Set
-      currentSet.add(vehicle);
-      vehicleList = Future.value(currentSet);
-    }
-
-
-    return success;
+  Future<Vehicle> createVehicle(String numberPlate, double consumption,
+  String fuelType, String name) async {
+  // Validar matrícula
+  if (!validNumberPlate(numberPlate)) {
+    throw Exception(
+        "NotValidVehicleException: El formato de la matrícula no es correcto");
   }
+
+  // Validar consumo
+  if (!threeDecimalPlacesMax(consumption)) {
+    throw Exception(
+        "NotValidVehicleException: El formato del consumo no es correcto");
+  }
+
+  // Validar tipo de combustible
+  if (!validateFuelType(fuelType)) {
+    throw Exception(
+        "NotValidVehicleException: El tipo de combustible no es válido");
+  }
+
+  // Crear el objeto Vehicle
+  Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
+
+  // Guardar el vehículo en la base de datos
+  bool success = await _dbAdapter.createVehicle(vehicle);
+
+  if (!success) {
+    throw Exception("Failed to create vehicle");
+  } else {
+    final currentSet = await vehicleList;
+    // Agregar el nuevo Vehicle al Set
+    currentSet.add(vehicle);
+    vehicleList = Future.value(currentSet);
+  }
+
+  // Devolver el vehículo creado
+  return vehicle;
+}
+
 
 
   Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {

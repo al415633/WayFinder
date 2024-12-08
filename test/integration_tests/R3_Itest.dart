@@ -53,13 +53,10 @@ void main() {
       when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
 
-      bool success = await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
 
       //THEN
-      expect(success, isTrue);
-
-
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
       
