@@ -26,8 +26,16 @@ class Gasolinecarprice implements Price {
       String toponym = route.start.toponym;
       List<String> toponymParts = toponym.split(',');
       if (toponymParts.length > 1) {
-        String secondName = toponymParts[1].trim();
+String secondName = toponymParts[1].trim();
+if (secondName.contains("/")) {
+    secondName = secondName.split("/")[0].trim();
+}
+if (secondName.contains("(")) {
+    secondName = secondName.split("\\(")[0].trim();
+}
         String? idMunicipio = municipioMap[secondName];
+
+        print(secondName);
 
         final response = await http.get(
           Uri.parse(
@@ -43,7 +51,9 @@ class Gasolinecarprice implements Price {
             double precio = double.parse(precioString);
             return precio;
           } else {
-            throw Exception('No hay precios disponibles');
+            print("Ha habido un error por ello cojo la de Castellon");
+                   throw Exception('Error al coger la gasolina');
+
           }
         } else {
           throw Exception('Error al cargar los datos: ${response.statusCode}');

@@ -27,7 +27,7 @@ static Future<double> getPrice(Routes route) async {
   final updateInterval = isElectric ? 1 : 24; 
 
   
-  if (cacheEntry != null) {
+  if (cacheEntry != null && route.vehicle !=null) {
    
     if (now.difference(lastCalculated!).inHours < updateInterval) {
       return cacheEntry;

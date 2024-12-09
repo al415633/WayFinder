@@ -27,6 +27,12 @@ class Dieselcarprice implements Price {
       List<String> toponymParts = toponym.split(',');
       if (toponymParts.length > 1) {
         String secondName = toponymParts[1].trim();
+if (secondName.contains("/")) {
+    secondName = secondName.split("/")[0].trim();
+}
+if (secondName.contains("(")) {
+    secondName = secondName.split("\\(")[0].trim();
+}
         String? idMunicipio = municipioMap[secondName];
 
         final response = await http.get(
