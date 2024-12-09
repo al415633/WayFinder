@@ -1,25 +1,25 @@
-import 'package:WayFinder/view/addLocationToponymDialog.dart';
+
 import 'package:flutter/material.dart';
 
-void showAddLocationDialog(BuildContext context, Function(String, String?) onLocationSelected) {
-  String locationNameInput = '';
+Future<Map<String, String>?> showAddLocationToponymDialog(BuildContext context, String alias) async {
+  String toponymInput = '';
   String errorMessage = '';
 
-  showDialog(
+  return showDialog<Map<String, String>>(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setDialogState) {
           return AlertDialog(
-            title: const Text('Nuevo lugar de interés'),
+            title: const Text('Introduce el topónimo'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Nombre'),
+                  decoration: const InputDecoration(labelText: 'Topónimo'),
                   onChanged: (value) {
                     setDialogState(() {
-                      locationNameInput = value; // Actualizar el valor del nombre
+                      toponymInput = value; // Actualizar el valor del topónimo
                       errorMessage = ''; // Limpiar el mensaje de error
                     });
                   },
@@ -43,32 +43,15 @@ void showAddLocationDialog(BuildContext context, Function(String, String?) onLoc
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (locationNameInput.isEmpty) {
+                  if (toponymInput.isEmpty) {
                     setDialogState(() {
-                      errorMessage = 'El nombre del lugar no puede estar vacío';
+                      errorMessage = 'El campo no puede estar vacío';
                     });
                   } else {
-                    onLocationSelected(locationNameInput, null);
-                    Navigator.of(context).pop(); // Cerrar el diálogo
+                    Navigator.of(context).pop({'alias': alias, 'toponym': toponymInput});
                   }
                 },
-                child: const Text('Usar Mapa'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (locationNameInput.isEmpty) {
-                    setDialogState(() {
-                      errorMessage = 'El nombre del lugar no puede estar vacío';
-                    });
-                  } else {
-                    final result = await showAddLocationToponymDialog(context, locationNameInput);
-                    if (result != null) {
-                      onLocationSelected(result['alias']!, result['toponym']);
-                    }
-                    Navigator.of(context).pop(); // Cerrar el diálogo
-                  }
-                },
-                child: const Text('Introducir tóponimo'),
+                child: const Text('Crear Lugar'),
               ),
             ],
           );

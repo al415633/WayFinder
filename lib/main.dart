@@ -6,9 +6,6 @@ import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/view/map_screen.dart';
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
 
@@ -83,33 +80,45 @@ class _InicioState extends State<Inicio> {
       appBar: AppBar(
         title: Text('Inicio de sesión'),
       ),
-      body: login(),
-      //body: MapScreen(),
+         body: Stack(
+        children: [
+           Positioned.fill(
+  child: Image.asset(
+    'lib/assets/images/mapa.PNG',
+    fit: BoxFit.cover, // Ajusta para cubrir toda el área disponible.
+  ),            
+          ),
+          Center(
+            child: Container(
+              width: 700, 
+              height: 700,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9), 
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: login(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget login() {
-    return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            nombre(),
-            campoUsuario(),
-            const SizedBox(height: 15), // separacion para que quede bonito
-
-            contrasena(),
-            campoContraena(),
-            const SizedBox(height: 15), // separacion para que quede bonito
-            
-            botonEntrar(),
-            const SizedBox(height: 15), // separacion para que quede bonito
-
-            nuevaCuenta(),
-
-          ],
-        ),
-      ),
+Widget login() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        nombre(),
+        campoUsuario(),
+        const SizedBox(height: 15),
+        contrasena(),
+        campoContraena(),
+        const SizedBox(height: 15),
+        botonEntrar(),
+        const SizedBox(height: 15),
+        nuevaCuenta(),
+      ],
     );
   }
 
@@ -200,7 +209,7 @@ void _login() async {
     
     UserAppController? userAppController = UserAppController.getInstance();
 
-    await userAppController?.logInCredenciales(email, password);
+    await userAppController.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
 

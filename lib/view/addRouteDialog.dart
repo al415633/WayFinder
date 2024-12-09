@@ -1,23 +1,30 @@
-import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
-import 'package:WayFinder/view/routeMapScreen.dart';
-import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
-void showAddRouteDialog(BuildContext context, List<Location> locations) {
+void showAddRouteDialog(
+    BuildContext context,
+    List<Location> locations,
+    List<Vehicle> vehicles,
+    Function(String, Location, Location, TransportMode, RouteMode, Vehicle? ,bool)
+        onRouteSelected) {
   // Variables para los datos de la ruta
   String routeNameInput = '';
   Location? startLocationInput;
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
   RouteMode routeModeInput = RouteMode.rapida; // Default value
-  FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
+  Vehicle? selectedVehicle;
+  VehicleController vehicleController =
+      VehicleController(FirestoreAdapterVehiculo());
 
 
   // Mensajes de error
   String errorMessage = '';
+
 
   showDialog(
     context: context,
@@ -72,17 +79,40 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                 DropdownButton<TransportMode>(
                   value: transportModeInput,
                   items: TransportMode.values.map((mode) {
-                  return DropdownMenuItem<TransportMode>(
-                    value: mode,
-                    child: Text(mode.name),
-                  );
+                    return DropdownMenuItem<TransportMode>(
+                      value: mode,
+                      child: Text(mode.name),
+                    );
                   }).toList(),
                   onChanged: (value) {
-                  setDialogState(() {
-                    transportModeInput = value!;
-                  });
+                    setDialogState(() {
+                      transportModeInput = value!;
+                    });
                   },
                 ),
+                if (transportModeInput == TransportMode.coche)
+                  vehicles.isNotEmpty
+                      ? DropdownButton<Vehicle>(
+                          value: selectedVehicle,
+                          items: vehicles.map((vehicle) {
+                            return DropdownMenuItem<Vehicle>(
+                              value: vehicle,
+                              child: Text(vehicle.name),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              selectedVehicle = value;
+                            });
+                          },
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'El usuario no tiene coches dados de alta',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
                 DropdownButton<RouteMode>(
                   value: routeModeInput,
                   items: RouteMode.values.map((mode) {
@@ -123,25 +153,39 @@ void showAddRouteDialog(BuildContext context, List<Location> locations) {
                       errorMessage = 'Por favor, complete todos los campos.';
                     });
                   } else {
-                    // Crear la ruta
-                    Routes newRoute = await RouteController.getInstance(routeAdapter).createRoute(
-                      routeNameInput,
-                      startLocationInput!,
-                      endLocationInput!,
-                      transportModeInput,
-                      routeModeInput,
-                    );
-
-                    // Navegar a RouteMapScreen
+                    onRouteSelected(
+                        routeNameInput,
+                        startLocationInput!,
+                        endLocationInput!,
+                        transportModeInput,
+                        routeModeInput, selectedVehicle,
+                        true);
                     Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RouteMapScreen(route: newRoute),
-                      ),
-                    );
                   }
                 },
-                child: const Text('Crear'),
+                child: const Text('Guardar y generar ruta'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (routeNameInput.isEmpty ||
+                      startLocationInput == null ||
+                      endLocationInput == null) {
+                    setDialogState(() {
+                      errorMessage = 'Por favor, complete todos los campos.';
+                    });
+                  } else {
+                    onRouteSelected(
+                        routeNameInput,
+                        startLocationInput!,
+                        endLocationInput!,
+                        transportModeInput,
+                        routeModeInput, selectedVehicle,
+                        false);
+                    // Navegar a RouteMapScreen
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Generar ruta'),
               ),
             ],
           );

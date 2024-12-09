@@ -1,4 +1,8 @@
 import 'package:WayFinder/model/favItem.dart';
+import 'package:WayFinder/viewModel/DieselCarPrice.dart';
+import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
+import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
+import 'package:WayFinder/viewModel/Price.dart';
 
 class Vehicle implements FavItem{
   // Propiedades
@@ -8,6 +12,8 @@ late double consumption;
 late String numberPlate;
 late String name;
 late bool fav;
+Price? price; //para hacer el stategy de si es gasolina, gasoil o electrico
+
 
   // Constructor
   Vehicle(String fuelType, double consumption, String numberPlate, String name, {this.fav = false}) {
@@ -15,11 +21,26 @@ late bool fav;
     this.consumption = consumption;
     this.numberPlate = numberPlate;
     this.name = name;
+    
+    switch (fuelType.toLowerCase()) {
+      case 'gasolina':
+        price=Gasolinecarprice();
+        break;
+      case 'eléctrico':
+        price=Electriccarprice();
+        break;
+      case 'diésel':
+         price=Dieselcarprice();
+        break;
   }
-
-  @override
-  bool getFav() => fav; // Implementación del método de la interfaz FavItem
+  }
   
+void setPriceStrategy(Price priceStrategy) {
+    price = priceStrategy;
+  }
+  @override
+  bool getFav() => fav;
+
   @override
   void addFav() {
     fav = true;

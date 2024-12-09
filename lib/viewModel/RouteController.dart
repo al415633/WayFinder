@@ -1,8 +1,10 @@
+import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
@@ -18,7 +20,7 @@ class RouteController {
 
   // Constructor privado
   RouteController(this.repository) {
-    routeList = Future.value(<Routes>{});
+    routeList = repository.getRouteList();
   }
 
   // Instancia única
@@ -29,12 +31,25 @@ class RouteController {
     return _instance!;
   }
 
-
   Future<Set<Routes>> getRouteList() async {
-    try {
-      return await routeList;
-    } catch (e) {
-      throw Exception("Error al obtener la lista de rutas: $e");
+    return routeList;
+  }
+
+  double calculateCostKCal(Routes? route) {
+    if (route == null || route.transportMode == TransportMode.coche) {
+      throw Invalidcaloriecalculationexception();
+    }
+
+    const double walkingKCalPerKMeter = 50.0; //50.0 si es por km
+    const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
+
+    switch (route.transportMode) {
+      case TransportMode.aPie:
+        return route.distance * walkingKCalPerKMeter;
+      case TransportMode.bicicleta:
+        return route.distance * bikingKCalPerKMeter;
+      default:
+        throw Invalidcaloriecalculationexception();
     }
   }
 
@@ -76,9 +91,12 @@ class RouteController {
       };
     }
   }
-  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination, TransportMode transportMode) async {
+
+  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination,
+      TransportMode transportMode) async {
     try {
-      Map<String, dynamic> pointsData = await getPoints(initialPoint, destination, transportMode);
+      Map<String, dynamic> pointsData =
+          await getPoints(initialPoint, destination, transportMode);
       return pointsData['points'] as List<LatLng>;
     } catch (e) {
       throw Exception("Error al obtener los puntos de la ruta: $e");
@@ -86,7 +104,7 @@ class RouteController {
   }
 
   Future<Routes> createRoute(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode) async {
+      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle) async {
     LatLng initialPoint =
         LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
     LatLng destination =
@@ -96,8 +114,26 @@ class RouteController {
     double distance = calculateDistance(points);
     double time = calculateTime(transportMode, distance);
     Routes route = Routes(
-        name, start, end, points, distance, time, transportMode, routeMode);
+        name, start, end, points, distance, time, transportMode, routeMode, vehicle);
     return route;
+  }
+
+  Future<bool> deleteRoute(Routes route) async{
+      try {
+      bool success = await repository.deleteRoute(route);
+
+      if (success) {
+        final currentSet = await routeList;
+        // Agregar el nuevo Location al Set
+        currentSet.remove(route);
+        routeList = Future.value(currentSet) ;
+
+      }
+
+      return success;
+    } catch (e) {
+      throw Exception("Error al crear la ruta: $e");
+    }
   }
 
   Future<bool> saveRoute(Routes route) async {
@@ -109,14 +145,12 @@ class RouteController {
 
         // Agregar el nuevo Location al Set
         currentSet.add(route);
-        routeList = currentSet as Future<Set<Routes>> ;
-
+        routeList = Future.value(currentSet);
       }
 
       return success;
     } catch (e) {
-      print("Error al crear la ruta: $e");
-      return false;
+      throw Exception("Error al crear la ruta: $e");
     }
   }
 
@@ -159,10 +193,10 @@ class RouteController {
       }
 
       return success;
-     } catch (e) {
-          throw Exception("Error al añadir el location a favoritos en el controlador: $e");
-        }
-      
+    } catch (e) {
+      throw Exception(
+          "Error al añadir el location a favoritos en el controlador: $e");
+    }
   }
 
   Future<bool> removeFav(String routeName) async {
@@ -184,8 +218,9 @@ class RouteController {
 
       return success;
     } catch (e) {
-          throw Exception("Error al eliminar el location a favoritos en el controlador: $e");
-        }
+      throw Exception(
+          "Error al eliminar el location a favoritos en el controlador: $e");
+    }
   }
 }
 
@@ -205,16 +240,21 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-      if (user != null) {
-        print('Usuario autenticado: ${user.uid}');
-      } else {
-        print('No hay usuario autenticado.');
-      }
     });
   }
 
   @override
   Future<Set<Routes>> getRouteList() async {
+
+    /*
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear la ruta.');
+    }
+
+    */
+    
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -235,6 +275,11 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<bool> saveRoute(Routes route) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede crear el location.');
+    }
     try {
       await db
           .collection(_collectionName)
@@ -247,6 +292,42 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       return false;
     }
   }
+
+ @override
+   Future<bool> deleteRoute(Routes route) async {
+    
+     final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw Exception('Usuario no autenticado. No se puede eliminar la ruta.');
+      }
+
+      try {
+        // Obtener la colección de rutas del usuario
+        var collectionRef = db
+            .collection(_collectionName)
+            .doc(_currentUser?.uid)
+            .collection("RouteList");
+
+        // Buscar el documento por algún atributo único de la ruta, por ejemplo, 'name'
+        var querySnapshot = await collectionRef
+            .where('name', isEqualTo: route.getName)
+            .get();
+
+        // Verificar si se encontró el documento
+        if (querySnapshot.docs.isEmpty) {
+          throw Exception('Ruta no encontrada.');
+        }
+
+        // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
+        await querySnapshot.docs.first.reference.delete();
+
+        return true;
+      } catch (e) {
+        throw Exception("Error al eliminar la ruta: $e");
+      }
+  }
+
 
   @override
   Future<bool> addFav(String routeName) async {
@@ -293,6 +374,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
 abstract class DbAdapterRoute {
   Future<bool> saveRoute(Routes route);
+  Future<bool> deleteRoute(Routes route);
   Future<Set<Routes>> getRouteList();
   Future<bool> removeFav(String routeName);
   Future<bool> addFav(String routeName);

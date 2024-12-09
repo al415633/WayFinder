@@ -1,10 +1,8 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -55,13 +53,10 @@ void main() {
       when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {vehicleMock});
 
-      bool success = await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
       final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
 
       //THEN
-      expect(success, isTrue);
-
-
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
       
@@ -157,7 +152,8 @@ void main() {
 
       //THEN
 
-      expect(success, isTrue);
+      expect(success.name, vehicleMock.name);
+      expect(success.numberPlate, vehicleMock.numberPlate);
       expect(vehicleList.first.consumption, equals(24.3));
       expect(vehicleList.first.name, equals("Coche Quique"));
       expect(vehicleList.first.fuelType, equals("Gasolina"));

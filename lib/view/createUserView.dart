@@ -1,8 +1,6 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
-import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/view/errorPage.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +42,33 @@ class _CreateUserViewState extends State<CreateUserView> {
 
 
   @override
-  Widget build(BuildContext context) {
-     return Scaffold(
+    Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         title: Text('Registro nuevo usuario'),
       ),
-      body: registro(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'lib/assets/images/mapa.PNG',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Center(
+            child: Container(
+              width: 700,
+              height: 700,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: registro(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -203,7 +222,7 @@ class _CreateUserViewState extends State<CreateUserView> {
         controller: _confirmPasswordEnter,
         obscureText: true,
         decoration: const InputDecoration(
-          hintText: "Password",
+          hintText: "Contraseña",
           fillColor: Colors.white,
           filled: true,
         ),
@@ -232,10 +251,10 @@ class _CreateUserViewState extends State<CreateUserView> {
     // Valida si la contraseña cumple con los requisitos
   bool _validatePassword(String password) {
     setState(() {
-      _passwordValidation["length"] = password.length >= 8;
-      _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
-      _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
-      _passwordValidation["special"] = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+  _passwordValidation["length"] = password.length >= 8;
+    _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
+    _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
+    _passwordValidation["special"] = password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
     });
 
     // Verificar si todos los requisitos son verdaderos
@@ -293,35 +312,24 @@ class _CreateUserViewState extends State<CreateUserView> {
     
     UserAppController? userAppController = UserAppController.getInstance();
     
-    UserApp? user= await userAppController?.createUser(email, password, name);
+    UserApp? user= await userAppController.createUser(email, password, name);
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => MapScreen()),
-  );
-} on NotValidEmailException {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'Email no válido')),
-  );
-} on IncorrectPasswordException {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'Contraseña no válida')),
-  );
-} on UserAlreadyExistsException {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'El usuario ya existe')),
-  );
-} catch (e) {
-  // Manejar cualquier otro error
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ErrorPage(message: 'Error desconocido')),
-  );
-}
+   if (user != null) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen()),
+    );
   }
+} on NotValidEmailException {
+  _errorMessage = 'Email no valido';
+} on IncorrectPasswordException {
+  _errorMessage = 'Contraseña no válida';
+}  catch (e) {
+  _errorMessage = 'El usuario ya existe';
+}
+
+  }
+
 
 
 

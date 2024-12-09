@@ -34,11 +34,14 @@ class UserAppController {
     return emailRegex.hasMatch(email);
   }
 
-  bool isValidPassword(String password) {
-    final passwordRegex =
-        RegExp(r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[.,@$&*=]).{8,}$');
-    return passwordRegex.hasMatch(password);
-  }
+bool isValidPassword(String password) {
+  final hasLength = password.length >= 8;
+  final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+  final hasNumeric = password.contains(RegExp(r'[0-9]'));
+  final hasSpecial = password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
+
+  return hasLength && hasUppercase && hasNumeric && hasSpecial;
+}
 
   Future<UserApp?> createUser(
       String email, String password, String name) async {
@@ -83,9 +86,12 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
 
   @override
   Future<UserApp?> createUser(String email, String password) async {
-    //Ver si user ya en BBDD
+
+
+
+
     var existingUser = await auth.fetchSignInMethodsForEmail(email);
-    if (existingUser.isNotEmpty) {
+    if (existingUser.isNotEmpty ) {
       throw UserAlreadyExistsException();
     }
 

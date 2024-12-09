@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-void showAddVehicleDialog(BuildContext context) {
+void showAddVehicleDialog(BuildContext context, Function(String, String, double, String) onVehicleSelected) {
   // Variables para los datos del vehículo
   String vehicleNameInput = '';
-  String fuelTypeInput = ''; // Esto se actualizará con la opción seleccionada
+  String fuelTypeInput = '';
   double consumptionInput = 0.0;
   String numberPlateInput = '';
+
 
   // Mensajes de error
   String errorMessage = '';
@@ -21,23 +22,34 @@ void showAddVehicleDialog(BuildContext context) {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Nombre del vehículo'),
+                  decoration:
+                      const InputDecoration(labelText: 'Nombre del vehículo'),
                   onChanged: (value) {
                     setDialogState(() {
                       vehicleNameInput = value;
                     });
                   },
                 ),
-                TextField(
-                  decoration: const InputDecoration(labelText: 'Tipo de combustible'),
+                DropdownButtonFormField<String>(
+                  decoration:
+                      const InputDecoration(labelText: 'Tipo de combustible'),
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'Gasolina', child: Text('Gasolina')),
+                    DropdownMenuItem(value: 'Diésel', child: Text('Diésel')),
+                    DropdownMenuItem(
+                        value: 'Eléctrico', child: Text('Eléctrico')),
+                  ],
                   onChanged: (value) {
                     setDialogState(() {
-                      fuelTypeInput = value;
+                      fuelTypeInput = value ?? '';
                     });
                   },
+                  value: fuelTypeInput.isEmpty ? null : fuelTypeInput,
                 ),
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Consumo (L/100km)'),
+                  decoration:
+                      const InputDecoration(labelText: 'Consumo (L/100km)'),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setDialogState(() {
@@ -46,7 +58,8 @@ void showAddVehicleDialog(BuildContext context) {
                   },
                 ),
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Número de placa'),
+                  decoration:
+                      const InputDecoration(labelText: 'Número de placa'),
                   onChanged: (value) {
                     setDialogState(() {
                       numberPlateInput = value;
@@ -71,16 +84,16 @@ void showAddVehicleDialog(BuildContext context) {
                 child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (vehicleNameInput.isEmpty ||
                       fuelTypeInput.isEmpty ||
                       consumptionInput <= 0 ||
                       numberPlateInput.isEmpty) {
                     setDialogState(() {
-                      errorMessage = 'Por favor, complete todos los campos.';
+                      errorMessage = 'Por favor, completa todos los campos.';
                     });
                   } else {
-                    // Aquí puedes agregar la lógica para guardar el vehículo
+                    onVehicleSelected(vehicleNameInput, fuelTypeInput, consumptionInput, numberPlateInput); // Notifica a la pantalla principal
                     Navigator.of(context).pop();
                   }
                 },

@@ -1,4 +1,3 @@
-import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -58,6 +57,7 @@ class LocationController {
   }
 
   Future<Location> createLocationFromTopo(String topo, String alias) async {
+
     Coordinate coordinate = await ToponymToCoord(topo);
 
     Location location = Location(coordinate, topo, alias);
@@ -173,22 +173,13 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-      if (user != null) {
-        print('Usuario autenticado: ${user.uid}');
-      } else {
-        print('No hay usuario autenticado.');
-      }
+    
     });
   }
 
   @override
   Future<Set<Location>> getLocationList() async {
 
-    /*
-    if(_currentUser == null){
-        throw UserNotAuthenticatedException();
-    }
-    */
 
     try {
       final querySnapshot = await db
