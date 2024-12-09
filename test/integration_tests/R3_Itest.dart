@@ -152,7 +152,8 @@ void main() {
 
       //THEN
 
-      expect(success, isTrue);
+      expect(success.name, vehicleMock.name);
+      expect(success.numberPlate, vehicleMock.numberPlate);
       expect(vehicleList.first.consumption, equals(24.3));
       expect(vehicleList.first.name, equals("Coche Quique"));
       expect(vehicleList.first.fuelType, equals("Gasolina"));
