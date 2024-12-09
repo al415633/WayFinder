@@ -2,6 +2,7 @@ import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/addRouteDialog.dart';
@@ -45,6 +46,7 @@ class _MapScreenState extends State<MapScreen> {
       VehicleController(FirestoreAdapterVehiculo());
   List<Vehicle> vehicles = [];
   UserAppController? userAppController = UserAppController.getInstance();
+  late double cost;
 
   @override
   void initState() {
@@ -122,15 +124,17 @@ class _MapScreenState extends State<MapScreen> {
                 (item) => _buildLocationItem(item as Location),
                 () => showAddLocationDialog(context, _onLocationSelected)),
           if (showRoutes)
-            _buildSidePanel('Rutas', routes,
+            _buildSidePanel(
+                'Rutas',
+                routes,
                 (item) => _buildRouteItem(item as Routes),
-                () => showAddRouteDialog(context, locations)),
+                () => showAddRouteDialog(context, locations,vehicles,  _onRouteSelected)),
           if (showVehicles)
             _buildSidePanel(
                 'Vehículos',
                 vehicles,
                 (item) => _buildVehicleItem(item as Vehicle),
-                () => showAddVehicleDialog(context)),
+                () => showAddVehicleDialog(context, _onVehicleSelected)),
         ],
       ),
     );
@@ -152,16 +156,76 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-    void _onLocationSelected(String locationNameInput) {
-    setState(() {
-      locationName = locationNameInput; // Guardar el nombre del lugar
-      isSelectingLocation = true; // Activar modo de selección
-    });
+  Future<void> _onLocationSelected(String alias, String? toponym) async {
+    if (toponym == null) {
+      setState(() {
+        locationName = alias; // Guardar el nombre del lugar
+        isSelectingLocation = true; // Activar modo de selección
+      });
+      // Mostrar mensaje para guiar al usuario
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona una ubicación en el mapa.')),
+      );
+    } else {
+      try {
+        await locationController.createLocationFromTopo(toponym, alias);
+        _fetchLocations(); // Actualizar la lista de ubicaciones
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ubicación guardada exitosamente.')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar la ubicación: $e')),
+        );
+      }
+    }
+  }
 
-    // Mostrar mensaje para guiar al usuario
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Selecciona una ubicación en el mapa.')),
-    );
+  Future<void> _onVehicleSelected(String name, String fuelType,
+      double consumption, String numberPlate) async {
+    try {
+      await vehicleController.createVehicle(
+          numberPlate, consumption, fuelType, name);
+      _fetchVehicles(); // Actualizar la lista de vehículos
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vehículo guardado exitosamente.')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar el vehículo: $e')),
+      );
+    }
+  }
+
+  Future<void> _onRouteSelected(String name, Location start, Location end,
+      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle, bool save) async {
+    late Routes route;
+    
+    try {
+      route = await routeController.createRoute(
+          name, start, end, transportMode, routeMode, vehicle);
+      print(vehicle);
+      cost = await vehicleController.calculatePrice(route, vehicle!);
+      print(cost);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al crear la ruta: $e')),
+      );
+    }
+    try {
+      if (save) {
+        routeController.saveRoute(route);
+        _fetchRoutes(); // Actualizar la lista de rutas
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ruta guardada exitosamente.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar la ubicación: $e')),
+      );
+    }
+    _showRoutes(route);
   }
 
   Widget _buildSidePanel(String title, List items,
@@ -264,11 +328,11 @@ class _MapScreenState extends State<MapScreen> {
           initialPoint.latitude,
           initialPoint.longitude,
           locationName!,
-        );    
-          _fetchLocations(); // Actualizar la lista de ubicaciones
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ubicación guardada exitosamente.')),
-          );
+        );
+        _fetchLocations(); // Actualizar la lista de ubicaciones
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ubicación guardada exitosamente.')),
+        );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -293,7 +357,8 @@ class _MapScreenState extends State<MapScreen> {
               location.addFav();
             }
             _fetchLocations();
-            print(location.toponym.toString()); // Actualizar la lista de ubicaciones
+            print(location.toponym
+                .toString()); // Actualizar la lista de ubicaciones
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -334,13 +399,11 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () async {
           try {
             if (route.getFav()) {
-              // Si es favorito, lo desmarcamos
               route.removeFav();
             } else {
-              // Si no es favorito, lo marcamos
               route.addFav();
             }
-            _fetchLocations(); // Actualizar la lista de ubicaciones
+            _fetchRoutes();
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -358,13 +421,17 @@ class _MapScreenState extends State<MapScreen> {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
+              routeController.deleteRoute(route);
+              _fetchRoutes();
               print('Eliminar ruta');
             },
           ),
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.route_outlined),
             onPressed: () {
-              print('Editar ruta');
+              _showRoutes(
+                  route); //Si se selecciona te lleva a la pantalla de la ruta
+              print('Mostrar ruta $route.name');
             },
           ),
         ],
@@ -382,13 +449,11 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () async {
           try {
             if (vehicle.getFav()) {
-              // Si es favorito, lo desmarcamos
               vehicle.removeFav();
             } else {
-              // Si no es favorito, lo marcamos
               vehicle.addFav();
             }
-            _fetchLocations(); // Actualizar la lista de ubicaciones
+            _fetchVehicles(); // Actualizar la lista de coches
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -418,7 +483,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
   void _fetchLocations() async {
     try {
       // Llamada asíncrona al ViewModel para obtener las ubicaciones
@@ -430,32 +494,10 @@ class _MapScreenState extends State<MapScreen> {
         locations = sortFavItems(locations);
       });
     } catch (e) {
-      print('Error al obtener las ubicaciones: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar ubicaciones: $e')),
       );
     }
-  }
-
-  List<T> sortFavItems<T extends FavItem>(List<T> items) {
-    // Crea una copia de la lista original
-    List<T> sortedItems = List.from(items);
-
-    // Ordena la nueva lista
-    sortedItems.sort((itemA, itemB) {
-      final isAFav = itemA.getFav();
-      final isBFav = itemB.getFav();
-      if (isAFav && !isBFav) {
-        return -1; // itemA va antes
-      } else if (!isAFav && isBFav) {
-        return 1; // itemB va antes
-      } else {
-        return 0;
-      }
-    });
-
-    // Devuelve la lista ordenada
-    return sortedItems;
   }
 
   void _fetchRoutes() async {
@@ -463,13 +505,11 @@ class _MapScreenState extends State<MapScreen> {
       final fetchedRoutes =
           await routeController.getRouteList(); // Obtener la lista de rutas
       setState(() {
-        routes = fetchedRoutes
-            .cast<Routes>()
-            .toList(); // Convertir a lista y actualizar el estado
+        routes =
+            fetchedRoutes.toList(); // Convertir a lista y actualizar el estado
         routes = sortFavItems(routes);
       });
     } catch (e) {
-      print('Error al obtener las rutas: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar rutas: $e')),
       );
@@ -487,6 +527,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _fetchVehicles() async {
     try {
+      print("entra en fetchvehicles"); //sí que entra
       final fetchedVehicles =
           await vehicleController.getVehicleList(); // Obtener la lista de rutas
       setState(() {
@@ -495,7 +536,6 @@ class _MapScreenState extends State<MapScreen> {
         vehicles = sortFavItems(vehicles);
       });
     } catch (e) {
-      print('Error al obtener los vehículos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar vehículos: $e')),
       );

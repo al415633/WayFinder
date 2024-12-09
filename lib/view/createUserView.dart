@@ -1,8 +1,6 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
-import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/view/errorPage.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:flutter/material.dart';
@@ -59,8 +57,8 @@ class _CreateUserViewState extends State<CreateUserView> {
           ),
           Center(
             child: Container(
-              width: 600,
-              height: 600,
+              width: 700,
+              height: 700,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.9),
@@ -253,10 +251,10 @@ class _CreateUserViewState extends State<CreateUserView> {
     // Valida si la contraseña cumple con los requisitos
   bool _validatePassword(String password) {
     setState(() {
-      _passwordValidation["length"] = password.length >= 8;
-      _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
-      _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
-      _passwordValidation["special"] = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+  _passwordValidation["length"] = password.length >= 8;
+    _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
+    _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
+    _passwordValidation["special"] = password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
     });
 
     // Verificar si todos los requisitos son verdaderos
@@ -314,12 +312,14 @@ class _CreateUserViewState extends State<CreateUserView> {
     
     UserAppController? userAppController = UserAppController.getInstance();
     
-    UserApp? user= await userAppController?.createUser(email, password, name);
+    UserApp? user= await userAppController.createUser(email, password, name);
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => MapScreen()),
-  );
+   if (user != null) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen()),
+    );
+  }
 } on NotValidEmailException {
   _errorMessage = 'Email no valido';
 } on IncorrectPasswordException {

@@ -6,9 +6,6 @@ import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/view/map_screen.dart';
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 
 // IMPORT PARA LA BASE DE DATOS
 
@@ -93,11 +90,11 @@ class _InicioState extends State<Inicio> {
           ),
           Center(
             child: Container(
-              width: 500, // Dimensiones cuadradas
-              height: 500,
+              width: 700, 
+              height: 700,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9), // Fondo blanco semitransparente
+                color: Colors.white.withOpacity(0.9), 
                 borderRadius: BorderRadius.circular(16.0),
               ),
               child: login(),
@@ -212,7 +209,7 @@ void _login() async {
     
     UserAppController? userAppController = UserAppController.getInstance();
 
-    await userAppController?.logInCredenciales(email, password);
+    await userAppController.logInCredenciales(email, password);
     _usuarioController.clear();
     _passwordController.clear();
 

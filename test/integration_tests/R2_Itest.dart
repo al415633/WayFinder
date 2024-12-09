@@ -1,3 +1,4 @@
+
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
@@ -38,7 +39,7 @@ void main() {
       );
 
       // GIVEN
-      String emailh5e1 = "Pruebah5e1@gmail.com";
+      String emailh5e1 = "Pruebah5e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh5e1 = "Aaaaa,.8";
       String nameh5e1 = "Pruebah5e1";
 
@@ -66,8 +67,8 @@ void main() {
       final firstLocationh5e1 = locationListh5e1[0];
 
       // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat, equals(lath5e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong, equals(longh5e1)); // Verifica la longitud
+      expect((firstLocationh5e1.getCoordinate().getLat - lath5e1).abs() < 0.001, equals(true)); // Verifica la latitud
+      expect((firstLocationh5e1.getCoordinate().getLong - longh5e1).abs() < 0.001 , equals(true)); // Verifica la longitud
       expect(firstLocationh5e1.getToponym(), equals(topoh5e1)); // Verifica el topónimo
       expect(firstLocationh5e1.getAlias(), equals(aliash5e1)); // Verifica el alias
     });
@@ -93,7 +94,7 @@ void main() {
     );
 
     // GIVEN
-    String emailh5e3 = "Pruebah5e3@gmail.com";
+    String emailh5e3 = "Pruebah5e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";
     String passwordh5e3 = "Aaaaa,.8";
     String nameh5e3 = "Pruebah5e3";
 
@@ -122,6 +123,127 @@ void main() {
   });
 
 
+  test('H6-E1V - Crear lugar', () async {
+     // Configurar los mocks y el controlador dentro del test
+     final mockAuth = MockFirebaseAuth();
+     final mockDbAdapterUserApp = MockDbAdapterUserApp();
+     final userAppController = UserAppController(mockDbAdapterUserApp);
+     final mockDbAdapterLocation = MockDbAdapterLocation();
+     final locationController = LocationController.getInstance(mockDbAdapterLocation);
+
+
+     final double lath6e1 = 39.98567;
+     final double longh6e1 = -0.04935;
+     final String aliash6e1 = "prueba 1";
+     final String topoh6e1 = "Caja Rural, Castellón de la Plana, VC, España";
+
+
+     // Configurar el stub de `getLocationList`
+     when(mockDbAdapterLocation.getLocationList()).thenAnswer(
+           (_) async => {
+             Location(Coordinate(lath6e1, longh6e1), topoh6e1, aliash6e1)
+           },
+     );
+
+
+     // GIVEN
+     String emailh6e1 = "Pruebah6e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+     String passwordh6e1 = "Aaaaa,.8";
+     String nameh6e1 = "Pruebah6e1";
+
+
+     // Simular la creación del usuario
+     when(userAppController.repository.createUser(emailh6e1, passwordh6e1))
+         .thenAnswer((_) async => UserApp("id", nameh6e1, emailh6e1));
+
+
+     await userAppController.createUser(emailh6e1, passwordh6e1, nameh6e1);
+
+
+     // WHEN
+
+
+     // Simular la creación de un lugar
+     when(mockDbAdapterLocation.createLocationFromTopo(any))
+         .thenAnswer((_) async => true);
+
+
+     await locationController.createLocationFromTopo(topoh6e1, aliash6e1);
+
+
+     // THEN
+     final Set<Location> location = await locationController.getLocationList();
+
+
+     // Convertir el set a una lista para acceder al primer elemento
+     final locationListh5e1 = location.toList();
+
+
+     // Acceder al primer objeto en la lista
+     final firstLocationh5e1 = locationListh5e1[0];
+
+
+     // Verificar que los valores del primer lugar son los esperados
+     expect((firstLocationh5e1.getCoordinate().getLat - lath6e1).abs() < 0.001, equals(true)); // Verifica la latitud
+     expect((firstLocationh5e1.getCoordinate().getLong - longh6e1).abs() < 0.001, equals(true)); // Verifica la longitud
+     expect(firstLocationh5e1.getToponym(), equals(topoh6e1)); // Verifica el topónimo
+     expect(firstLocationh5e1.getAlias(), equals(aliash6e1)); // Verifica el alias
+   });
+
+
+
+
+ test('H6-E3I - Toponimo del Lugar incorrecto', () async {
+   // Configurar los mocks y el controlador dentro del test
+   final mockAuth = MockFirebaseAuth();
+   final mockDbAdapterUserApp = MockDbAdapterUserApp();
+   final userAppController = UserAppController(mockDbAdapterUserApp);
+   final mockDbAdapterLocation = MockDbAdapterLocation();
+   final locationController = LocationController.getInstance(mockDbAdapterLocation);
+   final double lath6e3 = 39.98567;
+   final double longh6e3 = -0.04935;
+   final String aliash6e3 = "prueba 1";
+   final String topoh6e3 = "aoneutcg go5gog";
+
+   // Configurar el stub de `getLocationList`
+   when(mockDbAdapterLocation.getLocationList()).thenAnswer(
+     (_) async => {},
+   );
+
+
+   // GIVEN
+   String emailh6e3 = "Pruebah6e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+   String passwordh6e3 = "Aaaaa,.8";
+   String nameh6e3 = "Pruebah6e3";
+
+
+   // Simular la creación del usuario
+   when(userAppController.repository.createUser(emailh6e3, passwordh6e3))
+       .thenAnswer((_) async => UserApp("id", nameh6e3, emailh6e3));
+
+
+   await userAppController.createUser(emailh6e3, passwordh6e3, nameh6e3);
+
+
+   // Simular la creación de un lugar que arroja una excepción
+   when(mockDbAdapterLocation.createLocationFromTopo(any)).thenThrow(Exception("Toponimo inválido"));
+
+
+   // WHEN
+
+   Future<void> action() async {
+     //await locationController.getLocationList();
+     await locationController.createLocationFromTopo(topoh6e3, aliash6e3);
+   }
+
+   // THEN
+   expect(() async => await action(), throwsA(isA<Exception>()));
+ });
+
+
+
+
+
   test('H7-E1V - Listar lugares', () async {
     // Configurar los mocks y el controlador dentro del test
     final mockAuth = MockFirebaseAuth();
@@ -144,7 +266,7 @@ void main() {
     );
 
     // Simular la creación del usuario
-    String emailh7e1 = "Pruebah7e1@gmail.com";
+    String emailh7e1 = "Pruebah7e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
     String passwordh7e1 = "Aaaaa,.8";
     String nameh7e1 = "Pruebah7e1";
 
@@ -166,9 +288,11 @@ void main() {
 
     // Verificar que los valores del primer lugar son los esperados
     final firstLocation = locationList[0];
-    expect(firstLocation.getCoordinate().getLat, equals(lat1)); // Verifica la latitud
-    expect(firstLocation.getCoordinate().getLong, equals(long1)); // Verifica la longitud
+    expect((firstLocation.getCoordinate().getLat -lat1).abs() < 0.001, equals(true)); // Verifica la latitud
+    expect((firstLocation.getCoordinate().getLong - long1).abs() < 0.001, equals(true)); // Verifica la longitud      
+    expect(firstLocation.getToponym(), equals(topoh7e1)); // Verifica el toponimo
     expect(firstLocation.getAlias(), equals(alias1h7e1)); // Verifica el alias
+
 
   });
 

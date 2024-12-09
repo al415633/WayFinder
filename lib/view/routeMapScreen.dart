@@ -2,6 +2,7 @@ import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -26,7 +27,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   bool showVehicles = false;
   double distance = 0.0;
   double estimatedTime = 0.0;
+  double cost = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
+  FirestoreAdapterVehiculo vehicleAdapter = FirestoreAdapterVehiculo();
+
 
   @override
   void initState() {
@@ -48,7 +52,20 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       distance = result['distance'];
       estimatedTime = result['duration'];
       print('Distance: $distance, Estimated Time: $estimatedTime'); // Debugging statement
-    });
+      
+      });
+
+      if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta){
+        try{
+          route.setCalories = RouteController.getInstance(routeAdapter).calculateCostKCal(route);
+        }catch (e){
+          route.setCalories = 0.0;
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al calcular calorías: $e')),
+          );
+        }
+      } else if (transportMode == TransportMode.coche){
+          cost = await VehicleController.getInstance(vehicleAdapter).calculatePrice(route, route.getVehicle!);      }
   }
 
   void calculateDistanceAndTime() {
@@ -145,6 +162,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                     Text('Distancia: ${distance < 1 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km'}'),
                     Text(
                       'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
+                      if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta)
+                        Text('Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
+                      if (transportMode == TransportMode.coche)
+                        Text('Coste: ${cost.toStringAsFixed(2)} €'), // Mostrar el coste
                   ],
                 ),
               ),
