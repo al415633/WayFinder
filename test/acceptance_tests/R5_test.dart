@@ -125,7 +125,7 @@ void main() {
   
     test('H20-E1V - Marcar como favorito un lugar', () async {
       // GIVEN 
-      String emailh20e1 = "Pruebah20e1@gmail.com";
+      String emailh20e1 = "Pruebah20e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh20e1 = "Aaaaa,.8";
       String nameh20e1 = "Pruebah20e1";
       await userAppController.createUser(emailh20e1, passwordh20e1, nameh20e1);
@@ -135,11 +135,12 @@ void main() {
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String apodo1 = "castellon";
+      final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";
 
       await locationController.createLocationFromCoord(lat1, long1, apodo1);
 
       // Verificar que la ubicación se ha añadido correctamente
-      await locationController.addFav("", apodo1);
+      await locationController.addFav(topo1, apodo1);
       
       final Set<Location> locations = await locationController.getLocationList();
       expect(locations.isNotEmpty, true);  // Asegúrate de que no esté vacío
@@ -164,7 +165,7 @@ void main() {
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
 
         // GIVEN 
-      String emailh20e2 = "Pruebah20e2@gmail.com";
+      String emailh20e2 = "Pruebah20e2${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh20e2 = "Aaaaa,.8";
       String nameh20e2 = "Pruebah20e2";
       await userAppController.createUser(emailh20e2, passwordh20e2, nameh20e2);
