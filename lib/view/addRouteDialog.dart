@@ -1,4 +1,3 @@
-import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
@@ -10,7 +9,7 @@ void showAddRouteDialog(
     BuildContext context,
     List<Location> locations,
     List<Vehicle> vehicles,
-    Function(String, Location, Location, TransportMode, RouteMode, bool)
+    Function(String, Location, Location, TransportMode, RouteMode, Vehicle? ,bool)
         onRouteSelected) {
   // Variables para los datos de la ruta
   String routeNameInput = '';
@@ -159,7 +158,7 @@ void showAddRouteDialog(
                         startLocationInput!,
                         endLocationInput!,
                         transportModeInput,
-                        routeModeInput,
+                        routeModeInput, selectedVehicle,
                         true);
                     Navigator.of(context).pop();
                   }
@@ -180,7 +179,7 @@ void showAddRouteDialog(
                         startLocationInput!,
                         endLocationInput!,
                         transportModeInput,
-                        routeModeInput,
+                        routeModeInput, selectedVehicle,
                         false);
                     // Navegar a RouteMapScreen
                     Navigator.of(context).pop();

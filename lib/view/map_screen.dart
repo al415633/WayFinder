@@ -46,6 +46,7 @@ class _MapScreenState extends State<MapScreen> {
       VehicleController(FirestoreAdapterVehiculo());
   List<Vehicle> vehicles = [];
   UserAppController? userAppController = UserAppController.getInstance();
+  late double cost;
 
   @override
   void initState() {
@@ -197,11 +198,15 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _onRouteSelected(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode, bool save) async {
+      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle, bool save) async {
     late Routes route;
+    
     try {
       route = await routeController.createRoute(
-          name, start, end, transportMode, routeMode);
+          name, start, end, transportMode, routeMode, vehicle);
+      print(vehicle);
+      cost = await vehicleController.calculatePrice(route, vehicle!);
+      print(cost);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al crear la ruta: $e')),

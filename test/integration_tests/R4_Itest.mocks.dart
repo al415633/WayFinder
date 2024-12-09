@@ -16,10 +16,13 @@ import 'package:WayFinder/model/location.dart' as _i11;
 import 'package:WayFinder/model/route.dart' as _i6;
 import 'package:WayFinder/model/routeMode.dart' as _i12;
 import 'package:WayFinder/model/transportMode.dart' as _i10;
-import 'package:WayFinder/model/UserApp.dart' as _i14;
-import 'package:WayFinder/viewModel/LocationController.dart' as _i15;
+import 'package:WayFinder/model/UserApp.dart' as _i15;
+import 'package:WayFinder/model/vehicle.dart' as _i13;
+import 'package:WayFinder/viewModel/ElectricCarPrice.dart' as _i17;
+import 'package:WayFinder/viewModel/LocationController.dart' as _i16;
 import 'package:WayFinder/viewModel/RouteController.dart' as _i5;
-import 'package:WayFinder/viewModel/UserAppController.dart' as _i13;
+import 'package:WayFinder/viewModel/UserAppController.dart' as _i14;
+import 'package:WayFinder/viewModel/VehicleController.dart' as _i18;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -846,6 +849,7 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
     _i11.Location? end,
     _i10.TransportMode? transportMode,
     _i12.RouteMode? routeMode,
+    _i13.Vehicle? vehicle,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -856,6 +860,7 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
             end,
             transportMode,
             routeMode,
+            vehicle,
           ],
         ),
         returnValue: _i7.Future<_i6.Routes>.value(_FakeRoutes_5(
@@ -868,6 +873,7 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
               end,
               transportMode,
               routeMode,
+              vehicle,
             ],
           ),
         )),
@@ -881,6 +887,7 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
               end,
               transportMode,
               routeMode,
+              vehicle,
             ],
           ),
         )),
@@ -1013,9 +1020,9 @@ class MockDbAdapterRoute extends _i1.Mock implements _i5.DbAdapterRoute {
 /// A class which mocks [DbAdapterUserApp].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
+class MockDbAdapterUserApp extends _i1.Mock implements _i14.DbAdapterUserApp {
   @override
-  _i7.Future<_i14.UserApp?> createUser(
+  _i7.Future<_i15.UserApp?> createUser(
     String? email,
     String? password,
   ) =>
@@ -1027,12 +1034,12 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
             password,
           ],
         ),
-        returnValue: _i7.Future<_i14.UserApp?>.value(),
-        returnValueForMissingStub: _i7.Future<_i14.UserApp?>.value(),
-      ) as _i7.Future<_i14.UserApp?>);
+        returnValue: _i7.Future<_i15.UserApp?>.value(),
+        returnValueForMissingStub: _i7.Future<_i15.UserApp?>.value(),
+      ) as _i7.Future<_i15.UserApp?>);
 
   @override
-  _i7.Future<_i14.UserApp?> logInCredenciales(
+  _i7.Future<_i15.UserApp?> logInCredenciales(
     String? email,
     String? password,
   ) =>
@@ -1044,9 +1051,9 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
             password,
           ],
         ),
-        returnValue: _i7.Future<_i14.UserApp?>.value(),
-        returnValueForMissingStub: _i7.Future<_i14.UserApp?>.value(),
-      ) as _i7.Future<_i14.UserApp?>);
+        returnValue: _i7.Future<_i15.UserApp?>.value(),
+        returnValueForMissingStub: _i7.Future<_i15.UserApp?>.value(),
+      ) as _i7.Future<_i15.UserApp?>);
 
   @override
   _i7.Future<bool> logOut() => (super.noSuchMethod(
@@ -1062,7 +1069,7 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
 /// A class which mocks [DbAdapterLocation].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDbAdapterLocation extends _i1.Mock implements _i15.DbAdapterLocation {
+class MockDbAdapterLocation extends _i1.Mock implements _i16.DbAdapterLocation {
   @override
   _i7.Future<bool> createLocationFromCoord(_i11.Location? location) =>
       (super.noSuchMethod(
@@ -1124,6 +1131,140 @@ class MockDbAdapterLocation extends _i1.Mock implements _i15.DbAdapterLocation {
           [
             topo,
             alias,
+          ],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [Electriccarprice].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockElectriccarprice extends _i1.Mock implements _i17.Electriccarprice {
+  @override
+  _i7.Future<double> calculatePrice(
+    _i6.Routes? route,
+    _i13.Vehicle? vehiculo,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #calculatePrice,
+          [
+            route,
+            vehiculo,
+          ],
+        ),
+        returnValue: _i7.Future<double>.value(0.0),
+        returnValueForMissingStub: _i7.Future<double>.value(0.0),
+      ) as _i7.Future<double>);
+
+  @override
+  double convertMWhToKWh(double? pricePerMWh) => (super.noSuchMethod(
+        Invocation.method(
+          #convertMWhToKWh,
+          [pricePerMWh],
+        ),
+        returnValue: 0.0,
+        returnValueForMissingStub: 0.0,
+      ) as double);
+
+  @override
+  String getFechaHoy() => (super.noSuchMethod(
+        Invocation.method(
+          #getFechaHoy,
+          [],
+        ),
+        returnValue: _i8.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getFechaHoy,
+            [],
+          ),
+        ),
+        returnValueForMissingStub: _i8.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getFechaHoy,
+            [],
+          ),
+        ),
+      ) as String);
+
+  @override
+  double truncarA2Decimales(double? valor) => (super.noSuchMethod(
+        Invocation.method(
+          #truncarA2Decimales,
+          [valor],
+        ),
+        returnValue: 0.0,
+        returnValueForMissingStub: 0.0,
+      ) as double);
+
+  @override
+  _i7.Future<double> fetchElectricityPrice() => (super.noSuchMethod(
+        Invocation.method(
+          #fetchElectricityPrice,
+          [],
+        ),
+        returnValue: _i7.Future<double>.value(0.0),
+        returnValueForMissingStub: _i7.Future<double>.value(0.0),
+      ) as _i7.Future<double>);
+}
+
+/// A class which mocks [DbAdapterVehicle].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
+  @override
+  _i7.Future<bool> createVehicle(_i13.Vehicle? vehicle) => (super.noSuchMethod(
+        Invocation.method(
+          #createVehicle,
+          [vehicle],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<Set<_i13.Vehicle>> getVehicleList() => (super.noSuchMethod(
+        Invocation.method(
+          #getVehicleList,
+          [],
+        ),
+        returnValue: _i7.Future<Set<_i13.Vehicle>>.value(<_i13.Vehicle>{}),
+        returnValueForMissingStub:
+            _i7.Future<Set<_i13.Vehicle>>.value(<_i13.Vehicle>{}),
+      ) as _i7.Future<Set<_i13.Vehicle>>);
+
+  @override
+  _i7.Future<bool> addFav(
+    String? numberPlate,
+    String? name,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #addFav,
+          [
+            numberPlate,
+            name,
+          ],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<bool> removeFav(
+    String? numberPlate,
+    String? name,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeFav,
+          [
+            numberPlate,
+            name,
           ],
         ),
         returnValue: _i7.Future<bool>.value(false),
