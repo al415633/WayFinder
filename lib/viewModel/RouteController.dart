@@ -1,4 +1,5 @@
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
+import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
@@ -103,12 +104,17 @@ class RouteController {
     }
   }
 
-  Future<Routes> createRoute(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode? routeMode, Vehicle? vehicle) async {
+  Future<Routes> createRoute(
+      String name,
+      Location start,
+      Location end,
+      TransportMode transportMode,
+      RouteMode? routeMode,
+      Vehicle? vehicle) async {
 
-if (routeMode == null){
-  throw UnimplementedError();
-}
+    if (routeMode == null) {
+  throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
+    }
 
     LatLng initialPoint =
         LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
@@ -118,21 +124,20 @@ if (routeMode == null){
         await fetchRoutePoints(initialPoint, destination, transportMode);
     double distance = calculateDistance(points);
     double time = calculateTime(transportMode, distance);
-    Routes route = Routes(
-        name, start, end, points, distance, time, transportMode, routeMode, vehicle);
+    Routes route = Routes(name, start, end, points, distance, time,
+        transportMode, routeMode, vehicle);
     return route;
   }
 
-  Future<bool> deleteRoute(Routes route) async{
-      try {
+  Future<bool> deleteRoute(Routes route) async {
+    try {
       bool success = await repository.deleteRoute(route);
 
       if (success) {
         final currentSet = await routeList;
         // Agregar el nuevo Location al Set
         currentSet.remove(route);
-        routeList = Future.value(currentSet) ;
-
+        routeList = Future.value(currentSet);
       }
 
       return success;
@@ -250,7 +255,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<Set<Routes>> getRouteList() async {
-
     /*
     final user = FirebaseAuth.instance.currentUser;
 
@@ -259,7 +263,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     }
 
     */
-    
+
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -298,41 +302,38 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     }
   }
 
- @override
-   Future<bool> deleteRoute(Routes route) async {
-    
-     final user = FirebaseAuth.instance.currentUser;
+  @override
+  Future<bool> deleteRoute(Routes route) async {
+    final user = FirebaseAuth.instance.currentUser;
 
-      if (user == null) {
-        throw Exception('Usuario no autenticado. No se puede eliminar la ruta.');
+    if (user == null) {
+      throw Exception('Usuario no autenticado. No se puede eliminar la ruta.');
+    }
+
+    try {
+      // Obtener la colección de rutas del usuario
+      var collectionRef = db
+          .collection(_collectionName)
+          .doc(_currentUser?.uid)
+          .collection("RouteList");
+
+      // Buscar el documento por algún atributo único de la ruta, por ejemplo, 'name'
+      var querySnapshot =
+          await collectionRef.where('name', isEqualTo: route.getName).get();
+
+      // Verificar si se encontró el documento
+      if (querySnapshot.docs.isEmpty) {
+        throw Exception('Ruta no encontrada.');
       }
 
-      try {
-        // Obtener la colección de rutas del usuario
-        var collectionRef = db
-            .collection(_collectionName)
-            .doc(_currentUser?.uid)
-            .collection("RouteList");
+      // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
+      await querySnapshot.docs.first.reference.delete();
 
-        // Buscar el documento por algún atributo único de la ruta, por ejemplo, 'name'
-        var querySnapshot = await collectionRef
-            .where('name', isEqualTo: route.getName)
-            .get();
-
-        // Verificar si se encontró el documento
-        if (querySnapshot.docs.isEmpty) {
-          throw Exception('Ruta no encontrada.');
-        }
-
-        // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
-        await querySnapshot.docs.first.reference.delete();
-
-        return true;
-      } catch (e) {
-        throw Exception("Error al eliminar la ruta: $e");
-      }
+      return true;
+    } catch (e) {
+      throw Exception("Error al eliminar la ruta: $e");
+    }
   }
-
 
   @override
   Future<bool> addFav(String routeName) async {
