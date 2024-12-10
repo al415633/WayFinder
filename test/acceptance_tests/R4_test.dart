@@ -2,6 +2,7 @@
 
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
+import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
@@ -590,14 +591,18 @@ void main() {
       String name1 = "ruta 1";
 
 
-      Routes routeeco = await routeController.createRoute(
+      Routes route = await routeController.createRoute(
           name1, ini, fin, TransportMode.aPie, null, null);
 
       //THEN
   
-      expect(routeeco.distance,equals(1111));
-      expect(routeeco.time,equals(1111));
-      expect(routeeco.cost,equals(1111));
+     
+     expect(
+       () async => await routeController.createRoute(
+          name1, ini, fin, TransportMode.aPie, null, null),
+       throwsA(isA<MissingInformationRouteException>()),
+      
+     );
       
       await userAppController.logOut();
 
