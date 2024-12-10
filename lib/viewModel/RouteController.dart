@@ -104,7 +104,12 @@ class RouteController {
   }
 
   Future<Routes> createRoute(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle) async {
+      TransportMode transportMode, RouteMode? routeMode, Vehicle? vehicle) async {
+
+if (routeMode == null){
+  throw UnimplementedError();
+}
+
     LatLng initialPoint =
         LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
     LatLng destination =

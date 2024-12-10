@@ -489,8 +489,119 @@ void main() {
 
 
 
-    test('H16', () async {
+      test('H16-E1V - Crear ruta habiendo elegido un tipo de ruta concreto', () async {
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah16e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String nameh = "Pruebah16e1";
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController.getInstance(adapterRoute);
+
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
       
+      adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(adapterVehicle);
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+     
+      Location ini =
+          await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      Location fin =
+          await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+      String name1 = "ruta 1";
+
+      Routes routerapida = await routeController.createRoute(
+          name1, ini, fin, TransportMode.aPie, RouteMode.rapida, null);
+      Routes routecorta = await routeController.createRoute(
+          name1, ini, fin, TransportMode.aPie, RouteMode.corta, null);
+
+      Routes routeeco = await routeController.createRoute(
+          name1, ini, fin, TransportMode.aPie, RouteMode.economica, null);
+
+      //THEN
+      expect(routerapida.distance,equals(1111));
+      expect(routerapida.time,equals(1111));
+      expect(routerapida.cost,equals(1111));
+
+      expect(routecorta.distance,equals(1111));
+      expect(routecorta.time,equals(1111));
+      expect(routecorta.cost,equals(1111));
+
+      expect(routeeco.distance,equals(1111));
+      expect(routeeco.time,equals(1111));
+      expect(routeeco.cost,equals(1111));
+      
+      await userAppController.logOut();
+
+     
+    });
+
+    test('H16-E2I - Crear ruta  sin elegir un tipo de ruta concreto ', () async {
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah16e2@gmail.com";
+      String password = "Aaaaa,.8";
+      String nameh = "Pruebah16e2";
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController.getInstance(adapterRoute);
+
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+      
+      adapterVehicle = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(adapterVehicle);
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+     
+      Location ini =
+          await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      Location fin =
+          await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+      String name1 = "ruta 1";
+
+
+      Routes routeeco = await routeController.createRoute(
+          name1, ini, fin, TransportMode.aPie, null, null);
+
+      //THEN
+  
+      expect(routeeco.distance,equals(1111));
+      expect(routeeco.time,equals(1111));
+      expect(routeeco.cost,equals(1111));
+      
+      await userAppController.logOut();
+
+     
     });
    
 
