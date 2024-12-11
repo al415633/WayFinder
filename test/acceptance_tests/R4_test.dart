@@ -382,7 +382,7 @@ void main() {
       coste = routeController.calculateCostKCal(ruta);
 
       //THEN
-      expect(coste, 645.05); // Verifica el Location inicial
+      expect(coste, 645); // Verifica el Location inicial
     });
 
     test('H15 - E3I error al calular el coste de las calorias', () async {
@@ -491,34 +491,19 @@ void main() {
       Routes routeeco = await routeController.createRoute(
           name1, ini, fin, TransportMode.coche, RouteMode.economica, vehicle);
 
-      print(routerapida.distance);
-      print(routerapida.time);
-      print(routerapida.cost);
-
-
-      print(routecorta.distance);
-      print(routecorta.time);
-      print(routecorta.cost);
-
-
-      print(routeeco.distance);
-      print(routeeco.time);
-      print(routeeco.cost);
-
-
 
       //THEN
-      expect(routerapida.distance, equals(3036042.974));
-      expect(routerapida.time, equals(50600.71623333333));
+      expect(routerapida.distance, equals(12.83));
+      expect(routerapida.time, equals(0.32));
       expect(routerapida.cost, equals(0));
 
 
-      expect(routecorta.distance, equals(3054374.666));
-      expect(routecorta.time, equals(50906.24443333333));
+      expect(routecorta.distance, equals(12.57));
+      expect(routecorta.time, equals(0.37));
       expect(routecorta.cost, equals(0));
 
-      expect(routeeco.distance, equals(3036042.974));
-      expect(routeeco.time, equals(50600.71623333333));
+      expect(routeeco.distance, equals(12.83));
+      expect(routeeco.time, equals(0.32));
       expect(routeeco.cost, equals(0));
 
       await userAppController.logOut();

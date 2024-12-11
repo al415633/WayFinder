@@ -11,6 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:math';
+
 
 
 class RouteController {
@@ -79,6 +81,7 @@ class RouteController {
       int shift = 0, result = 0;
       int b;
 
+      // Decodificar Latitude
       do {
         b = encoded.codeUnitAt(index++) - 63;
         result |= (b & 0x1F) << shift;
@@ -88,6 +91,7 @@ class RouteController {
       int dLat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
       lat += dLat;
 
+      // Reiniciar variables para decodificar Longitude
       shift = 0;
       result = 0;
 
@@ -100,10 +104,19 @@ class RouteController {
       int dLng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
       lng += dLng;
 
-      polyline.add(LatLng(lat / 1E5, lng / 1E5));
+      // Dividir por 1e5 y redondear a 4 decimales
+      double finalLat = _roundToDecimalPlaces(lat / 1e5, 4);
+      double finalLng = _roundToDecimalPlaces(lng / 1e5, 4);
+
+      polyline.add(LatLng(finalLat, finalLng));
     }
 
     return polyline;
+  }
+
+  double _roundToDecimalPlaces(double value, int decimalPlaces) {
+    double mod = pow(10.0, decimalPlaces).toDouble();
+    return ((value * mod).round().toDouble() / mod);
   }
 
 
@@ -115,7 +128,7 @@ class RouteController {
     http.Response? response;
 
     String routeModeString = getApiPreferenceFromRouteMode(routeMode);
-    print(routeModeString);
+    //print(routeModeString);
 
     if (transportMode == TransportMode.coche) {
       response = await postCarRoute(initialPoint, destination, routeModeString);
@@ -143,8 +156,8 @@ class RouteController {
 
       return {
         'points': points,
-        'distance': distance,
-        'duration': duration,
+        'distance': _roundToDecimalPlaces(distance, 2),
+        'duration': _roundToDecimalPlaces(duration, 2),
       };
     } else {
       print('Error al obtener la ruta: ${response?.statusCode}, ${response?.body}');
@@ -184,11 +197,11 @@ class RouteController {
           await getPoints(initialPoint, destination, transportMode, routeMode);
 
     List<LatLng> points = pointsData['points'] as List<LatLng>;
-    print(points);
+    //print(points);
     double distance = pointsData['distance'] as double;
-    print("Distanciaaaa:$distance");
+    //print("Distanciaaaa:$distance");
     double time = pointsData['duration'] as double;
-    print("Tiempooooo $time");
+    //print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
     return route;

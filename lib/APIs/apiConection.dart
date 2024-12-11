@@ -44,8 +44,8 @@ Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String ro
   );
 
   // Depuración: Imprime el cuerpo de la solicitud y la respuesta
-  print('Cuerpo de la solicitud: ${json.encode(body)}');
-  print('Respuesta completa: ${response.body}');
+  //print('Cuerpo de la solicitud: ${json.encode(body)}');
+  //print('Respuesta completa: ${response.body}');
 
   return response;
 }
