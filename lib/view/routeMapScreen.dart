@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
@@ -46,7 +47,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
     void fetchCoordinates() async {
-    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode);
+    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode, RouteMode.corta);
     setState(() {
       points = result['points'];
       distance = result['distance'];
@@ -68,12 +69,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           cost = await VehicleController.getInstance(vehicleAdapter).calculatePrice(route, route.getVehicle!);      }
   }
 
-  void calculateDistanceAndTime() {
-    distance = RouteController.getInstance(routeAdapter).calculateDistance(points);
-    widget.route.setDistance = distance;
-    estimatedTime = RouteController.getInstance(routeAdapter).calculateTime(transportMode, distance);
-    widget.route.setTime = estimatedTime;
-  }
 
 
   void _onTransportChanged(TransportMode newTransportMode) {
