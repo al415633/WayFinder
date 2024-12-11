@@ -12,6 +12,7 @@ import 'package:WayFinder/model/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
 
+
 class RouteController {
   // Propiedades
   late Future<Set<Routes>> routeList;
@@ -36,6 +37,20 @@ class RouteController {
     return routeList;
   }
 
+  String getApiPreferenceFromRouteMode(RouteMode mode) {
+    switch (mode) {
+      case RouteMode.rapida:
+        return 'fastest'; // Ruta más rápida
+      case RouteMode.corta:
+        return 'shortest'; // Ruta más corta
+      case RouteMode.economica:
+        return 'recommended'; // Ruta recomendada
+      default:
+        return 'fastest'; // Valor por defecto
+    }
+  }
+
+
   double calculateCostKCal(Routes? route) {
     if (route == null || route.transportMode == TransportMode.coche) {
       throw Invalidcaloriecalculationexception();
@@ -54,50 +69,94 @@ class RouteController {
     }
   }
 
-  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
-      LatLng destination, TransportMode transportMode) async {
-    //más adelante se tnedrá que tener en cuenta el tipo de ruta
-    var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
-    var fin = '${destination.longitude}, ${destination.latitude}';
-    http.Response? response;
-    if (transportMode == TransportMode.coche) {
-      response = await http.get(getCarRouteUrl(ini, fin));
-    } else if (transportMode == TransportMode.aPie) {
-      response = await http.get(getWalkRouteUrl(ini, fin));
-    } else if (transportMode == TransportMode.bicicleta) {
-      response = await http.get(getBikeRouteUrl(ini, fin));
+
+  List<LatLng> decodePolyline(String encoded) {
+    List<LatLng> polyline = [];
+    int index = 0, len = encoded.length;
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int shift = 0, result = 0;
+      int b;
+
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1F) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+
+      int dLat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      lat += dLat;
+
+      shift = 0;
+      result = 0;
+
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1F) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+
+      int dLng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      lng += dLng;
+
+      polyline.add(LatLng(lat / 1E5, lng / 1E5));
     }
+
+    return polyline;
+  }
+
+
+
+  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
+      LatLng destination, TransportMode transportMode, RouteMode routeMode) async {
+    //var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
+    //var fin = '${destination.longitude}, ${destination.latitude}';
+    http.Response? response;
+
+    String routeModeString = getApiPreferenceFromRouteMode(routeMode);
+    print(routeModeString);
+
+    if (transportMode == TransportMode.coche) {
+      response = await postCarRoute(initialPoint, destination, routeModeString);
+      //response = await http.get(getCarRouteUrl(ini, fin, routeModeString));
+    } else if (transportMode == TransportMode.aPie) {
+      response = await postWalkRoute(initialPoint, destination, routeModeString);
+    } else if (transportMode == TransportMode.bicicleta) {
+      response = await postBikeRoute(initialPoint, destination,  routeModeString);
+    }
+   
     if (response?.statusCode == 200) {
       var data = jsonDecode(response!.body);
-      var listOfPoints = data['features'][0]['geometry']['coordinates'];
-      List<LatLng> points = listOfPoints
-          .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
-          .toList();
-      double distance = data['features'][0]['properties']['segments'][0]
-              ['distance'] /
-          1000; // Convertir a km
-      double duration = data['features'][0]['properties']['segments'][0]
-              ['duration'] /
-          3600; // Convertir a horas
+
+      if (data['routes'] == null || data['routes'].isEmpty) {
+        throw Exception('No se encontraron rutas en la respuesta.');
+      }
+
+      var geometry = data['routes'][0]['geometry'];
+
+      // Decodificar el polyline
+      List<LatLng> points = decodePolyline(geometry);
+
+      double distance = data['routes'][0]['summary']['distance'] / 1000; // en km
+      double duration = data['routes'][0]['summary']['duration'] / 3600; // en horas
+
       return {
         'points': points,
         'distance': distance,
         'duration': duration,
       };
     } else {
-      return {
-        'points': [],
-        'distance': 0.0,
-        'duration': 0.0,
-      };
+      print('Error al obtener la ruta: ${response?.statusCode}, ${response?.body}');
+      throw Exception('Error al obtener la ruta.');
     }
   }
 
   Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination,
-      TransportMode transportMode) async {
+      TransportMode transportMode, RouteMode routeMode) async {
     try {
       Map<String, dynamic> pointsData =
-          await getPoints(initialPoint, destination, transportMode);
+          await getPoints(initialPoint, destination, transportMode, routeMode);
       return pointsData['points'] as List<LatLng>;
     } catch (e) {
       throw Exception("Error al obtener los puntos de la ruta: $e");
@@ -120,10 +179,16 @@ class RouteController {
         LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
     LatLng destination =
         LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
-    List<LatLng> points =
-        await fetchRoutePoints(initialPoint, destination, transportMode);
-    double distance = calculateDistance(points);
-    double time = calculateTime(transportMode, distance);
+
+    Map<String, dynamic> pointsData =
+          await getPoints(initialPoint, destination, transportMode, routeMode);
+
+    List<LatLng> points = pointsData['points'] as List<LatLng>;
+    print(points);
+    double distance = pointsData['distance'] as double;
+    print("Distanciaaaa:$distance");
+    double time = pointsData['duration'] as double;
+    print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
     return route;

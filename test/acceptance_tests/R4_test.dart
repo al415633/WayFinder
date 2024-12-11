@@ -467,6 +467,7 @@ void main() {
       final double long2 = -0.08499;
       final String apodo2 = "burriana";
 
+
       Location ini =
           await locationController.createLocationFromCoord(lat1, long1, apodo1);
       Location fin =
@@ -474,26 +475,51 @@ void main() {
 
       String name1 = "ruta 1";
 
+      final String namec = "Coche Quique";
+      final double consumption = 24.3;
+      final String numberPlate = "DKR9087";
+      final String fuelType = 'Eléctrico';
+
+      Vehicle vehicle = Vehicle(numberPlate, consumption, fuelType, namec);
+
+
       Routes routerapida = await routeController.createRoute(
-          name1, ini, fin, TransportMode.aPie, RouteMode.rapida, null);
+          name1, ini, fin, TransportMode.coche, RouteMode.rapida, vehicle);
       Routes routecorta = await routeController.createRoute(
-          name1, ini, fin, TransportMode.aPie, RouteMode.corta, null);
+          name1, ini, fin, TransportMode.coche, RouteMode.corta, vehicle);
 
       Routes routeeco = await routeController.createRoute(
-          name1, ini, fin, TransportMode.aPie, RouteMode.economica, null);
+          name1, ini, fin, TransportMode.coche, RouteMode.economica, vehicle);
+
+      print(routerapida.distance);
+      print(routerapida.time);
+      print(routerapida.cost);
+
+
+      print(routecorta.distance);
+      print(routecorta.time);
+      print(routecorta.cost);
+
+
+      print(routeeco.distance);
+      print(routeeco.time);
+      print(routeeco.cost);
+
+
 
       //THEN
-      expect(routerapida.distance, equals(1111));
-      expect(routerapida.time, equals(1111));
-      expect(routerapida.cost, equals(1111));
+      expect(routerapida.distance, equals(3036042.974));
+      expect(routerapida.time, equals(50600.71623333333));
+      expect(routerapida.cost, equals(0));
 
-      expect(routecorta.distance, equals(1111));
-      expect(routecorta.time, equals(1111));
-      expect(routecorta.cost, equals(1111));
 
-      expect(routeeco.distance, equals(1111));
-      expect(routeeco.time, equals(1111));
-      expect(routeeco.cost, equals(1111));
+      expect(routecorta.distance, equals(3054374.666));
+      expect(routecorta.time, equals(50906.24443333333));
+      expect(routecorta.cost, equals(0));
+
+      expect(routeeco.distance, equals(3036042.974));
+      expect(routeeco.time, equals(50600.71623333333));
+      expect(routeeco.cost, equals(0));
 
       await userAppController.logOut();
     });

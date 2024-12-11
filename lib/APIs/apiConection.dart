@@ -5,6 +5,11 @@ library;
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
+
+
 
 const String apiKey = '5b3ce3597851110001cf6248f55d7a31499e40848c6848d7de8fa624';
 const String urlCar = 'https://api.openrouteservice.org/v2/directions/driving-car';
@@ -13,15 +18,108 @@ const String urlWalk = 'https://api.openrouteservice.org/v2/directions/foot-walk
 const String urlToponym= 'https://api.openrouteservice.org/geocode/search';
 const String urlCoordinate= 'https://api.openrouteservice.org/geocode/reverse';
 
-getCarRouteUrl(String startPoint, String endPoint){
-  return Uri.parse('$urlCar?api_key=$apiKey&start=$startPoint&end=$endPoint');
+Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String routeMode) async {
+
+  Map<String, dynamic> createRequestBody(LatLng startPoint, LatLng endPoint, {String profile = 'driving-car'}) {
+    return {
+      'coordinates': [
+        [startPoint.longitude, startPoint.latitude], 
+        [endPoint.longitude, endPoint.latitude]
+      ],
+      'profile': profile,
+      'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
+    };
+  }
+
+  Map<String, dynamic> body = createRequestBody(startPoint, endPoint);
+
+  // Realizar la solicitud POST
+  final response = await http.post(
+    Uri.parse(urlCar),
+    headers: {
+      'Authorization': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: json.encode(body),
+  );
+
+  // Depuración: Imprime el cuerpo de la solicitud y la respuesta
+  print('Cuerpo de la solicitud: ${json.encode(body)}');
+  print('Respuesta completa: ${response.body}');
+
+  return response;
 }
 
-getBikeRouteUrl(String startPoint, String endPoint){
+
+
+postBikeRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
+
+  createRequestBody(LatLng startPoint, LatLng endPoint, {String profile = 'cycling-regular'}) {
+     return {
+      'coordinates': [
+        [startPoint.longitude, startPoint.latitude], 
+        [endPoint.longitude, endPoint.latitude]
+      ],
+      'profile': profile,
+      'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
+    };
+  }
+
+  Map<String, dynamic> body = createRequestBody(startPoint, endPoint);
+
+    // Realizar la solicitud POST
+    final response = await http.post(
+      Uri.parse(urlBike),
+      headers: {
+        'Authorization': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(body),
+    );
+
+    return response;
+
+}
+
+postWalkRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
+
+  createRequestBody(LatLng startPoint, LatLng endPoint, {String profile = 'foot-walking'}) {
+    return {
+      'coordinates': [
+        [startPoint.longitude, startPoint.latitude], 
+        [endPoint.longitude, endPoint.latitude]
+      ],
+      'profile': profile,
+      'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
+    };
+  }
+
+  Map<String, dynamic> body = createRequestBody(startPoint, endPoint);
+
+    // Realizar la solicitud POST
+    final response = await http.post(
+      Uri.parse(urlWalk),
+      headers: {
+        'Authorization': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(body),
+    );
+
+    return response;
+
+}
+
+getBikeRouteUrl(String startPoint, String endPoint, String routeMode){
   return Uri.parse('$urlBike?api_key=$apiKey&start=$startPoint&end=$endPoint');
 }
 
-getWalkRouteUrl(String startPoint, String endPoint){
+getCarRouteUrl(String startPoint, String endPoint, String routeMode){
+  return Uri.parse('$urlCar?api_key=$apiKey&start=$startPoint&end=$endPoint&preference=$routeMode');
+}
+
+
+getWalkRouteUrl(String startPoint, String endPoint, String routeMode){
   return Uri.parse('$urlWalk?api_key=$apiKey&start=$startPoint&end=$endPoint');
 }
 
