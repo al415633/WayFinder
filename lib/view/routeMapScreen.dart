@@ -69,12 +69,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           cost = await VehicleController.getInstance(vehicleAdapter).calculatePrice(route, route.getVehicle!);      }
   }
 
-  void calculateDistanceAndTime() {
-    distance = RouteController.getInstance(routeAdapter).calculateDistance(points);
-    widget.route.setDistance = distance;
-    estimatedTime = RouteController.getInstance(routeAdapter).calculateTime(transportMode, distance);
-    widget.route.setTime = estimatedTime;
-  }
 
 
   void _onTransportChanged(TransportMode newTransportMode) {

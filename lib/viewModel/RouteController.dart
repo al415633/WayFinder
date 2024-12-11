@@ -123,16 +123,6 @@ class RouteController {
   }
 
 
-  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination,
-      TransportMode transportMode, RouteMode routeMode) async {
-    try {
-      Map<String, dynamic> pointsData =
-          await getPoints(initialPoint, destination, transportMode, routeMode);
-      return pointsData['points'] as List<LatLng>;
-    } catch (e) {
-      throw Exception("Error al obtener los puntos de la ruta: $e");
-    }
-  }
 
   Future<Routes> createRoute(
       String name,
@@ -200,27 +190,6 @@ class RouteController {
     }
   }
 
-  double calculateDistance(List<LatLng> points) {
-    var distance = 0.0;
-    for (int i = 0; i < points.length - 1; i++) {
-      distance += Distance().as(LengthUnit.Meter, points[i], points[i + 1]);
-    }
-    return distance / 1000;
-  }
-
-  double calculateTime(TransportMode transportMode, double distance) {
-    double speed;
-    if (transportMode == TransportMode.coche) {
-      speed = 60.0;
-    } else if (transportMode == TransportMode.aPie) {
-      speed = 5.0;
-    } else if (transportMode == TransportMode.bicicleta) {
-      speed = 15.0;
-    } else {
-      speed = 0.0;
-    }
-    return distance / speed; //en horas
-  }
 
   Future<bool> addFav(String routeName) async {
     try {
