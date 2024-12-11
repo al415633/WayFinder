@@ -9,13 +9,13 @@ import 'package:firebase_auth/firebase_auth.dart' as _i4;
 import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart'
     as _i3;
 import 'package:firebase_core/firebase_core.dart' as _i2;
-import 'package:latlong2/latlong.dart' as _i9;
+import 'package:latlong2/latlong.dart' as _i10;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i8;
-import 'package:WayFinder/model/location.dart' as _i11;
+import 'package:WayFinder/model/location.dart' as _i12;
 import 'package:WayFinder/model/route.dart' as _i6;
-import 'package:WayFinder/model/routeMode.dart' as _i12;
-import 'package:WayFinder/model/transportMode.dart' as _i10;
+import 'package:WayFinder/model/routeMode.dart' as _i9;
+import 'package:WayFinder/model/transportMode.dart' as _i11;
 import 'package:WayFinder/model/UserApp.dart' as _i15;
 import 'package:WayFinder/model/vehicle.dart' as _i13;
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart' as _i17;
@@ -792,6 +792,29 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
       ) as _i7.Future<Set<_i6.Routes>>);
 
   @override
+  String getApiPreferenceFromRouteMode(_i9.RouteMode? mode) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getApiPreferenceFromRouteMode,
+          [mode],
+        ),
+        returnValue: _i8.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getApiPreferenceFromRouteMode,
+            [mode],
+          ),
+        ),
+        returnValueForMissingStub: _i8.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getApiPreferenceFromRouteMode,
+            [mode],
+          ),
+        ),
+      ) as String);
+
+  @override
   double calculateCostKCal(_i6.Routes? route) => (super.noSuchMethod(
         Invocation.method(
           #calculateCostKCal,
@@ -803,9 +826,10 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
 
   @override
   _i7.Future<Map<String, dynamic>> getPoints(
-    _i9.LatLng? initialPoint,
-    _i9.LatLng? destination,
-    _i10.TransportMode? transportMode,
+    _i10.LatLng? initialPoint,
+    _i10.LatLng? destination,
+    _i11.TransportMode? transportMode,
+    _i9.RouteMode? routeMode,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -814,6 +838,7 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
             initialPoint,
             destination,
             transportMode,
+            routeMode,
           ],
         ),
         returnValue:
@@ -823,32 +848,12 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
       ) as _i7.Future<Map<String, dynamic>>);
 
   @override
-  _i7.Future<List<_i9.LatLng>> fetchRoutePoints(
-    _i9.LatLng? initialPoint,
-    _i9.LatLng? destination,
-    _i10.TransportMode? transportMode,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchRoutePoints,
-          [
-            initialPoint,
-            destination,
-            transportMode,
-          ],
-        ),
-        returnValue: _i7.Future<List<_i9.LatLng>>.value(<_i9.LatLng>[]),
-        returnValueForMissingStub:
-            _i7.Future<List<_i9.LatLng>>.value(<_i9.LatLng>[]),
-      ) as _i7.Future<List<_i9.LatLng>>);
-
-  @override
   _i7.Future<_i6.Routes> createRoute(
     String? name,
-    _i11.Location? start,
-    _i11.Location? end,
-    _i10.TransportMode? transportMode,
-    _i12.RouteMode? routeMode,
+    _i12.Location? start,
+    _i12.Location? end,
+    _i11.TransportMode? transportMode,
+    _i9.RouteMode? routeMode,
     _i13.Vehicle? vehicle,
   ) =>
       (super.noSuchMethod(
@@ -912,33 +917,6 @@ class MockRouteController extends _i1.Mock implements _i5.RouteController {
         returnValue: _i7.Future<bool>.value(false),
         returnValueForMissingStub: _i7.Future<bool>.value(false),
       ) as _i7.Future<bool>);
-
-  @override
-  double calculateDistance(List<_i9.LatLng>? points) => (super.noSuchMethod(
-        Invocation.method(
-          #calculateDistance,
-          [points],
-        ),
-        returnValue: 0.0,
-        returnValueForMissingStub: 0.0,
-      ) as double);
-
-  @override
-  double calculateTime(
-    _i10.TransportMode? transportMode,
-    double? distance,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #calculateTime,
-          [
-            transportMode,
-            distance,
-          ],
-        ),
-        returnValue: 0.0,
-        returnValueForMissingStub: 0.0,
-      ) as double);
 
   @override
   _i7.Future<bool> addFav(String? routeName) => (super.noSuchMethod(
@@ -1071,7 +1049,7 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i14.DbAdapterUserApp {
 /// See the documentation for Mockito's code generation for more information.
 class MockDbAdapterLocation extends _i1.Mock implements _i16.DbAdapterLocation {
   @override
-  _i7.Future<bool> createLocationFromCoord(_i11.Location? location) =>
+  _i7.Future<bool> createLocationFromCoord(_i12.Location? location) =>
       (super.noSuchMethod(
         Invocation.method(
           #createLocationFromCoord,
@@ -1082,7 +1060,7 @@ class MockDbAdapterLocation extends _i1.Mock implements _i16.DbAdapterLocation {
       ) as _i7.Future<bool>);
 
   @override
-  _i7.Future<bool> createLocationFromTopo(_i11.Location? location) =>
+  _i7.Future<bool> createLocationFromTopo(_i12.Location? location) =>
       (super.noSuchMethod(
         Invocation.method(
           #createLocationFromTopo,
@@ -1093,15 +1071,15 @@ class MockDbAdapterLocation extends _i1.Mock implements _i16.DbAdapterLocation {
       ) as _i7.Future<bool>);
 
   @override
-  _i7.Future<Set<_i11.Location>> getLocationList() => (super.noSuchMethod(
+  _i7.Future<Set<_i12.Location>> getLocationList() => (super.noSuchMethod(
         Invocation.method(
           #getLocationList,
           [],
         ),
-        returnValue: _i7.Future<Set<_i11.Location>>.value(<_i11.Location>{}),
+        returnValue: _i7.Future<Set<_i12.Location>>.value(<_i12.Location>{}),
         returnValueForMissingStub:
-            _i7.Future<Set<_i11.Location>>.value(<_i11.Location>{}),
-      ) as _i7.Future<Set<_i11.Location>>);
+            _i7.Future<Set<_i12.Location>>.value(<_i12.Location>{}),
+      ) as _i7.Future<Set<_i12.Location>>);
 
   @override
   _i7.Future<bool> addFav(
