@@ -771,7 +771,7 @@ void main() {
    // Convertir el set a una lista para acceder al primer elemento
    final routeListh19e1 = route.toList();
   
-   expect(routeListh19e1.length, equals(0)); // Verifica el Location inicial
+   expect(routeListh19e1.length, equals(0)); // Verifica que no hay rutas en la lista
 
    await signInAndDeleteUser(emailh19e1, passwordh19e1);
    await deleteRoute(name1);
