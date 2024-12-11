@@ -315,15 +315,6 @@ void main() {
       */
     });
 
-    test('H8', () async {
-      // Llamada real a la API
-      //final precioActual = await precioLuzService.fetchPrecioActual();
-
-      // Verificamos que el precio actual se haya recuperado
-      //expect(precioActual, isNotNull);
-      //print('El precio actual de la luz es: $precioActual €/MWh');
-    });
-
 //Empieza H8
     test('H8-E1V - Eliminar lugar de interés', () async {
       //GIVEN
@@ -375,7 +366,7 @@ void main() {
 
       await userAppController.logInCredenciales(emailh8e3, passwordh8e3);
 
-      locationController = LocationController(FirestoreAdapterLocation(collectionName: "testCollection"););
+      locationController = LocationController(FirestoreAdapterLocation(collectionName: "testCollection"));
 
       //WHEN
 
