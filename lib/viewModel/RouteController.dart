@@ -72,48 +72,6 @@ class RouteController {
   }
 
 
-  List<LatLng> decodePolyline(String encoded) {
-    List<LatLng> polyline = [];
-    int index = 0, len = encoded.length;
-    int lat = 0, lng = 0;
-
-    while (index < len) {
-      int shift = 0, result = 0;
-      int b;
-
-      // Decodificar Latitude
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1F) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-
-      int dLat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-      lat += dLat;
-
-      // Reiniciar variables para decodificar Longitude
-      shift = 0;
-      result = 0;
-
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1F) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-
-      int dLng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-      lng += dLng;
-
-      // Dividir por 1e5 y redondear a 4 decimales
-      double finalLat = _roundToDecimalPlaces(lat / 1e5, 4);
-      double finalLng = _roundToDecimalPlaces(lng / 1e5, 4);
-
-      polyline.add(LatLng(finalLat, finalLng));
-    }
-
-    return polyline;
-  }
-
   double _roundToDecimalPlaces(double value, int decimalPlaces) {
     double mod = pow(10.0, decimalPlaces).toDouble();
     return ((value * mod).round().toDouble() / mod);
@@ -123,37 +81,36 @@ class RouteController {
 
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
       LatLng destination, TransportMode transportMode, RouteMode routeMode) async {
-    //var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
-    //var fin = '${destination.longitude}, ${destination.latitude}';
     http.Response? response;
 
     String routeModeString = getApiPreferenceFromRouteMode(routeMode);
-    //print(routeModeString);
 
     if (transportMode == TransportMode.coche) {
       response = await postCarRoute(initialPoint, destination, routeModeString);
-      //response = await http.get(getCarRouteUrl(ini, fin, routeModeString));
     } else if (transportMode == TransportMode.aPie) {
       response = await postWalkRoute(initialPoint, destination, routeModeString);
     } else if (transportMode == TransportMode.bicicleta) {
-      response = await postBikeRoute(initialPoint, destination,  routeModeString);
+      response = await postBikeRoute(initialPoint, destination, routeModeString);
     }
-   
+
     if (response?.statusCode == 200) {
       var data = jsonDecode(response!.body);
 
-      if (data['routes'] == null || data['routes'].isEmpty) {
-        throw Exception('No se encontraron rutas en la respuesta.');
-      }
+      // Acceder a las coordenadas en GeoJSON
+      final List<dynamic> coordinates = data['features'][0]['geometry']['coordinates'];
 
-      var geometry = data['routes'][0]['geometry'];
+      // Convertir a List<LatLng>
+      List<LatLng> points = coordinates.map((coord) {
+        final double lng = coord[0];
+        final double lat = coord[1];
+        return LatLng(lat, lng);
+      }).toList();
 
-      // Decodificar el polyline
-      List<LatLng> points = decodePolyline(geometry);
+      // Acceder a distancia y duración
+      double distance = data['features'][0]['properties']['summary']['distance'] / 1000; // en km
+      double duration = data['features'][0]['properties']['summary']['duration'] / 3600; // en horas
 
-      double distance = data['routes'][0]['summary']['distance'] / 1000; // en km
-      double duration = data['routes'][0]['summary']['duration'] / 3600; // en horas
-
+      // Devolver los resultados
       return {
         'points': points,
         'distance': _roundToDecimalPlaces(distance, 2),
@@ -164,6 +121,7 @@ class RouteController {
       throw Exception('Error al obtener la ruta.');
     }
   }
+
 
   Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination,
       TransportMode transportMode, RouteMode routeMode) async {

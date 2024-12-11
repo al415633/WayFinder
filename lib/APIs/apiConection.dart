@@ -12,21 +12,20 @@ import 'package:latlong2/latlong.dart';
 
 
 const String apiKey = '5b3ce3597851110001cf6248f55d7a31499e40848c6848d7de8fa624';
-const String urlCar = 'https://api.openrouteservice.org/v2/directions/driving-car';
-const String urlBike = 'https://api.openrouteservice.org/v2/directions/cycling-regular';
-const String urlWalk = 'https://api.openrouteservice.org/v2/directions/foot-walking';
+const String urlCar = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
+const String urlBike = 'https://api.openrouteservice.org/v2/directions/cycling-regular/geojson';
+const String urlWalk = 'https://api.openrouteservice.org/v2/directions/foot-walking/geojson';
 const String urlToponym= 'https://api.openrouteservice.org/geocode/search';
 const String urlCoordinate= 'https://api.openrouteservice.org/geocode/reverse';
 
 Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String routeMode) async {
 
-  Map<String, dynamic> createRequestBody(LatLng startPoint, LatLng endPoint, {String profile = 'driving-car'}) {
+  Map<String, dynamic> createRequestBody(LatLng startPoint, LatLng endPoint) {
     return {
       'coordinates': [
         [startPoint.longitude, startPoint.latitude], 
         [endPoint.longitude, endPoint.latitude]
       ],
-      'profile': profile,
       'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
     };
   }
@@ -54,13 +53,12 @@ Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String ro
 
 postBikeRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
 
-  createRequestBody(LatLng startPoint, LatLng endPoint, {String profile = 'cycling-regular'}) {
+  createRequestBody(LatLng startPoint, LatLng endPoint) {
      return {
       'coordinates': [
         [startPoint.longitude, startPoint.latitude], 
         [endPoint.longitude, endPoint.latitude]
       ],
-      'profile': profile,
       'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
     };
   }
@@ -83,13 +81,12 @@ postBikeRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
 
 postWalkRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
 
-  createRequestBody(LatLng startPoint, LatLng endPoint, {String profile = 'foot-walking'}) {
+  createRequestBody(LatLng startPoint, LatLng endPoint) {
     return {
       'coordinates': [
         [startPoint.longitude, startPoint.latitude], 
         [endPoint.longitude, endPoint.latitude]
       ],
-      'profile': profile,
       'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
     };
   }

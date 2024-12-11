@@ -47,7 +47,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
     void fetchCoordinates() async {
-    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode);
+    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode, RouteMode.corta);
     setState(() {
       points = result['points'];
       distance = result['distance'];
