@@ -386,6 +386,8 @@ void main() {
       Location location1 =await locationController.createLocationFromCoord(lat1, long1, apodo1);
 
       await locationController.deleteLocation(location1);
+      
+      await signInAndDeleteUser(emailh8e3, passwordh8e3);
 
       //THEN
       expect(
@@ -393,7 +395,6 @@ void main() {
         throwsA(isA<Exception>()),
       );
 
-      await signInAndDeleteUser(emailh8e3, passwordh8e3);
       await deleteLocation(apodo1);
     });
   });
