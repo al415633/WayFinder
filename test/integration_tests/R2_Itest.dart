@@ -319,9 +319,44 @@ void main() {
     expect(action(), throwsA(isA<Exception>()));
   });
 
+  test('H8-E1V - Eliminar lugar de interés', () async {
+    // GIVEN
+    // Configurar los mocks y el controlador dentro del test
+     final mockDbAdapterUserApp = MockDbAdapterUserApp();
+     final userAppController = UserAppController(mockDbAdapterUserApp);
+     final mockDbAdapterLocation = MockDbAdapterLocation();
+     final locationController = LocationController.getInstance(mockDbAdapterLocation);
+
+
+     
+     // WHEN
+     final double lath8e1 = 39.98567;
+     final double longh8e1 = -0.04935;
+     final String aliash8e1 = "prueba 1";
+     final String topoh8e1 = "Caja Rural, Castellón de la Plana, VC, España";
+
+    final locationMock = Location(Coordinate(lath8e1, longh8e1), topoh8e1, aliash8e1);
+    
+    when(mockDbAdapterLocation.createLocationFromCoord(any)).thenAnswer((_) async => true);
+
+    await locationController.createLocationFromCoord(lath8e1, longh8e1, aliash8e1);
+
+     // THEN
+    when(mockDbAdapterLocation.deleteLocation(any)).thenAnswer((_) async => true);
+    when(mockDbAdapterLocation.getLocationList()).thenAnswer((_) async => {});
+
+    await locationController.deleteLocation(locationMock);
+    final Set<Location> locationList = await locationController.getLocationList();
+    expect(locationList.isEmpty, true);
+
+    verify(mockDbAdapterLocation.createLocationFromCoord(any)).called(1);
+    verify(mockDbAdapterLocation.getLocationList()).called(1);
+    verify(mockDbAdapterLocation.deleteLocation(any)).called(1);
+
 
  });
 
+});
 }
 
 

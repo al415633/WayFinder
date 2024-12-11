@@ -1071,6 +1071,17 @@ class MockDbAdapterLocation extends _i1.Mock implements _i16.DbAdapterLocation {
       ) as _i7.Future<bool>);
 
   @override
+  _i7.Future<bool> deleteLocation(_i12.Location? location) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteLocation,
+          [location],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
   _i7.Future<Set<_i12.Location>> getLocationList() => (super.noSuchMethod(
         Invocation.method(
           #getLocationList,
