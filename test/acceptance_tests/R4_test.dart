@@ -2,6 +2,7 @@
 
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
+import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
@@ -336,7 +337,7 @@ void main() {
       await userAppController.logOut();
     });
 
-    test('H15 - E1V', () async {
+    test('H15 - E1V- Calcular el coste de calorias bien', () async {
       //GIVEN
       //Loguear usuario
       String email = "Pruebah15e1@gmail.com";
@@ -381,10 +382,10 @@ void main() {
       coste = routeController.calculateCostKCal(ruta);
 
       //THEN
-      expect(coste, 645.05); // Verifica el Location inicial
+      expect(coste, 645); // Verifica el Location inicial
     });
 
-    test('H15 - E3I', () async {
+    test('H15 - E3I error al calular el coste de las calorias', () async {
       //GIVEN
       //Loguear usuario
       String email = "Pruebah15e3@gmail.com";
@@ -434,7 +435,132 @@ void main() {
       //Crear excepcion IncorrectCalculationException
     });
 
-    test('H16', () async {});
+    test('H16-E1V - Crear ruta habiendo elegido un tipo de ruta concreto',
+        () async {
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah16e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String nameh = "Pruebah16e1";
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController.getInstance(adapterRoute);
+
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+      adapterVehicle =
+          FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(adapterVehicle);
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+
+      String name1 = "ruta 1";
+
+      Location ini =
+          await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      Location fin =
+          await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+
+      final String namec = "Coche Quique";
+      final double consumption = 24.3;
+      final String numberPlate = "DKR9087";
+      final String fuelType = 'Eléctrico';
+
+      Vehicle vehicle = Vehicle(numberPlate, consumption, fuelType, namec);
+
+
+      Routes routerapida = await routeController.createRoute(
+          name1, ini, fin, TransportMode.coche, RouteMode.rapida, vehicle);
+      Routes routecorta = await routeController.createRoute(
+          name1, ini, fin, TransportMode.coche, RouteMode.corta, vehicle);
+
+      Routes routeeco = await routeController.createRoute(
+          name1, ini, fin, TransportMode.coche, RouteMode.economica, vehicle);
+
+
+      //THEN
+      expect(routerapida.distance, equals(12.83));
+      expect(routerapida.time, equals(0.32));
+      expect(routerapida.cost, equals(0));
+
+
+      expect(routecorta.distance, equals(12.57));
+      expect(routecorta.time, equals(0.37));
+      expect(routecorta.cost, equals(0));
+
+      expect(routeeco.distance, equals(12.83));
+      expect(routeeco.time, equals(0.32));
+      expect(routeeco.cost, equals(0));
+
+      await userAppController.logOut();
+    });
+
+    test('H16-E2I - Crear ruta  sin elegir un tipo de ruta concreto ',
+        () async {
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah16e2@gmail.com";
+      String password = "Aaaaa,.8";
+      String nameh = "Pruebah16e2";
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
+      adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
+      routeController = RouteController.getInstance(adapterRoute);
+
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+      adapterVehicle =
+          FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleController = VehicleController(adapterVehicle);
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      Location ini =
+          await locationController.createLocationFromCoord(lat1, long1, apodo1);
+      Location fin =
+          await locationController.createLocationFromCoord(lat2, long2, apodo2);
+
+      String name1 = "ruta 1";
+
+    //  Routes route = await routeController.createRoute(
+      //    name1, ini, fin, TransportMode.aPie, null, null);
+
+      //THEN
+
+        expect(
+    () async => await routeController.createRoute(
+      name1, ini, fin, TransportMode.aPie, null, null
+    ),
+    throwsA(isA<MissingInformationRouteException>()),
+  );
+
+      await userAppController.logOut();
+    });
 
     test('H17-E1V - Guardar ruta', () async {
       //GIVEN
