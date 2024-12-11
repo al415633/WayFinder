@@ -1238,6 +1238,16 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
       ) as _i7.Future<Set<_i13.Vehicle>>);
 
   @override
+  _i7.Future<bool> deleteVehicle(_i13.Vehicle? vehicle) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteVehicle,
+          [vehicle],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
   _i7.Future<bool> addFav(
     String? numberPlate,
     String? name,
