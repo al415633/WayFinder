@@ -312,7 +312,7 @@ void main() {
 
       await userAppController.logInCredenciales(emailh11e4, passwordh11e4);
 
-      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"););
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
 
       //WHEN
       String matricula = "9087DKR";
