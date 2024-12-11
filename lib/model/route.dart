@@ -16,7 +16,7 @@ class Routes implements FavItem {
   List<LatLng> points = [];
   bool fav;
   late TransportMode transportMode;
-  late RouteMode routeMode;
+  late RouteMode? routeMode;
   late double calories;
   late double cost;
   late Vehicle? vehicle;
@@ -74,7 +74,7 @@ class Routes implements FavItem {
   double get getTime => time;
   List<LatLng> get getPoints => points;
   TransportMode get getTransportMode => transportMode;
-  RouteMode get getRouteMode => routeMode;
+  RouteMode? get getRouteMode => routeMode;
   double get getCalories => calories;
   double get getCost => cost;
   Vehicle? get getVehicle => vehicle;
