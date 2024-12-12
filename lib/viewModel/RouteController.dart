@@ -6,6 +6,7 @@ import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
@@ -71,8 +72,53 @@ class RouteController {
       throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
     }
 
+    if(transportMode == TransportMode.coche && routeMode == RouteMode.economica){
+      DbAdapterVehicle vehicleAdapter = FirestoreAdapterVehiculo();
+      VehicleController vehicleController = VehicleController.getInstance(vehicleAdapter);
+
+      Map<String, dynamic> pointsDataShortest =
+          await repository.getRouteData(start, end, transportMode, RouteMode.corta);
+
+      List<LatLng> pointsShortest = pointsDataShortest['points'] as List<LatLng>;
+      //print(points);
+      double distanceShortest = pointsDataShortest['distance'] as double;
+      //print("Distanciaaaa:$distance");
+      double timeShortest = pointsDataShortest['duration'] as double;
+      //print("Tiempooooo $time");
+      Routes routeShortest = Routes(name, start, end, pointsShortest, distanceShortest, timeShortest,
+          transportMode, routeMode, vehicle);
+      
+      double precioShortest = await vehicleController.calculatePrice(routeShortest, vehicle!);
+
+
+      Map<String, dynamic> pointsDataFastest =
+          await repository.getRouteData(start, end, transportMode, RouteMode.rapida);
+
+      List<LatLng> pointsFastest = pointsDataFastest['points'] as List<LatLng>;
+      //print(points);
+      double distanceFastest = pointsDataFastest['distance'] as double;
+      //print("Distanciaaaa:$distance");
+      double timeFastest = pointsDataFastest['duration'] as double;
+      //print("Tiempooooo $time");
+      Routes routeFastest = Routes(name, start, end, pointsFastest, distanceFastest, timeFastest,
+          transportMode, routeMode, vehicle);
+      
+      double precioFastest = await vehicleController.calculatePrice(routeFastest, vehicle!);
+
+
+      if(precioFastest< precioShortest){
+        return routeFastest;
+      } else{
+        return routeShortest;
+      }
+
+      
+    }
+
     Map<String, dynamic> pointsData =
           await repository.getRouteData(start, end, transportMode, routeMode);
+
+    
 
     List<LatLng> points = pointsData['points'] as List<LatLng>;
     //print(points);

@@ -1,3 +1,4 @@
+import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
@@ -201,7 +202,7 @@ void main() {
 
       // WHEN
       when(mockElectricCarPrice.calculatePrice(ruta, vehicle))
-          .thenThrow(Exception('Error en el cálculo del precio de la ruta'));
+          .thenThrow(Incorrectcalculationexception());
 
       // Se establece la estrategia mock
       vehicle.setPriceStrategy(mockElectricCarPrice);
@@ -221,7 +222,7 @@ void main() {
       // THEN
       expect(() async {
         await vehicleController.calculatePrice(ruta, vehicle);
-      }, throwsA(isA<Exception>()));
+      }, throwsA(isA< Incorrectcalculationexception>()));
       verify(mockElectricCarPrice.calculatePrice(ruta, vehicle)).called(1);
     });
 
