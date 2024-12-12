@@ -10,7 +10,7 @@ class GasoilGasolina {
       //gasolina 1
       String valor = "1";
       if (tipo == 'diesel') {
-        String valor = "4";
+        valor = "4";
       }
 
       String toponym = route.start.toponym;
@@ -48,7 +48,6 @@ class GasoilGasolina {
         throw Exception('Toponym no tiene el formato esperado');
       }
     } catch (e) {
-      print('Error: $e');
       return -1;
     }
   }
