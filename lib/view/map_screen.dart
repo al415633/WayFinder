@@ -376,6 +376,7 @@ class _MapScreenState extends State<MapScreen> {
             icon: const Icon(Icons.delete),
             onPressed: () async {
               await locationController.deleteLocation(location);
+              _fetchLocations();
               print('Eliminar ${location.getAlias()}');
             },
           ),
