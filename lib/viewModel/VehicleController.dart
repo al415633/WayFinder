@@ -79,6 +79,22 @@ class VehicleController {
   return vehicle;
 }
 
+Future<bool> deleteVehicle(Vehicle vehicle) async {
+    try {
+      bool success = await _dbAdapter.deleteVehicle(vehicle);
+
+      if (success) {
+        final currentSet = await vehicleList;
+        // Agregar el nuevo vehiculo al Set
+        currentSet.remove(vehicle);
+        vehicleList = Future.value(currentSet);
+      }
+
+      return success;
+    } catch (e) {
+      throw Exception("Error al crear el vehiculo: $e");
+    }
+  }
 
 
   Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
@@ -261,6 +277,41 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     }
   }
 
+    @override
+  Future<bool> deleteVehicle(Vehicle vehicle) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception(
+          'Usuario no autenticado. No se puede eliminar el vehículo.');
+    }
+
+    try {
+      // Obtener la colección de vehículo del usuario
+      var collectionRef = db
+          .collection(_collectionName)
+          .doc(_currentUser?.uid)
+          .collection("VehicleList");
+
+      // Buscar el documento por algún atributo único del vehículo, como no lo tiene, revisamos tres para asegurarnos de que sea el correcto
+      var querySnapshot = await collectionRef
+          .where('numberPlate', isEqualTo: vehicle.getNumberPlate())
+          .get();
+
+      // Verificar si se encontró el documento
+      if (querySnapshot.docs.isEmpty) {
+        throw Exception('Vehículo no encontrado.');
+      }
+
+      // Eliminar el primer documento encontrado
+      await querySnapshot.docs.first.reference.delete();
+
+      return true;
+    } catch (e) {
+      throw Exception("Error al eliminar el vehículo: $e");
+    }
+  }
+
 
   @override
   Future<bool> addFav(String numberPlate, String name) async {
@@ -286,7 +337,6 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
     return true;
   }
-
 
   @override
   Future<bool> removeFav(String numberPlate, String name) async {
@@ -318,6 +368,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 abstract class DbAdapterVehicle {
   Future<bool> createVehicle(Vehicle vehicle);
   Future<Set<Vehicle>> getVehicleList();
+  Future<bool> deleteVehicle(Vehicle vehicle);
   Future<bool> addFav(String numberPlate, String name);
   Future<bool> removeFav(String numberPlate, String name);
 }
