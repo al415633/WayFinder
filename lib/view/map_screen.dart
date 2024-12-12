@@ -374,7 +374,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
+            onPressed: () async {
+              await locationController.deleteLocation(location);
+              _fetchLocations();
               print('Eliminar ${location.getAlias()}');
             },
           ),
@@ -420,8 +422,8 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
-              routeController.deleteRoute(route);
+            onPressed: () async{
+              await routeController.deleteRoute(route);
               _fetchRoutes();
               print('Eliminar ruta');
             },
@@ -468,7 +470,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
+            onPressed: () async{
+              await vehicleController.deleteVehicle(vehicle);
+              _fetchVehicles();
               print('Eliminar $vehicle');
             },
           ),

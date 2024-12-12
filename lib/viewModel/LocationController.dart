@@ -57,7 +57,6 @@ class LocationController {
   }
 
   Future<Location> createLocationFromTopo(String topo, String alias) async {
-
     Coordinate coordinate = await ToponymToCoord(topo);
 
     Location location = Location(coordinate, topo, alias);
@@ -70,6 +69,23 @@ class LocationController {
       return location;
     } catch (e) {
       throw Exception("Error al crear el lugar: $e");
+    }
+  }
+
+  Future<bool> deleteLocation(Location location) async {
+    try {
+      bool success = await _dbAdapter.deleteLocation(location);
+
+      if (success) {
+        final currentSet = await locationList;
+        // Agregar el nuevo Location al Set
+        currentSet.remove(location);
+        locationList = Future.value(currentSet);
+      }
+
+      return success;
+    } catch (e) {
+      throw Exception("Error al crear el lugar de interés: $e");
     }
   }
 
@@ -173,14 +189,11 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
   void _initializeAuthListener() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       _currentUser = user; // Actualizar el usuario actual
-    
     });
   }
 
   @override
   Future<Set<Location>> getLocationList() async {
-
-
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -232,6 +245,44 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
     } catch (e) {
       print("Error al crear el lugar: $e");
       return false;
+    }
+  }
+
+  @override
+  Future<bool> deleteLocation(Location location) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception(
+          'Usuario no autenticado. No se puede eliminar el lugar de interés.');
+    }
+
+    try {
+      // Obtener la colección de lugares de interés del usuario
+      var collectionRef = db
+          .collection(_collectionName)
+          .doc(_currentUser?.uid)
+          .collection("LocationList");
+
+      // Buscar el documento por algún atributo único del lugar de interés, como no lo tiene, revisamos tres para asegurarnos de que sea el correcto
+      var querySnapshot = await collectionRef
+          .where('lat', isEqualTo: location.getCoordinate().lat)
+          .where('long', isEqualTo: location.getCoordinate().long)
+          .where('toponym', isEqualTo: location.getToponym())
+          .where('alias', isEqualTo: location.getAlias())
+          .get();
+
+      // Verificar si se encontró el documento
+      if (querySnapshot.docs.isEmpty) {
+        throw Exception('Lugar de interés no encontrado.');
+      }
+
+      // Eliminar el primer documento encontrado
+      await querySnapshot.docs.first.reference.delete();
+
+      return true;
+    } catch (e) {
+      throw Exception("Error al eliminar el lugar de interés: $e");
     }
   }
 
@@ -288,6 +339,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 abstract class DbAdapterLocation {
   Future<bool> createLocationFromCoord(Location location);
   Future<bool> createLocationFromTopo(Location location);
+  Future<bool> deleteLocation(Location location);
   Future<Set<Location>> getLocationList();
   Future<bool> addFav(String topo, String alias);
   Future<bool> removeFav(String topo, String alias);

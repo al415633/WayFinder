@@ -95,4 +95,16 @@ void setPriceStrategy(Price priceStrategy) {
     fav = mapa['fav'] ?? false; // Valor por defecto si es nulo
   }
 
+  // Sobrescribe `==` para comparar por matrícula
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true; // Compara la referencia
+    if (other is! Vehicle) return false; // Verifica el tipo
+    return numberPlate == other.numberPlate; // Compara matrículas
+  }
+
+  // Sobrescribe `hashCode` para usar `numberPlate`
+  @override
+  int get hashCode => numberPlate.hashCode;
+
 }

@@ -264,7 +264,73 @@ void main() {
       await signInAndDeleteUser(email, password);
     });
        
+//Eliminar vehiculo
+    test('H11-E1V - Eliminar vehículo', () async {
+      //GIVEN
 
+      //Loguear usuario
+      String emailh11e1 =
+          "Pruebah11e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh11e1 = "Aaaaa,.8";
+      String nameh11e1 = "Pruebah11e1";
+      await userAppController.createUser(emailh11e1, passwordh11e1, nameh11e1);
+
+      await userAppController.logInCredenciales(emailh11e1, passwordh11e1);
+
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+
+      //WHEN
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      String combustible = "Gasolina";
+      String nombre = "Coche Quique";
+      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+
+      await vehicleController.deleteVehicle(vehicle1);
+
+      //THEN
+
+      final Set<Vehicle> vehicle = await vehicleController.getVehicleList();
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final vehicleListh11e1 = vehicle.toList();
+
+      expect(vehicleListh11e1.length, equals(0)); // Verifica que no hay vehiculos en lista
+
+      await signInAndDeleteUser(emailh11e1, passwordh11e1);
+      await deleteVehicle(matricula);
+    });
+
+    test('H11-E4I - Eliminar vehículo inválido, usuario no registrado', () async {
+      //GIVEN
+      //Loguear usuario
+      String emailh11e4 =
+          "Pruebah11e4${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh11e4 = "Aaaaa,.8";
+      String nameh11e4 = "Pruebah11e4";
+      await userAppController.createUser(emailh11e4, passwordh11e4, nameh11e4);
+
+      await userAppController.logInCredenciales(emailh11e4, passwordh11e4);
+
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+
+      //WHEN
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      String combustible = "Gasolina";
+      String nombre = "Coche Quique";
+      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+
+      await vehicleController.deleteVehicle(vehicle1);
+
+      await signInAndDeleteUser(emailh11e4, passwordh11e4);
+
+      //THEN
+      expect(
+        () async => await vehicleController.deleteVehicle(vehicle1),
+        throwsA(isA<Exception>()),
+      );
+    });
 
 
   });
