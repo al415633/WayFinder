@@ -420,8 +420,8 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
-              routeController.deleteRoute(route);
+            onPressed: () async{
+              await routeController.deleteRoute(route);
               _fetchRoutes();
               print('Eliminar ruta');
             },
