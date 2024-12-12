@@ -39,7 +39,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     super.initState();
     route = widget.route;
     transportMode = route.getTransportMode;
-    routeMode = route.getRouteMode;
+    routeMode = route.getRouteMode!;
     initialPoint = LatLng(route.getStart.getCoordinate().getLat,
         route.getStart.getCoordinate().getLong);
     destination = LatLng(route.getEnd.getCoordinate().getLat,
@@ -49,11 +49,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
     void fetchCoordinates() async {
-    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode, routeMode);
     setState(() {
-      points = result['points'];
-      distance = result['distance'];
-      estimatedTime = result['duration'];
+      points = route.getPoints;
+      distance = route.getDistance;
+      estimatedTime = route.getTime;
       print('Distance: $distance, Estimated Time: $estimatedTime'); // Debugging statement
       
       });
