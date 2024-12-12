@@ -374,7 +374,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
+            onPressed: () async {
+              await locationController.deleteLocation(location);
+              _fetchLocations();
               print('Eliminar ${location.getAlias()}');
             },
           ),

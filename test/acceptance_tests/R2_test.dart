@@ -315,13 +315,81 @@ void main() {
       */
     });
 
-    test('H8', () async {
+//Empieza H8
+    test('H8-E1V - Eliminar lugar de interés', () async {
+      //GIVEN
+
+      //Loguear usuario
+      String emailh8e1 =
+          "Pruebah8e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh8e1 = "Aaaaa,.8";
+      String nameh8e1 = "Pruebah8e1";
+      await userAppController.createUser(emailh8e1, passwordh8e1, nameh8e1);
       // Llamada real a la API
       //final precioActual = await precioLuzService.fetchPrecioActual();
 
-      // Verificamos que el precio actual se haya recuperado
-      //expect(precioActual, isNotNull);
-      //print('El precio actual de la luz es: $precioActual €/MWh');
+      await userAppController.logInCredenciales(emailh8e1, passwordh8e1);
+
+      locationController = LocationController(
+          FirestoreAdapterLocation(collectionName: "testCollection"));
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      Location location1 = await locationController.createLocationFromCoord(lat1, long1, apodo1);
+
+      await locationController.deleteLocation(location1);
+
+      //THEN
+
+      final Set<Location> location = await locationController.getLocationList();
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final locationListh8e1 = location.toList();
+
+      expect(
+          locationListh8e1.length, equals(0)); // Verifica que no hay locations en lista
+      //borrado de los tests para que no de problemas luego
+      await signInAndDeleteUser(emailh8e1, passwordh8e1);
+      await deleteLocation(apodo1);
     });
+
+    test('H8-E3I - Eliminar ruta inválida, usuario no registrado', () async {
+      //GIVEN
+      //Loguear usuario
+      String emailh8e3 =
+          "Pruebah8e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh8e3 = "Aaaaa,.8";
+      String nameh8e3 = "Pruebah8e3";
+      await userAppController.createUser(emailh8e3, passwordh8e3, nameh8e3);
+
+      await userAppController.logInCredenciales(emailh8e3, passwordh8e3);
+
+      locationController = LocationController(FirestoreAdapterLocation(collectionName: "testCollection"));
+
+      //WHEN
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+
+      Location location1 =await locationController.createLocationFromCoord(lat1, long1, apodo1);
+
+      await locationController.deleteLocation(location1);
+      
+      await signInAndDeleteUser(emailh8e3, passwordh8e3);
+
+      //THEN
+      expect(
+        () async => await locationController.deleteLocation(location1),
+        throwsA(isA<Exception>()),
+      );
+
+      await deleteLocation(apodo1);
+    });
+
   });
 }
