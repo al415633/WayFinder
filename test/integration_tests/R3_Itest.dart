@@ -177,7 +177,42 @@ void main() {
 });
 
        
+ test('H11-E1V - Eliminar vehiculo', () async {
 
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah11e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah11e1";
+
+      //WHEN
+      final String namec = "Coche Quique";
+      final double consumption = 24.3;
+      final String numberPlate = "DKR9087";
+      final String fuelType = "Gasolina";
+
+
+      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
+
+      when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
+
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
+     //THEN
+
+      when(mockVehicleAdapter.deleteVehicle(any)).thenAnswer((_) async => true);
+      when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {}); 
+
+      await vehicleController.deleteVehicle(vehicleMock);
+      final Set<Vehicle> vehicles2 = await vehicleController.getVehicleList();
+      expect(vehicles2.isEmpty, true);
+
+      // Verificar interacciones con el mock
+      verify(mockVehicleAdapter.createVehicle(any)).called(1);
+      verify(mockVehicleAdapter.getVehicleList()).called(1);
+      verify(mockVehicleAdapter.deleteVehicle(any)).called(1);
+
+    });
 
 
   });
