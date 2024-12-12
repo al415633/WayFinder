@@ -23,6 +23,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   late LatLng destination;
   late List<LatLng> points;
   late TransportMode transportMode;
+  late RouteMode routeMode;
   bool showInterestPlaces = false;
   bool showRoutes = true;
   bool showVehicles = false;
@@ -38,6 +39,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     super.initState();
     route = widget.route;
     transportMode = route.getTransportMode;
+    routeMode = route.getRouteMode;
     initialPoint = LatLng(route.getStart.getCoordinate().getLat,
         route.getStart.getCoordinate().getLong);
     destination = LatLng(route.getEnd.getCoordinate().getLat,
@@ -47,7 +49,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
     void fetchCoordinates() async {
-    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode, RouteMode.corta);
+    var result = await RouteController.getInstance(routeAdapter).getPoints(initialPoint, destination, transportMode, routeMode);
     setState(() {
       points = result['points'];
       distance = result['distance'];
