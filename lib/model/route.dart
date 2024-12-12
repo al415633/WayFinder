@@ -23,7 +23,7 @@ class Routes implements FavItem {
 
   // Constructor
   Routes(String name, Location start, Location end, List<LatLng> points,
-      double distance, double time, TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle,
+      double distance, double time, TransportMode transportMode, RouteMode? routeMode, Vehicle? vehicle,
       {this.fav = false, this.calories = 0.0, this.cost = 0.0}) {
     this.name = name;
     this.start = start;

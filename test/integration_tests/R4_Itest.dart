@@ -13,6 +13,7 @@ import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -20,7 +21,6 @@ import 'R4_Itest.mocks.dart';
 
 @GenerateNiceMocks([
   MockSpec<FirebaseAuth>(),
-  MockSpec<RouteController>(),
   MockSpec<DbAdapterRoute>(),
   MockSpec<DbAdapterUserApp>(),
   MockSpec<DbAdapterLocation>(),
@@ -37,7 +37,7 @@ void main() {
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterRoute = MockDbAdapterRoute();
-      final mockRouteController = RouteController(mockDbAdapterRoute);
+      final routeController = RouteController(mockDbAdapterRoute);
       final mockDbAdapterLocation = MockDbAdapterLocation();
       final locationController = LocationController(mockDbAdapterLocation);
 
@@ -57,37 +57,41 @@ void main() {
       String name1 = "ruta 1";
 
       Routes ruta = Routes(
-          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
+          name1, ini, fin, [], 12.83, 0.32, TransportMode.aPie, RouteMode.corta, null);
 
-      // Configurar el stub de `getRouteList`
-      when(mockDbAdapterRoute.getRouteList()).thenAnswer(
-        (_) async => {ruta},
-      );
+      Map<String, dynamic> pointsData = {
+        'points': <LatLng>[],
+        'distance': 12.83,
+        'duration': 0.32
+      };
+
 
       // GIVEN
-      String emailh13e1 = "Pruebah13e1@gmail.com";
-      String passwordh13e1 = "Aaaaa,.8";
-      String nameh13e1 = "Pruebah13e1";
+      String emailh16e1 =
+          "Pruebah16e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh16e1 = "Aaaaa,.8";
+      String nameh16e1 = "Pruebah16e1";
 
       // Simular la creación del usuario
-      when(userAppController.repository.createUser(emailh13e1, passwordh13e1))
-          .thenAnswer((_) async => UserApp("id", nameh13e1, emailh13e1));
+      when(userAppController.repository.createUser(emailh16e1, passwordh16e1))
+          .thenAnswer((_) async => UserApp("id", nameh16e1, emailh16e1));
 
-      await userAppController.createUser(emailh13e1, passwordh13e1, nameh13e1);
+      await userAppController.createUser(emailh16e1, passwordh16e1, nameh16e1);
 
       // WHEN
 
-      // Simular la creación de un lugar
-      //when(mockRouteController.createRoute(nameh13e1, ini, fin, TransportMode.aPie, RouteMode.corta))
-      // .thenReturn((_) => ruta);
+      when(mockDbAdapterRoute.getRouteData(ini, fin, TransportMode.aPie, RouteMode.corta)).thenAnswer(
+        (_) async => pointsData,
+      );
 
-      Routes firstRouteh13e1 = await mockRouteController.createRoute(
-          nameh13e1, ini, fin, TransportMode.aPie, RouteMode.corta, null);
+      Routes routeh16e1 = await routeController.createRoute( name1, ini, fin, TransportMode.aPie, RouteMode.corta, null);
 
       // THEN
-      expect(firstRouteh13e1.getStart,
-          equals(ini)); // Verifica el Location inicial
-      expect(firstRouteh13e1.getEnd, equals(fin)); // Verifica el Location final
+
+
+      expect(routeh16e1.getStart, equals(ini)); // Verifica el Location inicial
+      expect(routeh16e1.getEnd, equals(fin)); // Verifica el Location final
+
     });
 
     test('H13-E2I - Crear ruta inválido no hay conexión BBDD', () async {
@@ -141,9 +145,9 @@ void main() {
       ruta.vehicle = vehicle;
 
       // GIVEN
-      String email = "Pruebah15e1@gmail.com";
+      String email = "Pruebah14e1@gmail.com";
       String password = "Aaaaa,.8";
-      String name = "Pruebah15e1";
+      String name = "Pruebah14e1";
 
       // Simular la creación del usuario
       when(userAppController.repository.createUser(email, password))
@@ -220,6 +224,118 @@ void main() {
       }, throwsA(isA<Exception>()));
       verify(mockElectricCarPrice.calculatePrice(ruta, vehicle)).called(1);
     });
+
+
+    test('H16-E1V - Crear ruta habiendo elegido un tipo de ruta concreto', () async {
+      // Configurar los mocks y el controlador dentro del test
+      final mockAuth = MockFirebaseAuth();
+      final mockDbAdapterUserApp = MockDbAdapterUserApp();
+      final userAppController = UserAppController(mockDbAdapterUserApp);
+      final mockDbAdapterRoute = MockDbAdapterRoute();
+      final routeController = RouteController(mockDbAdapterRoute);
+      final mockDbAdapterLocation = MockDbAdapterLocation();
+      final locationController = LocationController(mockDbAdapterLocation);
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+      final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      final String topo2 = "Caja Rural, Castellón de la Plana, VC, España";
+
+      Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
+      Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
+
+      String name1 = "ruta 1";
+
+      Routes ruta = Routes(
+          name1, ini, fin, [], 12.83, 0.32, TransportMode.aPie, RouteMode.corta, null);
+
+      Map<String, dynamic> pointsData = {
+        'points': <LatLng>[],
+        'distance': 12.83,
+        'duration': 0.32
+      };
+
+
+      // GIVEN
+      String emailh16e1 =
+          "Pruebah16e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh16e1 = "Aaaaa,.8";
+      String nameh16e1 = "Pruebah16e1";
+
+      // Simular la creación del usuario
+      when(userAppController.repository.createUser(emailh16e1, passwordh16e1))
+          .thenAnswer((_) async => UserApp("id", nameh16e1, emailh16e1));
+
+      await userAppController.createUser(emailh16e1, passwordh16e1, nameh16e1);
+
+      // WHEN
+
+      when(mockDbAdapterRoute.getRouteData(ini, fin, TransportMode.aPie, RouteMode.corta)).thenAnswer(
+        (_) async => pointsData,
+      );
+
+      Routes routeh16e1 = await routeController.createRoute( name1, ini, fin, TransportMode.aPie, RouteMode.corta, null);
+
+      // THEN
+
+
+      expect(routeh16e1.getStart, equals(ini)); // Verifica el Location inicial
+      expect(routeh16e1.getEnd, equals(fin)); // Verifica el Location final
+      expect(routeh16e1.distance, equals(12.83));
+      expect(routeh16e1.time, equals(0.32));
+      expect(routeh16e1.cost, equals(0));
+    });
+
+    test('H16-E2I - Crear ruta  sin elegir un tipo de ruta concreto ', () async {
+      // Configurar los mocks y el controlador dentro del test
+      final mockDbAdapterRoute = MockDbAdapterRoute();
+      final routeController = RouteController(mockDbAdapterRoute);
+      final mockDbAdapterLocation = MockDbAdapterLocation();
+      final locationController = LocationController(mockDbAdapterLocation);
+
+      final double lat1 = 39.98567;
+      final double long1 = -0.04935;
+      final String apodo1 = "castellon";
+      final String topo1 = "Caja Rural, Castellón de la Plana, VC, España";
+
+      final double lat2 = 39.8890;
+      final double long2 = -0.08499;
+      final String apodo2 = "burriana";
+      final String topo2 = "Caja Rural, Castellón de la Plana, VC, España";
+
+      Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
+      Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
+
+      String name1 = "ruta 1";
+
+      Routes ruta = Routes(
+          name1, ini, fin, [], 0, 0, TransportMode.aPie, null, null);
+
+      // GIVEN
+      // no registramos usuario
+
+      // WHEN
+
+      // Simular que guardamos de un lugar
+      when(mockDbAdapterRoute.getRouteData(ini, fin, TransportMode.aPie, null))
+          .thenThrow(Exception);
+
+      // THEN
+
+      Future<void> action() async {
+        //await locationController.getLocationList();
+        await routeController.createRoute(name1, ini, fin, TransportMode.aPie, null, null);
+      }
+
+      // THEN
+      expect(action(), throwsA(isA<Exception>()));
+    });
+
 
     test('H17-E1V - Guardar ruta', () async {
       // Configurar los mocks y el controlador dentro del test

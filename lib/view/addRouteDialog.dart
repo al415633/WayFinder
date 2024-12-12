@@ -114,6 +114,7 @@ void showAddRouteDialog(
                           ),
                         ),
                 DropdownButton<RouteMode>(
+                  hint: const Text('Tipo de ruta:'),
                   value: routeModeInput,
                   items: RouteMode.values.map((mode) {
                     return DropdownMenuItem<RouteMode>(
@@ -158,7 +159,8 @@ void showAddRouteDialog(
                         startLocationInput!,
                         endLocationInput!,
                         transportModeInput,
-                        routeModeInput, selectedVehicle,
+                        routeModeInput, 
+                        selectedVehicle,
                         true);
                     Navigator.of(context).pop();
                   }

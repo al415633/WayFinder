@@ -39,19 +39,6 @@ class RouteController {
     return routeList;
   }
 
-  String getApiPreferenceFromRouteMode(RouteMode mode) {
-    switch (mode) {
-      case RouteMode.rapida:
-        return 'fastest'; // Ruta más rápida
-      case RouteMode.corta:
-        return 'shortest'; // Ruta más corta
-      case RouteMode.economica:
-        return 'recommended'; // Ruta recomendada
-      default:
-        return 'fastest'; // Valor por defecto
-    }
-  }
-
 
   double calculateCostKCal(Routes? route) {
     if (route == null || route.transportMode == TransportMode.coche) {
@@ -72,58 +59,6 @@ class RouteController {
   }
 
 
-  double _roundToDecimalPlaces(double value, int decimalPlaces) {
-    double mod = pow(10.0, decimalPlaces).toDouble();
-    return ((value * mod).round().toDouble() / mod);
-  }
-
-
-
-  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
-      LatLng destination, TransportMode transportMode, RouteMode routeMode) async {
-    http.Response? response;
-
-    String routeModeString = getApiPreferenceFromRouteMode(routeMode);
-
-    if (transportMode == TransportMode.coche) {
-      response = await postCarRoute(initialPoint, destination, routeModeString);
-    } else if (transportMode == TransportMode.aPie) {
-      response = await postWalkRoute(initialPoint, destination, routeModeString);
-    } else if (transportMode == TransportMode.bicicleta) {
-      response = await postBikeRoute(initialPoint, destination, routeModeString);
-    }
-
-    if (response?.statusCode == 200) {
-      var data = jsonDecode(response!.body);
-
-      // Acceder a las coordenadas en GeoJSON
-      final List<dynamic> coordinates = data['features'][0]['geometry']['coordinates'];
-
-      // Convertir a List<LatLng>
-      List<LatLng> points = coordinates.map((coord) {
-        final double lng = coord[0];
-        final double lat = coord[1];
-        return LatLng(lat, lng);
-      }).toList();
-
-      // Acceder a distancia y duración
-      double distance = data['features'][0]['properties']['summary']['distance'] / 1000; // en km
-      double duration = data['features'][0]['properties']['summary']['duration'] / 3600; // en horas
-
-      // Devolver los resultados
-      return {
-        'points': points,
-        'distance': _roundToDecimalPlaces(distance, 2),
-        'duration': _roundToDecimalPlaces(duration, 2),
-      };
-    } else {
-      print('Error al obtener la ruta: ${response?.statusCode}, ${response?.body}');
-      throw Exception('Error al obtener la ruta.');
-    }
-  }
-
-
-
   Future<Routes> createRoute(
       String name,
       Location start,
@@ -133,16 +68,11 @@ class RouteController {
       Vehicle? vehicle) async {
 
     if (routeMode == null) {
-  throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
+      throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
     }
 
-    LatLng initialPoint =
-        LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
-    LatLng destination =
-        LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
-
     Map<String, dynamic> pointsData =
-          await getPoints(initialPoint, destination, transportMode, routeMode);
+          await repository.getRouteData(start, end, transportMode, routeMode);
 
     List<LatLng> points = pointsData['points'] as List<LatLng>;
     //print(points);
@@ -381,6 +311,88 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       return false;
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> getRouteData(Location start, Location end, TransportMode transportMode,RouteMode? routeMode) async {
+    if (routeMode == null) {
+      throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
+    }
+    LatLng initialPoint =
+    LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
+    LatLng destination =
+        LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
+
+    Map<String, dynamic> pointsData =
+          await getPoints(initialPoint, destination, transportMode, routeMode!);
+    return pointsData;
+  }
+
+  @override
+  String getApiPreferenceFromRouteMode(RouteMode mode) {
+    switch (mode) {
+      case RouteMode.rapida:
+        return 'fastest'; // Ruta más rápida
+      case RouteMode.corta:
+        return 'shortest'; // Ruta más corta
+      case RouteMode.economica:
+        return 'recommended'; // Ruta recomendada
+      default:
+        return 'fastest'; // Valor por defecto
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
+      LatLng destination, TransportMode transportMode, RouteMode routeMode) async {
+    http.Response? response;
+
+    String routeModeString = getApiPreferenceFromRouteMode(routeMode);
+
+    if (transportMode == TransportMode.coche) {
+      response = await postCarRoute(initialPoint, destination, routeModeString);
+    } else if (transportMode == TransportMode.aPie) {
+      response = await postWalkRoute(initialPoint, destination, routeModeString);
+    } else if (transportMode == TransportMode.bicicleta) {
+      response = await postBikeRoute(initialPoint, destination, routeModeString);
+    }
+
+    if (response?.statusCode == 200) {
+      var data = jsonDecode(response!.body);
+
+      // Acceder a las coordenadas en GeoJSON
+      final List<dynamic> coordinates = data['features'][0]['geometry']['coordinates'];
+
+      // Convertir a List<LatLng>
+      List<LatLng> points = coordinates.map((coord) {
+        final double lng = coord[0];
+        final double lat = coord[1];
+        return LatLng(lat, lng);
+      }).toList();
+
+      // Acceder a distancia y duración
+      double distance = data['features'][0]['properties']['summary']['distance'] / 1000; // en km
+      double duration = data['features'][0]['properties']['summary']['duration'] / 3600; // en horas
+
+      // Devolver los resultados
+      return {
+        'points': points,
+        'distance': _roundToDecimalPlaces(distance, 2),
+        'duration': _roundToDecimalPlaces(duration, 2),
+      };
+    } else {
+      print('Error al obtener la ruta: ${response?.statusCode}, ${response?.body}');
+      throw Exception('Error al obtener la ruta.');
+    }
+  }
+
+  double _roundToDecimalPlaces(double value, int decimalPlaces) {
+    double mod = pow(10.0, decimalPlaces).toDouble();
+    return ((value * mod).round().toDouble() / mod);
+  }
+
+
+
+
 }
 
 abstract class DbAdapterRoute {
@@ -389,4 +401,6 @@ abstract class DbAdapterRoute {
   Future<Set<Routes>> getRouteList();
   Future<bool> removeFav(String routeName);
   Future<bool> addFav(String routeName);
+  Future<Map<String, dynamic>>getRouteData(Location start, Location end, TransportMode transportMode,RouteMode? routeMode);
+  Future<Map<String, dynamic>> getPoints(LatLng initialPoint, LatLng destination, TransportMode transportMode, RouteMode routeMode) ;
 }
