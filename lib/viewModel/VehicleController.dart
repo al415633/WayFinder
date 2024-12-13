@@ -98,7 +98,9 @@ Future<bool> deleteVehicle(Vehicle vehicle) async {
 
 
   Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
+    print("Hola1");
     if (route == null) {
+          print("Hola2");
       throw Incorrectcalculationexception();
     }
   
