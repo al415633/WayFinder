@@ -1,3 +1,10 @@
+import 'package:WayFinder/exceptions/%20APICoordenadasException.dart';
+import 'package:WayFinder/exceptions/APIToponimoException.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/InvalidCoordinatesException.dart';
+import 'package:WayFinder/exceptions/InvalidToponimoException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,12 +39,10 @@ class LocationController {
     lat = double.parse(lat.toStringAsFixed(6));
     long = double.parse(long.toStringAsFixed(6));
     if (lat > 90 || lat < -90) {
-      throw Exception(
-          "InvalidCoordinatesException: La latitud debe estar entre -90 y 90 grados.");
+      throw InvalidCoordinatesException();
     }
     if (long > 180 || long < -180) {
-      throw Exception(
-          "InvalidCoordinatesException: La longitud debe estar entre -180 y 180 grados.");
+      throw InvalidCoordinatesException();
     }
 
     Coordinate coordinate = Coordinate(lat, long);
@@ -125,7 +130,7 @@ class LocationController {
             "InvalidCoordinatesException: 'No se encontró ningún lugar para las coordenadas dadas.");
       }
     } else {
-      throw Exception("InvalidCoordinatesException: ${response.statusCode}");
+      throw  APICoordenadasException();
     }
   }
 
@@ -143,11 +148,10 @@ class LocationController {
         final coords = data['features'][0]['geometry']['coordinates'];
         return Coordinate(coords[1], coords[0]); // latitud y longitud
       } else {
-        throw Exception(
-            "InvalidToponymException: No se encontró ningún resultado para el topónimo dado.");
+        throw InvalidToponimoException();
       }
     } else {
-      throw Exception('Error en la solicitud: ${response.statusCode}');
+      throw  APIToponimoException();
     }
   }
 
@@ -194,6 +198,14 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
   @override
   Future<Set<Location>> getLocationList() async {
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+
+
+    if (user == null) {
+      throw NotAuthenticatedUserException();
+    }
+
     try {
       final querySnapshot = await db
           .collection(_collectionName)
@@ -208,7 +220,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return locations;
     } catch (e) {
-      throw Exception(
+      throw ConnectionBBDDException(
           'No se pudo obtener la lista de ubicaciones. Verifica la conexión.');
     }
   }
@@ -218,7 +230,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear el location.');
+      throw UserNotAuthenticatedException();
     }
 
     try {
@@ -229,12 +241,18 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
           .add(location.toMap());
       return true;
     } catch (e) {
-      throw Exception('Error al crear el lugar: $e');
+      throw ConnectionBBDDException('Error al crear el lugar: $e');
     }
   }
 
   @override
   Future<bool> createLocationFromTopo(Location location) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw UserNotAuthenticatedException();
+    }
+
     try {
       await db
           .collection(_collectionName)
@@ -253,8 +271,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      throw Exception(
-          'Usuario no autenticado. No se puede eliminar el lugar de interés.');
+      throw UserNotAuthenticatedException();
     }
 
     try {
@@ -274,7 +291,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       // Verificar si se encontró el documento
       if (querySnapshot.docs.isEmpty) {
-        throw Exception('Lugar de interés no encontrado.');
+        throw ConnectionBBDDException('Lugar de interés no encontrado.');
       }
 
       // Eliminar el primer documento encontrado
@@ -282,7 +299,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return true;
     } catch (e) {
-      throw Exception("Error al eliminar el lugar de interés: $e");
+      throw ConnectionBBDDException("Error al eliminar el lugar de interés: $e");
     }
   }
 
@@ -298,7 +315,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
         .get();
 
     if (querySnapshot.docs.isEmpty) {
-      throw Exception(
+      throw ConnectionBBDDException(
           "No se encontró la ubicación con el topónimo '$topo' y alias '$alias'.");
     }
 
@@ -321,7 +338,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        throw Exception(
+        throw ConnectionBBDDException(
             "No se encontró la ubicación con el topónimo '$topo' y alias '$alias'.");
       }
 

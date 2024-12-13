@@ -1,7 +1,7 @@
-class ConnectionBBDDException implements Exception {
+class APIRoutesException implements Exception {
   final String? message;
 
-  ConnectionBBDDException([this.message]);
+  APIRoutesException([this.message]);
 
   @override
   String toString() {

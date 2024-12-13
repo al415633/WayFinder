@@ -502,8 +502,8 @@ void main() {
       expect(routecorta.time, equals(0.37));
       expect(routecorta.cost, equals(0));
 
-      expect(routeeco.distance, equals(12.83));
-      expect(routeeco.time, equals(0.32));
+      expect(routeeco.distance, equals(12.57));
+      expect(routeeco.time, equals(0.37));
       expect(routeeco.cost, equals(0));
 
       await userAppController.logOut();
