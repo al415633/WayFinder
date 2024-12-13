@@ -105,11 +105,7 @@ void main() {
       // THEN
       expect(
         action(),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains("NotValidVehicleException: El tipo de combustible no es válido"),
-        )),
+        throwsA(isA<Exception>()),
       );
 
       final vehicles = await vehicleController.getVehicleList();

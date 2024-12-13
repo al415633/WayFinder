@@ -201,7 +201,6 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
 
-
     if (user == null) {
       throw NotAuthenticatedUserException();
     }
