@@ -103,7 +103,7 @@ class RouteController {
       Routes routeFastest = Routes(name, start, end, pointsFastest, distanceFastest, timeFastest,
           transportMode, routeMode, vehicle);
       
-      double precioFastest = await vehicleController.calculatePrice(routeFastest, vehicle!);
+      double precioFastest = await vehicleController.calculatePrice(routeFastest, vehicle);
 
 
       if(precioFastest< precioShortest){
@@ -369,7 +369,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
         LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
 
     Map<String, dynamic> pointsData =
-          await getPoints(initialPoint, destination, transportMode, routeMode!);
+          await getPoints(initialPoint, destination, transportMode, routeMode);
     return pointsData;
   }
 
