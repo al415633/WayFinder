@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/vehicle.dart';
 
 class PriceProxy {
   static PriceProxy? _instance;
@@ -12,9 +13,10 @@ class PriceProxy {
   static final Map<String, ValorFecha> _priceCache = {}; //CAMBIAR DE RUTA A SITIO DE INICIO
   static double luzPrice = 0;
   static DateTime? tiempoLuz = DateTime(1900, 1, 1);
-
+  
   static Future<double> getPrice(Routes route) async {
-    
+    Vehicle coche = route.vehicle!;
+
     final now = DateTime.now();
 
 
@@ -34,13 +36,13 @@ class PriceProxy {
     final cacheEntry = _priceCache[secondName]?.precio;
     final lastCalculated = _priceCache[secondName]?.lastCalculated;
 
-    if (route.vehicle!.fuelType == 'Eléctrico') {
+    if (coche.fuelType == 'Eléctrico') {
       if (now.difference(tiempoLuz!).inHours < 24) {
   
         
         return luzPrice;
       } else {
-        luzPrice = (await route.vehicle!.price?.calculatePrice(route, route.vehicle!))!;
+        luzPrice = (await coche.price?.calculatePrice(route, coche))!;
         tiempoLuz = now;
 
         return luzPrice; 
@@ -54,11 +56,12 @@ class PriceProxy {
         return cacheEntry;
       }
     }
+    
 
-    double? valor =
-        await route.vehicle!.price?.calculatePrice(route, route.vehicle!);
+    double valor =
+        await coche.price!.calculatePrice(route, coche);
 
-    _priceCache[secondName] = ValorFecha(valor!, now);
+    _priceCache[secondName] = ValorFecha(valor, now);
 
     return valor;
   }

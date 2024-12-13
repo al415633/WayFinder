@@ -17,8 +17,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
 
-
-
 class RouteController {
   // Propiedades
   late Future<Set<Routes>> routeList;
@@ -43,7 +41,6 @@ class RouteController {
     return routeList;
   }
 
-
   double calculateCostKCal(Routes? route) {
     if (route == null || route.transportMode == TransportMode.coche) {
       throw Invalidcaloriecalculationexception();
@@ -62,7 +59,6 @@ class RouteController {
     }
   }
 
-
   Future<Routes> createRoute(
       String name,
       Location start,
@@ -70,32 +66,35 @@ class RouteController {
       TransportMode transportMode,
       RouteMode? routeMode,
       Vehicle? vehicle) async {
-
     if (routeMode == null) {
-      throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
+      throw MissingInformationRouteException(
+          "El modo de ruta no puede ser nulo.");
     }
 
-    if(transportMode == TransportMode.coche && routeMode == RouteMode.economica){
+    if (transportMode == TransportMode.coche &&
+        routeMode == RouteMode.economica) {
       DbAdapterVehicle vehicleAdapter = FirestoreAdapterVehiculo();
-      VehicleController vehicleController = VehicleController.getInstance(vehicleAdapter);
+      VehicleController vehicleController =
+          VehicleController.getInstance(vehicleAdapter);
 
-      Map<String, dynamic> pointsDataShortest =
-          await repository.getRouteData(start, end, transportMode, RouteMode.corta);
+      Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
+          start, end, transportMode, RouteMode.corta);
 
-      List<LatLng> pointsShortest = pointsDataShortest['points'] as List<LatLng>;
+      List<LatLng> pointsShortest =
+          pointsDataShortest['points'] as List<LatLng>;
       //print(points);
       double distanceShortest = pointsDataShortest['distance'] as double;
       //print("Distanciaaaa:$distance");
       double timeShortest = pointsDataShortest['duration'] as double;
       //print("Tiempooooo $time");
-      Routes routeShortest = Routes(name, start, end, pointsShortest, distanceShortest, timeShortest,
-          transportMode, routeMode, vehicle);
-      
-      double precioShortest = await vehicleController.calculatePrice(routeShortest, vehicle!);
+      Routes routeShortest = Routes(name, start, end, pointsShortest,
+          distanceShortest, timeShortest, transportMode, routeMode, vehicle);
 
+      double precioShortest =
+          await vehicleController.calculatePrice(routeShortest, vehicle!);
 
-      Map<String, dynamic> pointsDataFastest =
-          await repository.getRouteData(start, end, transportMode, RouteMode.rapida);
+      Map<String, dynamic> pointsDataFastest = await repository.getRouteData(
+          start, end, transportMode, RouteMode.rapida);
 
       List<LatLng> pointsFastest = pointsDataFastest['points'] as List<LatLng>;
       //print(points);
@@ -103,25 +102,25 @@ class RouteController {
       //print("Distanciaaaa:$distance");
       double timeFastest = pointsDataFastest['duration'] as double;
       //print("Tiempooooo $time");
-      Routes routeFastest = Routes(name, start, end, pointsFastest, distanceFastest, timeFastest,
-          transportMode, routeMode, vehicle);
-      
-      double precioFastest = await vehicleController.calculatePrice(routeFastest, vehicle!);
+      Routes routeFastest = Routes(name, start, end, pointsFastest,
+          distanceFastest, timeFastest, transportMode, routeMode, vehicle);
 
+      double precioFastest =
+          await vehicleController.calculatePrice(routeFastest, vehicle);
 
-      if(precioFastest< precioShortest){
+      if (precioFastest < precioShortest) {
+        routeFastest.setCost = precioFastest;
         return routeFastest;
-      } else{
+      } else {
+        routeShortest.setCost = precioShortest;
+
         return routeShortest;
       }
-
-      
     }
 
     Map<String, dynamic> pointsData =
-          await repository.getRouteData(start, end, transportMode, routeMode);
+        await repository.getRouteData(start, end, transportMode, routeMode);
 
-    
     List<LatLng> points = pointsData['points'] as List<LatLng>;
     //print(points);
     double distance = pointsData['distance'] as double;
@@ -130,6 +129,10 @@ class RouteController {
     //print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
+    print(route.toString());
+    print(route.start.toString());
+    print(route.end.toString());
+    route.setCost = await vehicle!.price!.calculatePrice(route, vehicle);
     return route;
   }
 
@@ -167,7 +170,6 @@ class RouteController {
       throw Exception("Error al crear la ruta: $e");
     }
   }
-
 
   Future<bool> addFav(String routeName) async {
     try {
@@ -238,13 +240,13 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<Set<Routes>> getRouteList() async {
+    _currentUser = FirebaseAuth.instance.currentUser;
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
 
     if (user == null) {
       throw NotAuthenticatedUserException();
     }
-
 
     try {
       final querySnapshot = await db
@@ -269,7 +271,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
 
-
     if (user == null) {
       throw NotAuthenticatedUserException();
     }
@@ -291,7 +292,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   Future<bool> deleteRoute(Routes route) async {
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
-
 
     if (user == null) {
       throw NotAuthenticatedUserException();
@@ -338,7 +338,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException("Error al añadir la ruta a favoritos en la base de datos: $e");
+      throw ConnectionBBDDException(
+          "Error al añadir la ruta a favoritos en la base de datos: $e");
     }
   }
 
@@ -358,22 +359,25 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException("Error al eliminar la ruta de favoritos en la base de datos: $e");
+      throw ConnectionBBDDException(
+          "Error al eliminar la ruta de favoritos en la base de datos: $e");
     }
   }
 
   @override
-  Future<Map<String, dynamic>> getRouteData(Location start, Location end, TransportMode transportMode,RouteMode? routeMode) async {
+  Future<Map<String, dynamic>> getRouteData(Location start, Location end,
+      TransportMode transportMode, RouteMode? routeMode) async {
     if (routeMode == null) {
-      throw MissingInformationRouteException("El modo de ruta no puede ser nulo.");
+      throw MissingInformationRouteException(
+          "El modo de ruta no puede ser nulo.");
     }
     LatLng initialPoint =
-    LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
+        LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
     LatLng destination =
         LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
 
     Map<String, dynamic> pointsData =
-          await getPoints(initialPoint, destination, transportMode, routeMode!);
+        await getPoints(initialPoint, destination, transportMode, routeMode);
     return pointsData;
   }
 
@@ -392,8 +396,11 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   }
 
   @override
-  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
-      LatLng destination, TransportMode transportMode, RouteMode routeMode) async {
+  Future<Map<String, dynamic>> getPoints(
+      LatLng initialPoint,
+      LatLng destination,
+      TransportMode transportMode,
+      RouteMode routeMode) async {
     http.Response? response;
 
     String routeModeString = getApiPreferenceFromRouteMode(routeMode);
@@ -401,16 +408,19 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     if (transportMode == TransportMode.coche) {
       response = await postCarRoute(initialPoint, destination, routeModeString);
     } else if (transportMode == TransportMode.aPie) {
-      response = await postWalkRoute(initialPoint, destination, routeModeString);
+      response =
+          await postWalkRoute(initialPoint, destination, routeModeString);
     } else if (transportMode == TransportMode.bicicleta) {
-      response = await postBikeRoute(initialPoint, destination, routeModeString);
+      response =
+          await postBikeRoute(initialPoint, destination, routeModeString);
     }
 
     if (response?.statusCode == 200) {
       var data = jsonDecode(response!.body);
 
       // Acceder a las coordenadas en GeoJSON
-      final List<dynamic> coordinates = data['features'][0]['geometry']['coordinates'];
+      final List<dynamic> coordinates =
+          data['features'][0]['geometry']['coordinates'];
 
       // Convertir a List<LatLng>
       List<LatLng> points = coordinates.map((coord) {
@@ -420,8 +430,12 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       }).toList();
 
       // Acceder a distancia y duración
-      double distance = data['features'][0]['properties']['summary']['distance'] / 1000; // en km
-      double duration = data['features'][0]['properties']['summary']['duration'] / 3600; // en horas
+      double distance = data['features'][0]['properties']['summary']
+              ['distance'] /
+          1000; // en km
+      double duration = data['features'][0]['properties']['summary']
+              ['duration'] /
+          3600; // en horas
 
       // Devolver los resultados
       return {
@@ -438,10 +452,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     double mod = pow(10.0, decimalPlaces).toDouble();
     return ((value * mod).round().toDouble() / mod);
   }
-
-
-
-
 }
 
 abstract class DbAdapterRoute {
@@ -450,7 +460,9 @@ abstract class DbAdapterRoute {
   Future<Set<Routes>> getRouteList();
   Future<bool> removeFav(String routeName);
   Future<bool> addFav(String routeName);
-  Future<Map<String, dynamic>>getRouteData(Location start, Location end, TransportMode transportMode,RouteMode? routeMode);
-  Future<Map<String, dynamic>> getPoints(LatLng initialPoint, LatLng destination, TransportMode transportMode, RouteMode routeMode) ;
+  Future<Map<String, dynamic>> getRouteData(Location start, Location end,
+      TransportMode transportMode, RouteMode? routeMode);
+  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
+      LatLng destination, TransportMode transportMode, RouteMode routeMode);
   String getApiPreferenceFromRouteMode(RouteMode mode);
 }

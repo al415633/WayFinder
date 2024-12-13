@@ -130,7 +130,7 @@ class LocationController {
             "InvalidCoordinatesException: 'No se encontró ningún lugar para las coordenadas dadas.");
       }
     } else {
-      throw  APICoordenadasException();
+      throw APICoordenadasException();
     }
   }
 
@@ -151,7 +151,7 @@ class LocationController {
         throw InvalidToponimoException();
       }
     } else {
-      throw  APIToponimoException();
+      throw APIToponimoException();
     }
   }
 
@@ -198,9 +198,9 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
   @override
   Future<Set<Location>> getLocationList() async {
+    _currentUser = FirebaseAuth.instance.currentUser;
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
-
 
     if (user == null) {
       throw NotAuthenticatedUserException();
@@ -299,7 +299,8 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException("Error al eliminar el lugar de interés: $e");
+      throw ConnectionBBDDException(
+          "Error al eliminar el lugar de interés: $e");
     }
   }
 
