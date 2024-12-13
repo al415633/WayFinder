@@ -1,5 +1,8 @@
+import 'package:WayFinder/exceptions/APIRoutesExcpetion.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
@@ -119,7 +122,6 @@ class RouteController {
           await repository.getRouteData(start, end, transportMode, routeMode);
 
     
-
     List<LatLng> points = pointsData['points'] as List<LatLng>;
     //print(points);
     double distance = pointsData['distance'] as double;
@@ -185,7 +187,7 @@ class RouteController {
 
       return success;
     } catch (e) {
-      throw Exception(
+      throw ConnectionBBDDException(
           "Error al añadir el location a favoritos en el controlador: $e");
     }
   }
@@ -209,7 +211,7 @@ class RouteController {
 
       return success;
     } catch (e) {
-      throw Exception(
+      throw ConnectionBBDDException(
           "Error al eliminar el location a favoritos en el controlador: $e");
     }
   }
@@ -236,14 +238,13 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<Set<Routes>> getRouteList() async {
-    /*
-    final user = FirebaseAuth.instance.currentUser;
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
 
     if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear la ruta.');
+      throw NotAuthenticatedUserException();
     }
 
-    */
 
     try {
       final querySnapshot = await db
@@ -259,17 +260,20 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return routes;
     } catch (e) {
-      throw Exception("Error al obtener la lista de rutas: $e");
+      throw ConnectionBBDDException("Error al obtener la lista de rutas: $e");
     }
   }
 
   @override
   Future<bool> saveRoute(Routes route) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+
 
     if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear el location.');
+      throw NotAuthenticatedUserException();
     }
+
     try {
       await db
           .collection(_collectionName)
@@ -285,10 +289,12 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<bool> deleteRoute(Routes route) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+
 
     if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede eliminar la ruta.');
+      throw NotAuthenticatedUserException();
     }
 
     try {
@@ -304,7 +310,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       // Verificar si se encontró el documento
       if (querySnapshot.docs.isEmpty) {
-        throw Exception('Ruta no encontrada.');
+        throw ConnectionBBDDException('Ruta no encontrada.');
       }
 
       // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
@@ -312,7 +318,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      throw Exception("Error al eliminar la ruta: $e");
+      throw ConnectionBBDDException("Error al eliminar la ruta: $e");
     }
   }
 
@@ -332,8 +338,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      print("Error al añadir la ruta a favoritos en la base de datos: $e");
-      return false;
+      throw ConnectionBBDDException("Error al añadir la ruta a favoritos en la base de datos: $e");
     }
   }
 
@@ -353,8 +358,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      print("Error al eliminar la ruta de favoritos en la base de datos: $e");
-      return false;
+      throw ConnectionBBDDException("Error al eliminar la ruta de favoritos en la base de datos: $e");
     }
   }
 
@@ -426,8 +430,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
         'duration': _roundToDecimalPlaces(duration, 2),
       };
     } else {
-      print('Error al obtener la ruta: ${response?.statusCode}, ${response?.body}');
-      throw Exception('Error al obtener la ruta.');
+      throw APIRoutesException('Error al obtener la ruta.');
     }
   }
 
@@ -449,4 +452,5 @@ abstract class DbAdapterRoute {
   Future<bool> addFav(String routeName);
   Future<Map<String, dynamic>>getRouteData(Location start, Location end, TransportMode transportMode,RouteMode? routeMode);
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint, LatLng destination, TransportMode transportMode, RouteMode routeMode) ;
+  String getApiPreferenceFromRouteMode(RouteMode mode);
 }
