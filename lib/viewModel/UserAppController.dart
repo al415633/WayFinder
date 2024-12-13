@@ -20,13 +20,10 @@ class UserAppController {
 
   static UserAppController getInstance([DbAdapterUserApp? repository]) {
     if (repository != null) {
-        _instance ??= UserAppController(repository);
+      _instance ??= UserAppController(repository);
     }
     return _instance!;
-}
-
-  
-
+  }
 
   bool isValidEmail(String email) {
     final emailRegex =
@@ -34,14 +31,15 @@ class UserAppController {
     return emailRegex.hasMatch(email);
   }
 
-bool isValidPassword(String password) {
-  final hasLength = password.length >= 8;
-  final hasUppercase = password.contains(RegExp(r'[A-Z]'));
-  final hasNumeric = password.contains(RegExp(r'[0-9]'));
-  final hasSpecial = password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
+  bool isValidPassword(String password) {
+    final hasLength = password.length >= 8;
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasNumeric = password.contains(RegExp(r'[0-9]'));
+    final hasSpecial =
+        password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
 
-  return hasLength && hasUppercase && hasNumeric && hasSpecial;
-}
+    return hasLength && hasUppercase && hasNumeric && hasSpecial;
+  }
 
   Future<UserApp?> createUser(
       String email, String password, String name) async {
@@ -86,12 +84,8 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
 
   @override
   Future<UserApp?> createUser(String email, String password) async {
-
-
-
-
     var existingUser = await auth.fetchSignInMethodsForEmail(email);
-    if (existingUser.isNotEmpty ) {
+    if (existingUser.isNotEmpty) {
       throw UserAlreadyExistsException();
     }
 
@@ -134,7 +128,9 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       );
 
       User? user = userCredential.user;
-      return UserApp(user!.uid, '', email);
+      UserApp usuario=UserApp(user!.uid, user.displayName??'', email);
+      usuario.setUser=user;
+      return usuario;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         throw UserNotExistException();

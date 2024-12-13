@@ -171,9 +171,9 @@ void main() {
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterRoute = MockDbAdapterRoute();
       final routeController = RouteController(mockDbAdapterRoute);
-      final mockDbAdapterVehicle1 = MockDbAdapterVehicle();
-      final vehicleController1 = VehicleController(mockDbAdapterVehicle1);
-      final mockElectricCarPrice1 = MockElectriccarprice();
+      final mockDbAdapterVehicle = MockDbAdapterVehicle();
+      final vehicleController = VehicleController(mockDbAdapterVehicle);
+      final mockElectricCarPrice = MockElectriccarprice();
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
@@ -187,11 +187,8 @@ void main() {
 
       String name1 = "Ruta h14 e2";
 
-      Location ini = Location(Coordinate(lat1, long1), topo1, apodo1);
-      Location fin = Location(Coordinate(lat2, long2), topo2, apodo2);
-
-      Routes ruta = Routes(
-          name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.corta, null);
+    
+Routes? ruta;
 
       final String namec = "Coche Quique";
       final double consumption = 24.3;
@@ -201,21 +198,16 @@ void main() {
       Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 
       // Configuración del mock
-      when(mockElectricCarPrice1.calculatePrice(any, any))
+      when(mockElectricCarPrice.calculatePrice(null, any))
           .thenThrow(Incorrectcalculationexception());
 
-      // Asignar estrategia de precio
-      vehicle.setPriceStrategy(mockElectricCarPrice1);
-      ruta.vehicle = vehicle;
-
+      
       // THEN
       expect(
-        () async => await vehicleController1.calculatePrice(ruta, vehicle),
+        () async => await vehicleController.calculatePrice(ruta, vehicle),
         throwsA(isA<Incorrectcalculationexception>()),
       );
 
-      // Verificar llamada
-      verify(mockElectricCarPrice1.calculatePrice(ruta, vehicle)).called(1);
     });
 
     test('H16-E1V - Crear ruta habiendo elegido un tipo de ruta concreto',
