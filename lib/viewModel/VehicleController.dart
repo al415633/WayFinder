@@ -1,6 +1,7 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
+import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
@@ -44,20 +45,17 @@ class VehicleController {
   String fuelType, String name) async {
   // Validar matrícula
   if (!validNumberPlate(numberPlate)) {
-    throw Exception(
-        "NotValidVehicleException: El formato de la matrícula no es correcto");
+    throw NotValidVehicleException("El formato de la matrícula no es correcto");
   }
 
   // Validar consumo
   if (!threeDecimalPlacesMax(consumption)) {
-    throw Exception(
-        "NotValidVehicleException: El formato del consumo no es correcto");
+    throw NotValidVehicleException("El formato del consumo no es correcto");
   }
 
   // Validar tipo de combustible
   if (!validateFuelType(fuelType)) {
-    throw Exception(
-        "NotValidVehicleException: El tipo de combustible no es válido");
+    throw  NotValidVehicleException("El tipo de combustible no es válido");
   }
 
   // Crear el objeto Vehicle
@@ -98,9 +96,7 @@ Future<bool> deleteVehicle(Vehicle vehicle) async {
 
 
   Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
-    print("Hola1");
     if (route == null) {
-          print("Hola2");
       throw Incorrectcalculationexception();
     }
   
@@ -153,7 +149,7 @@ Future<bool> deleteVehicle(Vehicle vehicle) async {
 
       return success;
     } catch (e) {
-      throw Exception("Error al añadir a favoritos en el controlador: $e");
+      throw Exception("Error al aliminar de favoritos en el controlador: $e");
     }
   }
 
@@ -230,11 +226,9 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
 
-
     if (user == null) {
       throw NotAuthenticatedUserException();
     }
-
 
     try {
       final querySnapshot = await db
@@ -259,13 +253,12 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
   @override
   Future<bool> createVehicle(Vehicle vehicle) async {
-    final user = FirebaseAuth.instance.currentUser;
-
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
 
     if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear el vehículo.');
+      throw NotAuthenticatedUserException();
     }
-
 
     try {
       await db
@@ -275,17 +268,17 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
           .add(vehicle.toMap());
       return true;
     } catch (e) {
-      throw Exception('Error al crear el vehículo: $e');
+      throw ConnectionBBDDException('Error al crear el vehículo: $e');
     }
   }
 
     @override
   Future<bool> deleteVehicle(Vehicle vehicle) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
 
     if (user == null) {
-      throw Exception(
-          'Usuario no autenticado. No se puede eliminar el vehículo.');
+      throw NotAuthenticatedUserException();
     }
 
     try {
@@ -302,7 +295,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
       // Verificar si se encontró el documento
       if (querySnapshot.docs.isEmpty) {
-        throw Exception('Vehículo no encontrado.');
+        throw ConnectionBBDDException('Vehículo no encontrado.');
       }
 
       // Eliminar el primer documento encontrado
@@ -310,7 +303,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
       return true;
     } catch (e) {
-      throw Exception("Error al eliminar el vehículo: $e");
+      throw ConnectionBBDDException("Error al eliminar el vehículo: $e");
     }
   }
 
@@ -328,7 +321,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
 
     if (querySnapshot.docs.isEmpty) {
-      throw Exception(
+      throw ConnectionBBDDException(
           "No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
     }
 
@@ -353,7 +346,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
 
     if (querySnapshot.docs.isEmpty) {
-      throw Exception(
+      throw ConnectionBBDDException(
           "No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
     }
 
