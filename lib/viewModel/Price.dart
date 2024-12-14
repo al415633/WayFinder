@@ -1,5 +1,3 @@
-
-
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
 

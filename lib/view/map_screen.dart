@@ -128,7 +128,8 @@ class _MapScreenState extends State<MapScreen> {
                 'Rutas',
                 routes,
                 (item) => _buildRouteItem(item as Routes),
-                () => showAddRouteDialog(context, locations,vehicles,  _onRouteSelected)),
+                () => showAddRouteDialog(
+                    context, locations, vehicles, _onRouteSelected)),
           if (showVehicles)
             _buildSidePanel(
                 'Vehículos',
@@ -197,22 +198,27 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _onRouteSelected(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle, bool save) async {
+  Future<void> _onRouteSelected(
+      String name,
+      Location start,
+      Location end,
+      TransportMode transportMode,
+      RouteMode routeMode,
+      Vehicle? vehicle,
+      bool save) async {
     late Routes route;
-    
+
     try {
-      route = await routeController.createRoute(
-          name, start, end, transportMode, routeMode, vehicle);
-      print(vehicle);
-      cost = await vehicleController.calculatePrice(route, vehicle!);
-      print(cost);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al crear la ruta: $e')),
-      );
-    }
-    try {
+      try {
+        route = await routeController.createRoute(
+            name, start, end, transportMode, routeMode, vehicle!);
+        print(vehicle);
+
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al crear la ruta: $e')),
+        );
+      }
       if (save) {
         routeController.saveRoute(route);
         _fetchRoutes(); // Actualizar la lista de rutas
@@ -222,7 +228,7 @@ class _MapScreenState extends State<MapScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar la ubicación: $e')),
+        SnackBar(content: Text('Error al guardar la ruta: $e')),
       );
     }
     _showRoutes(route);
@@ -422,7 +428,7 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async{
+            onPressed: () async {
               await routeController.deleteRoute(route);
               _fetchRoutes();
               print('Eliminar ruta');
@@ -470,7 +476,7 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async{
+            onPressed: () async {
               await vehicleController.deleteVehicle(vehicle);
               _fetchVehicles();
               print('Eliminar $vehicle');
