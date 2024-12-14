@@ -30,6 +30,7 @@ void main() {
     );
     await cleanUp();
     await userCredential.user!.delete();
+    
     return null;
   }
 
@@ -85,7 +86,7 @@ void main() {
 
     test('H2-E2V - Permite Iniciar Sesión', () async {
       // GIVEN (realizado en setUpAll)
-      String email = "Pruebah2e2@gmail.com";
+      String email = "Pruebahh2e2@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah2e2";
       await userAppController.createUser(email, password, name);
@@ -107,9 +108,9 @@ void main() {
     test('H2-E3I - No permite Iniciar Sesión por password inválido', () async {
       // GIVEN (realizado en setUpAll)
       
-      String email = "Pruebah2e3@gmail.com";
+      String email = "PruebaH22e3@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebah2e3";
+      String name="Pruebahhh2e3";
       await userAppController.createUser(email, password, name);
 
       // WHEN
@@ -129,7 +130,7 @@ void main() {
 
       // GIVEN
 
-      String email = "Pruebae3e1@gmail.com";
+      String email = "PruebaH3e1@gmail.com";
       String password = "Aaaaa,.8";
       String name="Pruebah3e1";
       await userAppController.createUser(email, password, name);
@@ -148,7 +149,7 @@ void main() {
     test('H3-E4I - Cerrar sesion sin estar conectado', () async {
       // GIVEN
  
-      String email = "pruebah3e4@gmail.com";
+      String email = "pruebaH3e4@gmail.com";
       String password = "Aaaaacccccc,.8";
       String name = "pruebah3e2";
 

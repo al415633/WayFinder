@@ -41,10 +41,6 @@ void main() {
             measurementId: "G-TZLW8P5J8V"),
       );
 
-      locationAdapter =
-          FirestoreAdapterLocation(collectionName: "testCollectionR2");
-      locationController = LocationController.getInstance(locationAdapter);
-
       userAppAdapter =
           FirestoreAdapterUserApp(collectionName: "testCollectionR2");
       userAppController = UserAppController.getInstance(userAppAdapter);
@@ -96,6 +92,9 @@ void main() {
 
       await userAppController.logInCredenciales(emailh5e1, passwordh5e1);
 
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
       //WHEN
 
       final double lath5e1 = 39.98567;
@@ -143,6 +142,10 @@ void main() {
 
       await userAppController.logInCredenciales(emailh5e3, passwordh5e3);
 
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
       //WHEN
 
       final double lath5e3 = 91;
@@ -171,6 +174,10 @@ void main() {
       String nameh6e1 = "Pruebah6e1";
       await userAppController.createUser(emailh6e1, passwordh6e1, nameh6e1);
       await userAppController.logInCredenciales(emailh6e1, passwordh6e1);
+
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
 
       //WHEN
 
@@ -217,6 +224,10 @@ void main() {
       await userAppController.createUser(emailh6e2, passwordh6e2, nameh6e2);
       await userAppController.logInCredenciales(emailh6e2, passwordh6e2);
 
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
+
       //WHEN
 
       final String aliash6e2 = "prueba 1";
@@ -245,6 +256,10 @@ void main() {
       String nameh7e1 = "Pruebah7e1";
       await userAppController.createUser(emailh7e1, passwordh7e1, nameh7e1);
       await userAppController.logInCredenciales(emailh7e1, passwordh7e1);
+
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
 
       //Hecho en el setUpAll
 
@@ -330,8 +345,8 @@ void main() {
 
       await userAppController.logInCredenciales(emailh8e1, passwordh8e1);
 
-      locationController = LocationController(
-          FirestoreAdapterLocation(collectionName: "testCollection"));
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
 
       //WHEN
 
@@ -368,7 +383,9 @@ void main() {
 
       await userAppController.logInCredenciales(emailh8e3, passwordh8e3);
 
-      locationController = LocationController(FirestoreAdapterLocation(collectionName: "testCollection"));
+
+      locationAdapter = FirestoreAdapterLocation(collectionName: "testCollectionR2");
+      locationController = LocationController(locationAdapter);
 
       //WHEN
 

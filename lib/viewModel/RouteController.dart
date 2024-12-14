@@ -102,6 +102,7 @@ class RouteController {
       //print("Distanciaaaa:$distance");
       double timeFastest = pointsDataFastest['duration'] as double;
       //print("Tiempooooo $time");
+
       Routes routeFastest = Routes(name, start, end, pointsFastest,
           distanceFastest, timeFastest, transportMode, routeMode, vehicle);
 
@@ -378,6 +379,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
     Map<String, dynamic> pointsData =
         await getPoints(initialPoint, destination, transportMode, routeMode);
+
     return pointsData;
   }
 

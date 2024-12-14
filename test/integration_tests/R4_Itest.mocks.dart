@@ -825,6 +825,29 @@ class MockDbAdapterRoute extends _i1.Mock implements _i7.DbAdapterRoute {
         returnValueForMissingStub:
             _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i5.Future<Map<String, dynamic>>);
+
+  @override
+  String getApiPreferenceFromRouteMode(_i11.RouteMode? mode) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getApiPreferenceFromRouteMode,
+          [mode],
+        ),
+        returnValue: _i6.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getApiPreferenceFromRouteMode,
+            [mode],
+          ),
+        ),
+        returnValueForMissingStub: _i6.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getApiPreferenceFromRouteMode,
+            [mode],
+          ),
+        ),
+      ) as String);
 }
 
 /// A class which mocks [DbAdapterUserApp].

@@ -47,9 +47,6 @@ void main() {
       );
 
 
-      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
-      locationController = LocationController.getInstance(adapterLocation);
-
       adapterUserApp = FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(adapterUserApp);
 
@@ -131,6 +128,10 @@ void main() {
       await userAppController.createUser(emailh20e1, passwordh20e1, nameh20e1);
       userApp = await userAppController.logInCredenciales(emailh20e1, passwordh20e1);
 
+
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
       // WHEN
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
@@ -172,6 +173,9 @@ void main() {
       userApp = await userAppController.logInCredenciales(emailh20e2, passwordh20e2);
 
  
+      adapterLocation = FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
 
       // WHEN Y THEN
       expect(
