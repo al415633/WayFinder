@@ -1,12 +1,6 @@
 class ConnectionBBDDException implements Exception {
-  final String? message;
-
-  ConnectionBBDDException([this.message]);
+ final String message = "Error de conexión a la BBDD";
 
   @override
-  String toString() {
-    return message != null
-        ? "ConnectionBBDDException: $message"
-        : "ConnectionBBDDException: ocurrió un error.";
-  }
+  String toString() => "APICoordenadasException: $message";
 }

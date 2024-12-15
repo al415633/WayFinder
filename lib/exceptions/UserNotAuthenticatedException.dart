@@ -1,4 +1,6 @@
-
 class UserNotAuthenticatedException implements Exception {
-  //TODO
+ final String message = "Error, actualmente no hay ningún usuario autenticado.";
+
+  @override
+  String toString() => "APICoordenadasException: $message";
 }

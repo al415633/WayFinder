@@ -39,13 +39,12 @@ class VehicleController {
       FuelType fuelType, String name) async {
     // Validar matrícula
     if (!validNumberPlate(numberPlate)) {
-      throw NotValidVehicleException(
-          "El formato de la matrícula no es correcto");
+      throw NotValidVehicleException();
     }
 
     // Validar consumo
     if (!threeDecimalPlacesMax(consumption)) {
-      throw NotValidVehicleException("El formato del consumo no es correcto");
+      throw NotValidVehicleException();
     }
 
     // Crear el objeto Vehicle
@@ -229,7 +228,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
           .add(vehicle.toMap());
       return true;
     } catch (e) {
-      throw ConnectionBBDDException('Error al crear el vehículo: $e');
+      throw ConnectionBBDDException();
     }
   }
 
@@ -256,7 +255,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
       // Verificar si se encontró el documento
       if (querySnapshot.docs.isEmpty) {
-        throw ConnectionBBDDException('Vehículo no encontrado.');
+        throw ConnectionBBDDException();
       }
 
       // Eliminar el primer documento encontrado
@@ -264,7 +263,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException("Error al eliminar el vehículo: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -281,7 +280,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
     if (querySnapshot.docs.isEmpty) {
       throw ConnectionBBDDException(
-          "No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
+      );
     }
 
     // Actualizar el campo 'fav' a true en el primer documento encontrado
@@ -302,8 +301,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
         .get();
 
     if (querySnapshot.docs.isEmpty) {
-      throw ConnectionBBDDException(
-          "No se encontró la ubicación con matrícula '$numberPlate' y nombre '$name'.");
+      throw ConnectionBBDDException();
     }
 
     // Actualizar el campo 'fav' a true en el primer documento encontrado

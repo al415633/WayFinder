@@ -220,8 +220,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return locations;
     } catch (e) {
-      throw ConnectionBBDDException(
-          'No se pudo obtener la lista de ubicaciones. Verifica la conexión.');
+      throw ConnectionBBDDException();
     }
   }
 
@@ -241,7 +240,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
           .add(location.toMap());
       return true;
     } catch (e) {
-      throw ConnectionBBDDException('Error al crear el lugar: $e');
+      throw ConnectionBBDDException();
     }
   }
 
@@ -291,7 +290,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       // Verificar si se encontró el documento
       if (querySnapshot.docs.isEmpty) {
-        throw ConnectionBBDDException('Lugar de interés no encontrado.');
+        throw ConnectionBBDDException();
       }
 
       // Eliminar el primer documento encontrado
@@ -299,8 +298,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException(
-          "Error al eliminar el lugar de interés: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -316,8 +314,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
         .get();
 
     if (querySnapshot.docs.isEmpty) {
-      throw ConnectionBBDDException(
-          "No se encontró la ubicación con el topónimo '$topo' y alias '$alias'.");
+      throw ConnectionBBDDException();
     }
 
     // Actualizar el campo 'fav' a true en el primer documento encontrado
@@ -339,8 +336,7 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        throw ConnectionBBDDException(
-            "No se encontró la ubicación con el topónimo '$topo' y alias '$alias'.");
+        throw ConnectionBBDDException();
       }
 
       // Actualizar el campo 'fav' a false en el primer documento encontrado

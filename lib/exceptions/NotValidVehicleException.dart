@@ -1,12 +1,6 @@
 class NotValidVehicleException implements Exception {
-  final String? message;
-
-  NotValidVehicleException([this.message]);
+ final String message = "Error, el vehículo introducido no es válido.";
 
   @override
-  String toString() {
-    return message != null
-        ? "ConnectionBBDDException: $message"
-        : "ConnectionBBDDException: ocurrió un error.";
-  }
+  String toString() => "APICoordenadasException: $message";
 }

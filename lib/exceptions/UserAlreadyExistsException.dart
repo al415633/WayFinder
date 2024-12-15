@@ -1,3 +1,6 @@
 class UserAlreadyExistsException implements Exception {
-  //TODO
+ final String message = "Error, el usuario que intentas crear ya existe.";
+
+  @override
+  String toString() => "APICoordenadasException: $message";
 }

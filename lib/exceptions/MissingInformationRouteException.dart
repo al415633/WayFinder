@@ -1,10 +1,6 @@
 class MissingInformationRouteException implements Exception {
-  final String message;
-
-  MissingInformationRouteException([this.message = "Información de ruta faltante"]);
+ final String message = "Error, falta información para calcular la ruta.";
 
   @override
-  String toString() {
-    return "MissingInformationRouteException: $message";
-  }
+  String toString() => "APICoordenadasException: $message";
 }

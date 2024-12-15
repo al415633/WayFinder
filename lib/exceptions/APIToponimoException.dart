@@ -1,3 +1,6 @@
 class APIToponimoException implements Exception {
-  //TODO
+ final String message = "Error al obtener el toponimo de la API.";
+
+  @override
+  String toString() => "APICoordenadasException: $message";
 }

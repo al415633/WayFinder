@@ -186,8 +186,7 @@ class RouteController {
 
       return success;
     } catch (e) {
-      throw ConnectionBBDDException(
-          "Error al añadir el location a favoritos en el controlador: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -210,8 +209,7 @@ class RouteController {
 
       return success;
     } catch (e) {
-      throw ConnectionBBDDException(
-          "Error al eliminar el location a favoritos en el controlador: $e");
+      throw ConnectionBBDDException();
     }
   }
 }
@@ -259,7 +257,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return routes;
     } catch (e) {
-      throw ConnectionBBDDException("Error al obtener la lista de rutas: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -307,7 +305,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       // Verificar si se encontró el documento
       if (querySnapshot.docs.isEmpty) {
-        throw ConnectionBBDDException('Ruta no encontrada.');
+        throw ConnectionBBDDException();
       }
 
       // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
@@ -315,7 +313,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException("Error al eliminar la ruta: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -335,8 +333,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException(
-          "Error al añadir la ruta a favoritos en la base de datos: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -356,8 +353,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
       return true;
     } catch (e) {
-      throw ConnectionBBDDException(
-          "Error al eliminar la ruta de favoritos en la base de datos: $e");
+      throw ConnectionBBDDException();
     }
   }
 
@@ -365,8 +361,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
       TransportMode transportMode, RouteMode routeMode) async {
     if (routeMode == RouteMode.noSeleccionado) {
-      throw MissingInformationRouteException(
-          "El modo de ruta no puede ser nulo.");
+      throw MissingInformationRouteException();
     }
     LatLng initialPoint =
         LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
@@ -442,7 +437,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
         'duration': _roundToDecimalPlaces(duration, 2),
       };
     } else {
-      throw APIRoutesException('Error al obtener la ruta.');
+      throw APIRoutesException();
     }
   }
 

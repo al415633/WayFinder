@@ -1,3 +1,6 @@
 class InvalidToponimoException implements Exception {
-  //TODO
+ final String message = "Error, el topónimo introducido no es válido.";
+
+  @override
+  String toString() => "APICoordenadasException: $message";
 }

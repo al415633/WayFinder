@@ -1,12 +1,6 @@
 class APIRoutesException implements Exception {
-  final String? message;
-
-  APIRoutesException([this.message]);
+ final String message = "Error al obtener la ruta de la API.";
 
   @override
-  String toString() {
-    return message != null
-        ? "ConnectionBBDDException: $message"
-        : "ConnectionBBDDException: ocurrió un error.";
-  }
+  String toString() => "APICoordenadasException: $message";
 }
