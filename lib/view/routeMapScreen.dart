@@ -29,7 +29,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   bool showVehicles = false;
   double distance = 0.0;
   double estimatedTime = 0.0;
-  double cost = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
   FirestoreAdapterVehiculo vehicleAdapter = FirestoreAdapterVehiculo();
 
@@ -53,21 +52,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       points = route.getPoints;
       distance = route.getDistance;
       estimatedTime = route.getTime;
-      print('Distance: $distance, Estimated Time: $estimatedTime'); // Debugging statement
       
       });
 
-      if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta){
-        try{
-          route.setCalories = RouteController.getInstance(routeAdapter).calculateCostKCal(route);
-        }catch (e){
-          route.setCalories = 0.0;
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al calcular calorías: $e')),
-          );
-        }
-      } else if (transportMode == TransportMode.coche){
-          cost = await VehicleController.getInstance(vehicleAdapter).calculatePrice(route, route.getVehicle!);      }
+    
   }
 
 
@@ -161,7 +149,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta)
                         Text('Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
                       if (transportMode == TransportMode.coche)
-                        Text('Coste: ${cost.toStringAsFixed(2)} €'), // Mostrar el coste
+                        Text('Coste: ${route.getCost.toStringAsFixed(2)} €'), // Mostrar el coste
                   ],
                 ),
               ),

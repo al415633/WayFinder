@@ -21,7 +21,8 @@ import 'dart:math';
 class RouteController {
   // Propiedades
   late Future<Set<Routes>> routeList;
-  VehicleController vehicleController = VehicleController.getInstance(FirestoreAdapterVehiculo());
+  VehicleController vehicleController =
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
 
   // Propiedad privada
   final DbAdapterRoute repository;
@@ -52,10 +53,13 @@ class RouteController {
     const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
 
     switch (route.transportMode) {
+
       case TransportMode.aPie:
-        return route.distance * walkingKCalPerKMeter;
+      route.setCalories=route.distance * walkingKCalPerKMeter;
+        return route.getCalories;
       case TransportMode.bicicleta:
-        return route.distance * bikingKCalPerKMeter;
+      route.setCalories=route.distance * bikingKCalPerKMeter;
+        return route.getCalories;
       default:
         throw Invalidcaloriecalculationexception();
     }
@@ -68,10 +72,8 @@ class RouteController {
       TransportMode transportMode,
       RouteMode routeMode,
       Vehicle? vehicle) async {
-
     if (transportMode == TransportMode.coche &&
         routeMode == RouteMode.economica) {
-
       Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
           start, end, transportMode, RouteMode.corta);
 
@@ -104,6 +106,9 @@ class RouteController {
       double precioFastest =
           await vehicleController.calculatePrice(routeFastest, vehicle);
 
+      routeFastest.setCalories = calculateCostKCal(routeFastest);
+      routeShortest.setCalories = calculateCostKCal(routeShortest);
+
       if (precioFastest < precioShortest) {
         routeFastest.setCost = precioFastest;
         return routeFastest;
@@ -125,11 +130,11 @@ class RouteController {
     //print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
-    if(vehicle != null) {
+    if (vehicle != null) {
       double cost = await vehicle.price!.calculatePrice(route, vehicle);
       route.setCost = cost;
-      print(cost);
     }
+    route.setCalories = calculateCostKCal(route);
     return route;
   }
 
