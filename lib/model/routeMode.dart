@@ -1,7 +1,8 @@
 enum RouteMode {
   rapida,
   corta,
-  economica
+  economica,
+  noSeleccionado
 }
 
 extension RouteModeExtension on RouteMode {
@@ -13,7 +14,7 @@ extension RouteModeExtension on RouteMode {
         return 'Corta';
       case RouteMode.economica:
         return 'Económica';
-      default:
+      case  RouteMode.noSeleccionado:
         return '';
     }
   }

@@ -2,6 +2,7 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
@@ -35,7 +36,7 @@ class VehicleController {
   }
 
   Future<Vehicle> createVehicle(String numberPlate, double consumption,
-      String fuelType, String name) async {
+      FuelType fuelType, String name) async {
     // Validar matrícula
     if (!validNumberPlate(numberPlate)) {
       throw NotValidVehicleException(
@@ -45,11 +46,6 @@ class VehicleController {
     // Validar consumo
     if (!threeDecimalPlacesMax(consumption)) {
       throw NotValidVehicleException("El formato del consumo no es correcto");
-    }
-
-    // Validar tipo de combustible
-    if (!validateFuelType(fuelType)) {
-      throw NotValidVehicleException("El tipo de combustible no es válido");
     }
 
     // Crear el objeto Vehicle
@@ -157,14 +153,6 @@ class VehicleController {
         format2.hasMatch(numberPlate) ||
         format3.hasMatch(numberPlate) ||
         format4.hasMatch(numberPlate);
-  }
-
-  bool validateFuelType(String? fuelType) {
-    const validFuelTypes = ['Gasolina', 'Diésel', 'Eléctrico'];
-
-    if (fuelType == null) return false;
-
-    return validFuelTypes.contains(fuelType);
   }
 }
 

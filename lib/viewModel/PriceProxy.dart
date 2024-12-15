@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
 
@@ -36,13 +37,13 @@ class PriceProxy {
     final cacheEntry = _priceCache[secondName]?.precio;
     final lastCalculated = _priceCache[secondName]?.lastCalculated;
 
-    if (coche.fuelType == 'Eléctrico') {
+    if (coche.fuelType == FuelType.electrico) {
       if (now.difference(tiempoLuz!).inHours < 24) {
   
         
         return luzPrice;
       } else {
-        luzPrice = (await coche.price?.calculatePrice(route, coche))!;
+        luzPrice = (await coche.price!.calculatePrice(route, coche));
         tiempoLuz = now;
 
         return luzPrice; 
@@ -51,7 +52,7 @@ class PriceProxy {
 
     final updateInterval = 1;
 
-    if (cacheEntry != null && route.vehicle != null) {
+    if (cacheEntry != null) {
       if (now.difference(lastCalculated!).inHours < updateInterval) {
         return cacheEntry;
       }

@@ -16,8 +16,8 @@ void showAddRouteDialog(
   Location? startLocationInput;
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
-  RouteMode routeModeInput = RouteMode.rapida; // Default value
-  Vehicle? selectedVehicle;
+  RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
+  Vehicle? selectedVehicle = null;
   VehicleController vehicleController =
       VehicleController(FirestoreAdapterVehiculo());
 
@@ -91,8 +91,8 @@ void showAddRouteDialog(
                   },
                 ),
                 if (transportModeInput == TransportMode.coche)
-                  vehicles.isNotEmpty
-                      ? DropdownButton<Vehicle>(
+                  vehicles.isNotEmpty ? (
+                    DropdownButton<Vehicle>(
                           value: selectedVehicle,
                           items: vehicles.map((vehicle) {
                             return DropdownMenuItem<Vehicle>(
@@ -105,14 +105,14 @@ void showAddRouteDialog(
                               selectedVehicle = value;
                             });
                           },
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            'El usuario no tiene coches dados de alta',
-                            style: const TextStyle(color: Colors.red),
-                          ),
+                    ))
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'El usuario no tiene coches dados de alta',
+                          style: const TextStyle(color: Colors.red),
                         ),
+                      ),
                 DropdownButton<RouteMode>(
                   hint: const Text('Tipo de ruta:'),
                   value: routeModeInput,
@@ -147,6 +147,7 @@ void showAddRouteDialog(
               ),
               ElevatedButton(
                 onPressed: () async {
+                  print('guardar y generar');
                   if (routeNameInput.isEmpty ||
                       startLocationInput == null ||
                       endLocationInput == null) {
@@ -169,6 +170,7 @@ void showAddRouteDialog(
               ),
               ElevatedButton(
                 onPressed: () async {
+                  print('generar');
                   if (routeNameInput.isEmpty ||
                       startLocationInput == null ||
                       endLocationInput == null) {

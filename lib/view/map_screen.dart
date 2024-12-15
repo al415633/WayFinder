@@ -1,5 +1,6 @@
 import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/favItem.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
@@ -182,7 +183,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _onVehicleSelected(String name, String fuelType,
+  Future<void> _onVehicleSelected(String name, FuelType fuelType,
       double consumption, String numberPlate) async {
     try {
       await vehicleController.createVehicle(
@@ -207,18 +208,16 @@ class _MapScreenState extends State<MapScreen> {
       Vehicle? vehicle,
       bool save) async {
     late Routes route;
-
     try {
-      try {
-        route = await routeController.createRoute(
-            name, start, end, transportMode, routeMode, vehicle!);
-        print(vehicle);
-
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear la ruta: $e')),
-        );
-      }
+      route = await routeController.createRoute(
+          name, start, end, transportMode, routeMode, vehicle);
+      print(vehicle);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al crear la ruta: $e')),
+      );
+    }
+    try {
       if (save) {
         routeController.saveRoute(route);
         _fetchRoutes(); // Actualizar la lista de rutas

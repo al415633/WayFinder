@@ -16,14 +16,14 @@ class Routes implements FavItem {
   List<LatLng> points = [];
   bool fav;
   late TransportMode transportMode;
-  late RouteMode? routeMode;
+  late RouteMode routeMode;
   late double calories;
   late double cost;
   late Vehicle? vehicle;
 
   // Constructor
   Routes(String name, Location start, Location end, List<LatLng> points,
-      double distance, double time, TransportMode transportMode, RouteMode? routeMode, Vehicle? vehicle,
+      double distance, double time, TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle,
       {this.fav = false, this.calories = 0.0, this.cost = 0.0}) {
     this.name = name;
     this.start = start;
@@ -46,8 +46,8 @@ class Routes implements FavItem {
         .map((point) => Coordinate.fromMap(point)).cast<LatLng>()
         .toList();
     fav = fav;
-    transportMode = TransportMode.values.firstWhere((e) => e.toString().split('.').last == mapa['transportMode']);
-    routeMode = RouteMode.values.firstWhere((e) => e.toString().split('.').last == mapa['routeMode']);
+    transportMode = TransportMode.values.firstWhere((e) => e.name == mapa['transportMode']);
+    routeMode = RouteMode.values.firstWhere((e) => e.name == mapa['routeMode']);
     calories = mapa['calories'] ?? 0.0;
     cost = mapa['cost'] ?? 0.0;
     vehicle = mapa['vehicle'];
@@ -100,8 +100,8 @@ class Routes implements FavItem {
       'time': time,
       'points': points.map((point) => {'latitude': point.latitude, 'longitude': point.longitude}).toList(),
       'fav': fav,
-      'transportMode': transportMode.toString().split('.').last,  // Convertimos el enum a string
-      'routeMode': routeMode.toString().split('.').last,  // Convertimos el enum a string
+      'transportMode': transportMode.name,  // Convertimos el enum a string
+      'routeMode': routeMode.name,  // Convertimos el enum a string
       'calories' : calories,
       'cost' : cost,
       'vehicle' : vehicle,

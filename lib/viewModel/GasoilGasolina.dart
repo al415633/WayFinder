@@ -1,15 +1,16 @@
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
 import "package:WayFinder/viewModel/municipios_map.dart";
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class GasoilGasolina {
-  static Future<double> fetchPrice(Routes route, String tipo) async {
+  static Future<double> fetchPrice(Routes route, FuelType fuelType) async {
     try {
       //diesel 4
       //gasolina 1
       String valor = "1";
-      if (tipo == 'diesel') {
+      if (fuelType == FuelType.diesel) {
         valor = "4";
       }
 

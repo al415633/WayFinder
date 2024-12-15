@@ -5,6 +5,7 @@ import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
@@ -266,9 +267,9 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = 'Eléctrico';
+      final FuelType fuelType = FuelType.electrico;
 
-      Vehicle vehicle = Vehicle(numberPlate, consumption, fuelType, namec);
+      Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 
       vehicle.setPriceStrategy(Electriccarprice());
       ruta.vehicle = vehicle;
@@ -324,7 +325,7 @@ void main() {
       Future<void> action() async {
         final String namec = "Coche Quiqee";
         final double consumption = 24.3;
-        final String fuelType = "Gasolina";
+        final FuelType fuelType = FuelType.gasolina;
         Vehicle vehiculo = Vehicle(fuelType, consumption, numberPlate, namec);
 
         double coste = await vehicleController.calculatePrice(ruta, vehiculo);
@@ -478,9 +479,9 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = 'Eléctrico';
+      final FuelType fuelType = FuelType.electrico;
 
-      Vehicle vehicle = Vehicle(numberPlate, consumption, fuelType, namec);
+      Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 
 
       Routes routerapida = await routeController.createRoute(
@@ -554,7 +555,7 @@ void main() {
 
         expect(
     () async => await routeController.createRoute(
-      name1, ini, fin, TransportMode.aPie, null, null
+      name1, ini, fin, TransportMode.aPie, RouteMode.noSeleccionado, null
     ),
     throwsA(isA<MissingInformationRouteException>()),
   );

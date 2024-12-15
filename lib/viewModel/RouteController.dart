@@ -9,6 +9,7 @@ import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/Price.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,7 @@ import 'dart:math';
 class RouteController {
   // Propiedades
   late Future<Set<Routes>> routeList;
+  VehicleController vehicleController = VehicleController.getInstance(FirestoreAdapterVehiculo());
 
   // Propiedad privada
   final DbAdapterRoute repository;
@@ -64,18 +66,11 @@ class RouteController {
       Location start,
       Location end,
       TransportMode transportMode,
-      RouteMode? routeMode,
+      RouteMode routeMode,
       Vehicle? vehicle) async {
-    if (routeMode == null) {
-      throw MissingInformationRouteException(
-          "El modo de ruta no puede ser nulo.");
-    }
 
     if (transportMode == TransportMode.coche &&
         routeMode == RouteMode.economica) {
-      DbAdapterVehicle vehicleAdapter = FirestoreAdapterVehiculo();
-      VehicleController vehicleController =
-          VehicleController.getInstance(vehicleAdapter);
 
       Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
           start, end, transportMode, RouteMode.corta);
@@ -130,10 +125,11 @@ class RouteController {
     //print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
-    print(route.toString());
-    print(route.start.toString());
-    print(route.end.toString());
-    route.setCost = await vehicle!.price!.calculatePrice(route, vehicle);
+    if(vehicle != null) {
+      double cost = await vehicle.price!.calculatePrice(route, vehicle);
+      route.setCost = cost;
+      print(cost);
+    }
     return route;
   }
 
@@ -367,8 +363,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
-      TransportMode transportMode, RouteMode? routeMode) async {
-    if (routeMode == null) {
+      TransportMode transportMode, RouteMode routeMode) async {
+    if (routeMode == RouteMode.noSeleccionado) {
       throw MissingInformationRouteException(
           "El modo de ruta no puede ser nulo.");
     }
@@ -463,7 +459,7 @@ abstract class DbAdapterRoute {
   Future<bool> removeFav(String routeName);
   Future<bool> addFav(String routeName);
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
-      TransportMode transportMode, RouteMode? routeMode);
+      TransportMode transportMode, RouteMode routeMode);
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
       LatLng destination, TransportMode transportMode, RouteMode routeMode);
   String getApiPreferenceFromRouteMode(RouteMode mode);

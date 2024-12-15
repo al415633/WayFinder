@@ -1,6 +1,7 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';
@@ -105,7 +106,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.gasolina;
 
       await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
 
@@ -153,9 +154,9 @@ void main() {
       //WHEN
 
       final String namec = "Coche Quique";
-      final double consumption = 24.3;
+      final double consumption = 24232323.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Híbrido";
+      final FuelType fuelType = FuelType.gasolina;
 
 
       //THEN
@@ -171,7 +172,7 @@ void main() {
         throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
-        contains("NotValidVehicleException: El tipo de combustible no es válido"))),
+        contains("NotValidVehicleException: El formato del consumo no es correcto"))),
       );
 
 
@@ -199,7 +200,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.gasolina;
 
       await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
 
@@ -282,7 +283,7 @@ void main() {
       //WHEN
       String matricula = "9087DKR";
       double consumo = 24.3;
-      String combustible = "Gasolina";
+      FuelType combustible = FuelType.gasolina;
       String nombre = "Coche Quique";
       Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
 
@@ -317,7 +318,7 @@ void main() {
       //WHEN
       String matricula = "9087DKR";
       double consumo = 24.3;
-      String combustible = "Gasolina";
+      FuelType combustible = FuelType.gasolina;
       String nombre = "Coche Quique";
       Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
 
