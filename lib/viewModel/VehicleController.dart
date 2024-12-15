@@ -138,6 +138,8 @@ class VehicleController {
   bool validNumberPlate(String? numberPlate) {
     if (numberPlate == null) return false;
 
+    numberPlate = numberPlate.toUpperCase();
+
     // Formatos existentes
     final format1 = RegExp(r'^[A-Z]{3}\d{4}$'); // Ejemplo: ABC1234
     final format2 = RegExp(r'^[A-Z]{1}\d{4}$'); // Ejemplo: A1234
