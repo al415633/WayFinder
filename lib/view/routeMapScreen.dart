@@ -60,8 +60,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
 
   void _onTransportChanged(TransportMode newTransportMode) {
     setState(() {
-      VehicleController vehicleController = VehicleController.getInstance(vehicleAdapter);
-      vehicleController.onTransportChanged(newTransportMode, route);
+      RouteController routeController = RouteController.getInstance(routeAdapter);
+      routeController.onTransportChanged(newTransportMode, route);
       transportMode = newTransportMode;
       fetchCoordinates();
     });

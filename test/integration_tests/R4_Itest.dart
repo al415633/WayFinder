@@ -1,4 +1,5 @@
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
+import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/fuelType.dart';
@@ -157,7 +158,7 @@ void main() {
       await userAppController.createUser(email, password, name);
 
       //Da 0 porque se sobrescribe la strategy mockeada
-      coste = await vehicleController.calculatePrice(ruta, vehicle);
+      coste = await routeController.calculatePrice(ruta, vehicle);
 
       // THEN
       expect(coste, isNotNull);
@@ -204,7 +205,7 @@ Routes? ruta;
       
       // THEN
       expect(
-        () async => await vehicleController.calculatePrice(ruta, vehicle),
+        () async => await routeController.calculatePrice(ruta, vehicle),
         throwsA(isA<Incorrectcalculationexception>()),
       );
 
@@ -301,7 +302,7 @@ Routes? ruta;
       String name1 = "ruta 1";
 
       Routes ruta =
-          Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, null, null);
+          Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.noSeleccionado, null);
 
       // GIVEN
       // no registramos usuario
@@ -309,19 +310,19 @@ Routes? ruta;
       // WHEN
 
       // Simular que guardamos de un lugar
-      when(mockDbAdapterRoute.getRouteData(ini, fin, TransportMode.aPie, null))
-          .thenThrow(Exception);
+      when(mockDbAdapterRoute.getRouteData(ini, fin, TransportMode.aPie, RouteMode.noSeleccionado))
+          .thenThrow(MissingInformationRouteException());
 
       // THEN
 
       Future<void> action() async {
         //await locationController.getLocationList();
         await routeController.createRoute(
-            name1, ini, fin, TransportMode.aPie, null, null);
+            name1, ini, fin, TransportMode.aPie, RouteMode.noSeleccionado, null);
       }
 
       // THEN
-      expect(action(), throwsA(isA<Exception>()));
+      expect(action(), throwsA(isA<MissingInformationRouteException>()));
     });
 
     test('H17-E1V - Guardar ruta', () async {

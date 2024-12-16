@@ -1,5 +1,6 @@
 import 'package:WayFinder/exceptions/APIRoutesExcpetion.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
@@ -9,7 +10,7 @@ import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/VehicleController.dart';
+import 'package:WayFinder/viewModel/PriceProxy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
@@ -20,7 +21,6 @@ import 'dart:math';
 class RouteController {
   // Propiedades
   late Future<Set<Routes>> routeList;
-  
 
   // Propiedad privada
   final DbAdapterRoute repository;
@@ -50,15 +50,12 @@ class RouteController {
     const double walkingKCalPerKMeter = 50.0; //50.0 si es por km
     const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
 
-    if(route.getTransportMode == TransportMode.aPie){
-      route.setCalories=route.distance * walkingKCalPerKMeter;
-    }
-    else if(route.getTransportMode == TransportMode.bicicleta){
-      route.setCalories=route.distance * bikingKCalPerKMeter;
-
-    }
-    else{
-        throw Invalidcaloriecalculationexception();
+    if (route.getTransportMode == TransportMode.aPie) {
+      route.setCalories = route.distance * walkingKCalPerKMeter;
+    } else if (route.getTransportMode == TransportMode.bicicleta) {
+      route.setCalories = route.distance * bikingKCalPerKMeter;
+    } else {
+      throw Invalidcaloriecalculationexception();
     }
     return route.getCalories;
   }
@@ -70,9 +67,8 @@ class RouteController {
       TransportMode transportMode,
       RouteMode? routeMode,
       Vehicle? vehicle) async {
-        VehicleController vehicleController =
-      VehicleController.getInstance(FirestoreAdapterVehiculo());
-    if (transportMode == TransportMode.coche && routeMode == RouteMode.economica) {
+    if (transportMode == TransportMode.coche &&
+        routeMode == RouteMode.economica) {
       Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
           start, end, transportMode, RouteMode.corta);
 
@@ -83,11 +79,18 @@ class RouteController {
       //print("Distanciaaaa:$distance");
       double timeShortest = pointsDataShortest['duration'] as double;
       //print("Tiempooooo $time");
-      Routes routeShortest = Routes(name, start, end, pointsShortest,
-          distanceShortest, timeShortest, transportMode, RouteMode.corta, vehicle);
+      Routes routeShortest = Routes(
+          name,
+          start,
+          end,
+          pointsShortest,
+          distanceShortest,
+          timeShortest,
+          transportMode,
+          RouteMode.corta,
+          vehicle);
 
-      double precioShortest =
-          await vehicleController.calculatePrice(routeShortest, vehicle!);
+      double precioShortest = await calculatePrice(routeShortest, vehicle!);
 
       Map<String, dynamic> pointsDataFastest = await repository.getRouteData(
           start, end, transportMode, RouteMode.rapida);
@@ -99,11 +102,18 @@ class RouteController {
       double timeFastest = pointsDataFastest['duration'] as double;
       //print("Tiempooooo $time");
 
-      Routes routeFastest = Routes(name, start, end, pointsFastest,
-          distanceFastest, timeFastest, transportMode, RouteMode.rapida, vehicle);
+      Routes routeFastest = Routes(
+          name,
+          start,
+          end,
+          pointsFastest,
+          distanceFastest,
+          timeFastest,
+          transportMode,
+          RouteMode.rapida,
+          vehicle);
 
-      double precioFastest =
-          await vehicleController.calculatePrice(routeFastest, vehicle);
+      double precioFastest = await calculatePrice(routeFastest, vehicle);
 
       if (precioFastest < precioShortest) {
         routeFastest.setCost = precioFastest;
@@ -127,14 +137,13 @@ class RouteController {
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
     if (vehicle != null) {
-      double cost = await vehicleController.calculatePrice(route, vehicle);
+      double cost = await calculatePrice(route, vehicle);
       print("cost $cost");
       route.setCost = cost;
-    }
-    else{
+    } else {
       route.setCalories = calculateCostKCal(route);
     }
-    
+
     return route;
   }
 
@@ -215,6 +224,28 @@ class RouteController {
       return success;
     } catch (e) {
       throw ConnectionBBDDException();
+    }
+  }
+
+  Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
+    if (route == null) {
+      throw Incorrectcalculationexception();
+    }
+
+    double num = await PriceProxy.getPrice(route);
+
+    return num;
+  }
+
+  void onTransportChanged(TransportMode newTransportMode, Routes route) async {
+    route.setTransportMode = newTransportMode;
+    RouteController routeController =
+        RouteController.getInstance(FirestoreAdapterRoute());
+    if (newTransportMode == TransportMode.coche) {
+      route.setCost = await calculatePrice(route, route.vehicle!);
+    } else {
+      routeController.calculateCostKCal(route);
+      print("OnTransportChanged: ${route.getCost}");
     }
   }
 }

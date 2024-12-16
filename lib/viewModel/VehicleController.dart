@@ -1,13 +1,8 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/fuelType.dart';
-import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/PriceProxy.dart';
-import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -49,12 +44,12 @@ class VehicleController {
       throw NotValidVehicleException();
     }
 
-    if (fuelType == null){
+    if (fuelType == null) {
       throw NotValidVehicleException();
     }
 
     // Crear el objeto Vehicle
-    Vehicle vehicle = Vehicle(fuelType!, consumption, numberPlate, name);
+    Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
 
     // Guardar el vehículo en la base de datos
     bool success = await _dbAdapter.createVehicle(vehicle);
@@ -87,16 +82,6 @@ class VehicleController {
     } catch (e) {
       throw Exception("Error al crear el vehiculo: $e");
     }
-  }
-
-  Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
-    if (route == null) {
-      throw Incorrectcalculationexception();
-    }
-
-    double num = await PriceProxy.getPrice(route);
-
-    return num;
   }
 
   Future<bool> addFav(String numberPlate, String name) async {
@@ -163,31 +148,16 @@ class VehicleController {
   }
 
   bool threeDecimalPlacesMax(double value) {
-  // Convierte el número a String
-  String valueStr = value.toString();
-  // Divide la cadena en parte entera y parte decimal
-  List<String> divisions = valueStr.split('.');
-  // Si no hay parte decimal, cumple la regla
-  if (divisions.length < 2) return true;
-  // Verifica que la parte decimal tenga 6 o menos caracteres
-  return divisions[1].length <= 3;
+    // Convierte el número a String
+    String valueStr = value.toString();
+    // Divide la cadena en parte entera y parte decimal
+    List<String> divisions = valueStr.split('.');
+    // Si no hay parte decimal, cumple la regla
+    if (divisions.length < 2) return true;
+    // Verifica que la parte decimal tenga 6 o menos caracteres
+    return divisions[1].length <= 3;
+  }
 }
-
-  void onTransportChanged(TransportMode newTransportMode, Routes route) async{
-    route.setTransportMode = newTransportMode;
-    RouteController routeController = RouteController.getInstance(FirestoreAdapterRoute());
-    if(newTransportMode == TransportMode.coche){
-      route.setCost = await calculatePrice(route, route.vehicle!);
-    }
-    else{
-      routeController.calculateCostKCal(route);
-      print("OnTransportChanged: ${route.getCost}");
-    }
-
-}
-}
-
-
 
 class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   final String _collectionName;
@@ -302,8 +272,7 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
         .get();
 
     if (querySnapshot.docs.isEmpty) {
-      throw ConnectionBBDDException(
-      );
+      throw ConnectionBBDDException();
     }
 
     // Actualizar el campo 'fav' a true en el primer documento encontrado

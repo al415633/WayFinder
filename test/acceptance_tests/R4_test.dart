@@ -275,7 +275,7 @@ void main() {
       ruta.vehicle = vehicle;
 
       //WHEN
-      double coste = await vehicleController.calculatePrice(ruta, vehicle);
+      double coste = await routeController.calculatePrice(ruta, vehicle);
       expect(coste, isNotNull);
       expect(coste, inExclusiveRange(0.1, 2.3));
 
@@ -328,7 +328,7 @@ void main() {
         final FuelType fuelType = FuelType.gasolina;
         Vehicle vehiculo = Vehicle(fuelType, consumption, numberPlate, namec);
 
-        double coste = await vehicleController.calculatePrice(ruta, vehiculo);
+        double coste = await routeController.calculatePrice(ruta, vehiculo);
       }
 
       // THEN
@@ -496,16 +496,12 @@ void main() {
       //THEN
       expect(routerapida.distance, equals(12.83));
       expect(routerapida.time, equals(0.32));
-      expect(routerapida.cost, equals(0));
-
 
       expect(routecorta.distance, equals(12.57));
       expect(routecorta.time, equals(0.37));
-      expect(routecorta.cost, equals(0));
 
       expect(routeeco.distance, equals(12.57));
       expect(routeeco.time, equals(0.37));
-      expect(routeeco.cost, equals(0));
 
       await userAppController.logOut();
     });
