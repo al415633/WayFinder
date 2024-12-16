@@ -1,6 +1,7 @@
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
@@ -34,13 +35,12 @@ void main() {
   group('R4: Gestión de Routes', () {
     test('H13-E1V - Crear ruta', () async {
       // Configurar los mocks y el controlador dentro del test
-      final mockAuth = MockFirebaseAuth();
+
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
       final mockDbAdapterRoute = MockDbAdapterRoute();
       final routeController = RouteController(mockDbAdapterRoute);
-      final mockDbAdapterLocation = MockDbAdapterLocation();
-      final locationController = LocationController(mockDbAdapterLocation);
+
 
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
@@ -76,8 +76,8 @@ void main() {
       when(userAppController.repository.createUser(emailh16e1, passwordh16e1))
           .thenAnswer((_) async => UserApp("id", nameh16e1, emailh16e1));
 
-      await userAppController.createUser(emailh16e1, passwordh16e1, nameh16e1);
 
+      await userAppController.createUser(emailh16e1, passwordh16e1, nameh16e1);
       // WHEN
 
       when(mockDbAdapterRoute.getRouteData(
@@ -130,7 +130,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = 'Eléctrico';
+      final FuelType fuelType = FuelType.electrico;
 
       Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 
@@ -193,7 +193,7 @@ Routes? ruta;
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = 'Eléctrico';
+      final FuelType fuelType = FuelType.electrico;
 
       Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, namec);
 

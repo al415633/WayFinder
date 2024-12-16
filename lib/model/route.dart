@@ -16,14 +16,14 @@ class Routes implements FavItem {
   List<LatLng> points = [];
   bool fav;
   late TransportMode transportMode;
-  late RouteMode routeMode;
+  late RouteMode? routeMode;
   late double calories;
   late double cost;
   late Vehicle? vehicle;
 
   // Constructor
   Routes(String name, Location start, Location end, List<LatLng> points,
-      double distance, double time, TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle,
+      double distance, double time, TransportMode transportMode, RouteMode? routeMode, Vehicle? vehicle,
       {this.fav = false, this.calories = 0.0, this.cost = 0.0}) {
     this.name = name;
     this.start = start;
@@ -101,7 +101,7 @@ class Routes implements FavItem {
       'points': points.map((point) => {'latitude': point.latitude, 'longitude': point.longitude}).toList(),
       'fav': fav,
       'transportMode': transportMode.name,  // Convertimos el enum a string
-      'routeMode': routeMode.name,  // Convertimos el enum a string
+      'routeMode': routeMode?.name,  // Convertimos el enum a string
       'calories' : calories,
       'cost' : cost,
       'vehicle' : vehicle,

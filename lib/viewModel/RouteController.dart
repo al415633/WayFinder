@@ -20,8 +20,7 @@ import 'dart:math';
 class RouteController {
   // Propiedades
   late Future<Set<Routes>> routeList;
-  VehicleController vehicleController =
-      VehicleController.getInstance(FirestoreAdapterVehiculo());
+  
 
   // Propiedad privada
   final DbAdapterRoute repository;
@@ -53,12 +52,9 @@ class RouteController {
 
     if(route.getTransportMode == TransportMode.aPie){
       route.setCalories=route.distance * walkingKCalPerKMeter;
-            print("Orouetcontroller: ${route.getCost}");
     }
     else if(route.getTransportMode == TransportMode.bicicleta){
       route.setCalories=route.distance * bikingKCalPerKMeter;
-
-            print("Orouetcontroller: ${route.getCost}");
 
     }
     else{
@@ -72,8 +68,10 @@ class RouteController {
       Location start,
       Location end,
       TransportMode transportMode,
-      RouteMode routeMode,
+      RouteMode? routeMode,
       Vehicle? vehicle) async {
+        VehicleController vehicleController =
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
     if (transportMode == TransportMode.coche && routeMode == RouteMode.economica) {
       Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
           start, end, transportMode, RouteMode.corta);
@@ -118,7 +116,7 @@ class RouteController {
     }
 
     Map<String, dynamic> pointsData =
-        await repository.getRouteData(start, end, transportMode, routeMode);
+        await repository.getRouteData(start, end, transportMode, routeMode!);
 
     List<LatLng> points = pointsData['points'] as List<LatLng>;
     //print(points);

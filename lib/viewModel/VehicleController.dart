@@ -38,7 +38,7 @@ class VehicleController {
   }
 
   Future<Vehicle> createVehicle(String numberPlate, double consumption,
-      FuelType fuelType, String name) async {
+      FuelType? fuelType, String name) async {
     // Validar matrícula
     if (!validNumberPlate(numberPlate)) {
       throw NotValidVehicleException();
@@ -49,8 +49,12 @@ class VehicleController {
       throw NotValidVehicleException();
     }
 
+    if (fuelType == null){
+      throw NotValidVehicleException();
+    }
+
     // Crear el objeto Vehicle
-    Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
+    Vehicle vehicle = Vehicle(fuelType!, consumption, numberPlate, name);
 
     // Guardar el vehículo en la base de datos
     bool success = await _dbAdapter.createVehicle(vehicle);

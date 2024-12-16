@@ -1,5 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';
@@ -44,7 +45,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.gasolina;
 
       final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
 
@@ -66,7 +67,7 @@ void main() {
       // Verificar que los valores del primer lugar son los esperados
       expect(firstPlace.getConsumption(), equals(24.3)); // Verifica consumo
       expect(
-          firstPlace.getFuelType(), equals("Gasolina")); // Verifica combustible
+          firstPlace.getFuelType(), equals(FuelType.gasolina)); // Verifica combustible
       expect(
           firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
       expect(firstPlace.getName(), equals("Coche Quique")); // Verifica nombre
@@ -89,7 +90,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Híbrido";
+      final FuelType? fuelType = null;
 
       // Configura el mock para lanzar una excepción
       when(mockVehicleAdapter.getVehicleList())
@@ -127,7 +128,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.gasolina;
 
       final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
 
@@ -150,7 +151,7 @@ void main() {
       expect(success.numberPlate, vehicleMock.numberPlate);
       expect(vehicleList.first.consumption, equals(24.3));
       expect(vehicleList.first.name, equals("Coche Quique"));
-      expect(vehicleList.first.fuelType, equals("Gasolina"));
+      expect(vehicleList.first.fuelType, equals(FuelType.gasolina));
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
 
       verify(mockVehicleAdapter.createVehicle(any)).called(1);
@@ -200,7 +201,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.electrico;
 
       final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
 
