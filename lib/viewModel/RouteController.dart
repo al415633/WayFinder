@@ -45,7 +45,7 @@ class RouteController {
   }
 
   double calculateCostKCal(Routes? route) {
-    if (route == null || route.transportMode == TransportMode.coche) {
+    if (route == null) {
       throw Invalidcaloriecalculationexception();
     }
 
@@ -60,6 +60,8 @@ class RouteController {
       case TransportMode.bicicleta:
       route.setCalories=route.distance * bikingKCalPerKMeter;
         return route.getCalories;
+      case TransportMode.coche:
+        return 0;
       default:
         throw Invalidcaloriecalculationexception();
     }
@@ -72,8 +74,7 @@ class RouteController {
       TransportMode transportMode,
       RouteMode routeMode,
       Vehicle? vehicle) async {
-    if (transportMode == TransportMode.coche &&
-        routeMode == RouteMode.economica) {
+    if (transportMode == TransportMode.coche && routeMode == RouteMode.economica) {
       Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
           start, end, transportMode, RouteMode.corta);
 
@@ -85,7 +86,7 @@ class RouteController {
       double timeShortest = pointsDataShortest['duration'] as double;
       //print("Tiempooooo $time");
       Routes routeShortest = Routes(name, start, end, pointsShortest,
-          distanceShortest, timeShortest, transportMode, routeMode, vehicle);
+          distanceShortest, timeShortest, transportMode, RouteMode.corta, vehicle);
 
       double precioShortest =
           await vehicleController.calculatePrice(routeShortest, vehicle!);
@@ -101,7 +102,7 @@ class RouteController {
       //print("Tiempooooo $time");
 
       Routes routeFastest = Routes(name, start, end, pointsFastest,
-          distanceFastest, timeFastest, transportMode, routeMode, vehicle);
+          distanceFastest, timeFastest, transportMode, RouteMode.rapida, vehicle);
 
       double precioFastest =
           await vehicleController.calculatePrice(routeFastest, vehicle);
