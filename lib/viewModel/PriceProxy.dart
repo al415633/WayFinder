@@ -37,6 +37,7 @@ class PriceProxy {
     final cacheEntry = _priceCache[secondName]?.precio;
     final lastCalculated = _priceCache[secondName]?.lastCalculated;
 
+  //Si el lastCalculated es menor a 24 horas, se coge el precio de la luz/gasolina que ya hay en el mapa
     if (coche.fuelType == FuelType.electrico) {
       if (now.difference(tiempoLuz!).inHours < 24) {
   
@@ -58,7 +59,7 @@ class PriceProxy {
       }
     }
     
-
+  //Si no se ha devuelto con lo de antes(ha pasado el tiempo), se vuelve a calcular
     double valor =
         await coche.price!.calculatePrice(route, coche);
 

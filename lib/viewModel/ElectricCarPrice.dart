@@ -17,7 +17,6 @@ class Electriccarprice implements Price{
 
     double costPerKm = pricePerKWh * consumption/100 * distance;
 
-    route.setCost = costPerKm;
     return costPerKm;
   }
 

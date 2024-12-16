@@ -9,7 +9,6 @@ import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/Price.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
@@ -45,24 +44,27 @@ class RouteController {
   }
 
   double calculateCostKCal(Routes? route) {
-    if (route == null || route.transportMode == TransportMode.coche) {
+    if (route == null) {
+      print("1111");
       throw Invalidcaloriecalculationexception();
     }
 
     const double walkingKCalPerKMeter = 50.0; //50.0 si es por km
     const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
 
-    switch (route.transportMode) {
-
-      case TransportMode.aPie:
+    if(route.getTransportMode == TransportMode.aPie){
       route.setCalories=route.distance * walkingKCalPerKMeter;
-        return route.getCalories;
-      case TransportMode.bicicleta:
+            print("Orouetcontroller: ${route.getCost}");
+    }
+    else if(route.getTransportMode == TransportMode.bicicleta){
       route.setCalories=route.distance * bikingKCalPerKMeter;
-        return route.getCalories;
-      default:
+            print("Orouetcontroller: ${route.getCost}");
+
+    }
+    else{
         throw Invalidcaloriecalculationexception();
     }
+    return route.getCalories;
   }
 
   Future<Routes> createRoute(
@@ -106,9 +108,6 @@ class RouteController {
       double precioFastest =
           await vehicleController.calculatePrice(routeFastest, vehicle);
 
-      routeFastest.setCalories = calculateCostKCal(routeFastest);
-      routeShortest.setCalories = calculateCostKCal(routeShortest);
-
       if (precioFastest < precioShortest) {
         routeFastest.setCost = precioFastest;
         return routeFastest;
@@ -131,10 +130,14 @@ class RouteController {
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
     if (vehicle != null) {
-      double cost = await vehicle.price!.calculatePrice(route, vehicle);
+      double cost = await vehicleController.calculatePrice(route, vehicle);
+      print("cost $cost");
       route.setCost = cost;
     }
-    route.setCalories = calculateCostKCal(route);
+    else{
+      route.setCalories = calculateCostKCal(route);
+    }
+    
     return route;
   }
 

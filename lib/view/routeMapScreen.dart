@@ -58,12 +58,11 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     
   }
 
-
-
   void _onTransportChanged(TransportMode newTransportMode) {
     setState(() {
+      VehicleController vehicleController = VehicleController.getInstance(vehicleAdapter);
+      vehicleController.onTransportChanged(newTransportMode, route);
       transportMode = newTransportMode;
-      widget.route.setTransportMode = transportMode;
       fetchCoordinates();
     });
   }

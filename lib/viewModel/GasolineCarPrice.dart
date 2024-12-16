@@ -17,7 +17,6 @@ class Gasolinecarprice implements Price {
     }
 
     double totalCost = pricePerlitre * consumption / 100 * distance;
-    route.setCost = totalCost;
     return totalCost;
   }
 

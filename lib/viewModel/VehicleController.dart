@@ -4,8 +4,10 @@ import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -155,9 +157,8 @@ class VehicleController {
         format3.hasMatch(numberPlate) ||
         format4.hasMatch(numberPlate);
   }
-}
 
-bool threeDecimalPlacesMax(double value) {
+  bool threeDecimalPlacesMax(double value) {
   // Convierte el número a String
   String valueStr = value.toString();
   // Divide la cadena en parte entera y parte decimal
@@ -167,6 +168,22 @@ bool threeDecimalPlacesMax(double value) {
   // Verifica que la parte decimal tenga 6 o menos caracteres
   return divisions[1].length <= 3;
 }
+
+  void onTransportChanged(TransportMode newTransportMode, Routes route) async{
+    route.setTransportMode = newTransportMode;
+    RouteController routeController = RouteController.getInstance(FirestoreAdapterRoute());
+    if(newTransportMode == TransportMode.coche){
+      route.setCost = await calculatePrice(route, route.vehicle!);
+    }
+    else{
+      routeController.calculateCostKCal(route);
+      print("OnTransportChanged: ${route.getCost}");
+    }
+
+}
+}
+
+
 
 class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   final String _collectionName;
