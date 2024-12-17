@@ -124,6 +124,7 @@ void showAddRouteDialog(
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),
+                if (transportModeInput != TransportMode.aPie && transportModeInput != TransportMode.bicicleta)
                 DropdownButton<RouteMode>(
                   hint: const Text('Tipo de ruta:'),
                   value: routeModeInput,
