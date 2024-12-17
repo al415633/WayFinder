@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
 
-
 const String apiKey = '5b3ce3597851110001cf6248f55d7a31499e40848c6848d7de8fa624';
 const String urlCar = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
 const String urlBike = 'https://api.openrouteservice.org/v2/directions/cycling-regular/geojson';
@@ -18,13 +17,13 @@ const String urlWalk = 'https://api.openrouteservice.org/v2/directions/foot-walk
 const String urlToponym= 'https://api.openrouteservice.org/geocode/search';
 const String urlCoordinate= 'https://api.openrouteservice.org/geocode/reverse';
 
-Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String routeMode) async {
 
+Future<http.Response> postRoute(LatLng startPoint, LatLng endPoint, String routeMode, String url,) async {
   Map<String, dynamic> createRequestBody(LatLng startPoint, LatLng endPoint) {
     return {
       'coordinates': [
-        [startPoint.longitude, startPoint.latitude], 
-        [endPoint.longitude, endPoint.latitude]
+        [startPoint.longitude, startPoint.latitude],
+        [endPoint.longitude, endPoint.latitude],
       ],
       'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
     };
@@ -32,9 +31,8 @@ Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String ro
 
   Map<String, dynamic> body = createRequestBody(startPoint, endPoint);
 
-  // Realizar la solicitud POST
   final response = await http.post(
-    Uri.parse(urlCar),
+    Uri.parse(url),
     headers: {
       'Authorization': apiKey,
       'Content-Type': 'application/json',
@@ -42,83 +40,23 @@ Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String ro
     body: json.encode(body),
   );
 
-  // Depuración: Imprime el cuerpo de la solicitud y la respuesta
-  //print('Cuerpo de la solicitud: ${json.encode(body)}');
-  //print('Respuesta completa: ${response.body}');
-
   return response;
 }
 
 
-
-postBikeRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
-
-  createRequestBody(LatLng startPoint, LatLng endPoint) {
-     return {
-      'coordinates': [
-        [startPoint.longitude, startPoint.latitude], 
-        [endPoint.longitude, endPoint.latitude]
-      ],
-      'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
-    };
-  }
-
-  Map<String, dynamic> body = createRequestBody(startPoint, endPoint);
-
-    // Realizar la solicitud POST
-    final response = await http.post(
-      Uri.parse(urlBike),
-      headers: {
-        'Authorization': apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(body),
-    );
-
-    return response;
-
+Future<http.Response> postCarRoute(LatLng startPoint, LatLng endPoint, String routeMode) async {
+  return await postRoute(startPoint, endPoint, routeMode, urlCar);
 }
 
-postWalkRoute(LatLng startPoint, LatLng endPoint, String routeMode) async{
-
-  createRequestBody(LatLng startPoint, LatLng endPoint) {
-    return {
-      'coordinates': [
-        [startPoint.longitude, startPoint.latitude], 
-        [endPoint.longitude, endPoint.latitude]
-      ],
-      'preference': routeMode, // Por ejemplo, 'recommended', 'shortest'
-    };
-  }
-
-  Map<String, dynamic> body = createRequestBody(startPoint, endPoint);
-
-    // Realizar la solicitud POST
-    final response = await http.post(
-      Uri.parse(urlWalk),
-      headers: {
-        'Authorization': apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(body),
-    );
-
-    return response;
-
+Future<http.Response> postBikeRoute(LatLng startPoint, LatLng endPoint, String routeMode) async {
+  return await postRoute(startPoint, endPoint, routeMode, urlBike);
 }
 
-getBikeRouteUrl(String startPoint, String endPoint, String routeMode){
-  return Uri.parse('$urlBike?api_key=$apiKey&start=$startPoint&end=$endPoint');
-}
-
-getCarRouteUrl(String startPoint, String endPoint, String routeMode){
-  return Uri.parse('$urlCar?api_key=$apiKey&start=$startPoint&end=$endPoint&preference=$routeMode');
+Future<http.Response> postWalkRoute(LatLng startPoint, LatLng endPoint, String routeMode) async {
+  return await postRoute(startPoint, endPoint, routeMode, urlWalk);
 }
 
 
-getWalkRouteUrl(String startPoint, String endPoint, String routeMode){
-  return Uri.parse('$urlWalk?api_key=$apiKey&start=$startPoint&end=$endPoint');
-}
 
 getCoordinatesLocation(String topo){
   return Uri.parse('$urlToponym?api_key=$apiKey&text=$topo&size=1');
