@@ -1,12 +1,14 @@
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:WayFinder/view/carSelectionDialog.dart';
 
 class RouteMapScreen extends StatefulWidget {
   final Routes route;
@@ -30,7 +32,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   double distance = 0.0;
   double estimatedTime = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
-  FirestoreAdapterVehiculo vehicleAdapter = FirestoreAdapterVehiculo();
+  VehicleController vehicleController =
+      VehicleController(FirestoreAdapterVehiculo());
 
 
   @override
@@ -58,14 +61,44 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     
   }
 
-  void _onTransportChanged(TransportMode newTransportMode) {
-    setState(() {
-      RouteController routeController = RouteController.getInstance(routeAdapter);
-      routeController.onTransportChanged(newTransportMode, route);
-      transportMode = newTransportMode;
-      fetchCoordinates();
-    });
+  void _onTransportChanged(TransportMode newTransportMode) async {
+    if ((transportMode == TransportMode.aPie ||
+            transportMode == TransportMode.bicicleta) &&
+        newTransportMode == TransportMode.coche) {
+      // Esperar a que se complete la lista de vehículos
+      Set<Vehicle> vehicleSet = await vehicleController.getVehicleList();
+      List<Vehicle> vehicleList = vehicleSet.toList();
+
+      showCarSelectionDialog(
+        context,
+        vehicleList, // Ahora pasas una lista válida
+        (RouteMode selectedRouteMode, Vehicle selectedCar) {
+          setState(() {
+            routeMode = selectedRouteMode;
+            selectedCar = selectedCar;
+
+            // Actualizar la ruta
+            RouteController routeController =
+                RouteController.getInstance(routeAdapter);
+            routeController.onTransportChanged(newTransportMode, route);
+
+            transportMode = newTransportMode;
+            fetchCoordinates();
+          });
+        },
+      );
+    } else {
+      setState(() {
+        RouteController routeController =
+            RouteController.getInstance(routeAdapter);
+        routeController.onTransportChanged(newTransportMode, route);
+        transportMode = newTransportMode;
+        fetchCoordinates();
+      });
+    }
   }
+
+
 
   void _onModeChanged(String mode) {
     setState(() {

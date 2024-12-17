@@ -98,6 +98,13 @@ void showAddRouteDialog(
                   onChanged: (value) {
                     setDialogState(() {
                       transportModeInput = value!;
+                      if (transportModeInput == TransportMode.aPie || 
+                          transportModeInput == TransportMode.bicicleta) {
+                        // Asigna un valor predeterminado válido para routeModeInput
+                        routeModeInput = RouteMode.economica;
+                      } else {
+                        routeModeInput = RouteMode.noSeleccionado;
+                      }
                     });
                   },
                 ),
