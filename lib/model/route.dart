@@ -43,14 +43,14 @@ class Routes implements FavItem {
     distance = mapa['distance'];
     time = mapa['time'];
     points = (mapa['points'] as List<dynamic>)
-        .map((point) => Coordinate.fromMap(point)).cast<LatLng>()
-        .toList();
+      .map((point) => LatLng(point['latitude'], point['longitude']))
+      .toList();
     fav = fav;
     transportMode = TransportMode.values.firstWhere((e) => e.name == mapa['transportMode']);
     routeMode = RouteMode.values.firstWhere((e) => e.name == mapa['routeMode']);
     calories = mapa['calories'] ?? 0.0;
     cost = mapa['cost'] ?? 0.0;
-    vehicle = mapa['vehicle'];
+    vehicle = mapa['vehicle'] != null ? Vehicle.fromMap(mapa['vehicle']) : null;
  }
 
   @override
@@ -104,7 +104,7 @@ class Routes implements FavItem {
       'routeMode': routeMode?.name,  // Convertimos el enum a string
       'calories' : calories,
       'cost' : cost,
-      'vehicle' : vehicle,
+      'vehicle' : vehicle?.toMap(),
   };
   }
 }

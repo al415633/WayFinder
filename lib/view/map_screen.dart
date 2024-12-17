@@ -453,12 +453,12 @@ class _MapScreenState extends State<MapScreen> {
           vehicle.getFav() ? Icons.star : Icons.star_border,
           color: vehicle.getFav() ? Colors.yellow : Colors.grey,
         ),
-        onPressed: () async {
+        onPressed: () {
           try {
             if (vehicle.getFav()) {
-              vehicle.removeFav();
+              vehicleController.removeFav(vehicle);
             } else {
-              vehicle.addFav();
+              vehicleController.addFav(vehicle);
             }
             _fetchVehicles(); // Actualizar la lista de coches
           } catch (e) {
@@ -536,7 +536,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _fetchVehicles() async {
     try {
-      print("entra en fetchvehicles"); //sí que entra
       final fetchedVehicles =
           await vehicleController.getVehicleList(); // Obtener la lista de rutas
       setState(() {

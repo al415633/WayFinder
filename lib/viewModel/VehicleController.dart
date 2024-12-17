@@ -84,43 +84,25 @@ class VehicleController {
     }
   }
 
-  Future<bool> addFav(String numberPlate, String name) async {
+  void addFav(Vehicle vehicle) async {
     try {
-      bool success = await _dbAdapter.addFav(numberPlate, name);
+      await _dbAdapter.addFav(vehicle.numberPlate, vehicle.name);
 
-      if (success) {
-        // Si la operación fue exitosa, actualizar la lista local
-        final currentSet = await vehicleList;
-        for (var vehicle in currentSet) {
-          if (vehicle.numberPlate == numberPlate && vehicle.name == name) {
-            vehicle.fav = true; // Marcar como favorito en la lista local
-            break;
-          }
-        }
-      }
-
-      return success;
+      // Si la operación fue exitosa, actualizar la lista local
+      final currentSet = await vehicleList;
+      vehicle.addFav(); // Marcar como favorito en la lista local
+      vehicleList = Future.value(currentSet);
     } catch (e) {
       throw Exception("Error al añadir a favoritos en el controlador: $e");
     }
   }
 
-  Future<bool> removeFav(String numberPlate, String name) async {
+  void removeFav(Vehicle vehicle) async {
     try {
-      bool success = await _dbAdapter.removeFav(numberPlate, name);
-
-      if (success) {
-        // Si la operación fue exitosa, actualizar la lista local
-        final currentSet = await vehicleList;
-        for (var vehicle in currentSet) {
-          if (vehicle.numberPlate == numberPlate && vehicle.name == name) {
-            vehicle.fav = false; // Marcar como NO favorito en la lista local
-            break;
-          }
-        }
-      }
-
-      return success;
+      await _dbAdapter.removeFav(vehicle.numberPlate, vehicle.name);
+      final currentSet = await vehicleList;
+      vehicle.removeFav(); // Marcar como NO favorito en la lista local
+      vehicleList = Future.value(currentSet);
     } catch (e) {
       throw Exception("Error al aliminar de favoritos en el controlador: $e");
     }
@@ -197,9 +179,6 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
       Set<Vehicle> vehicles = querySnapshot.docs.map((doc) {
         return Vehicle.fromMap(doc.data());
       }).toSet();
-      vehicles.forEach((vehicle) {
-        print("getvehicle,$vehicle.toString()");
-      });
       return vehicles;
     } catch (e) {
       throw ConnectionBBDDException();

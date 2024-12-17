@@ -35,19 +35,14 @@ class Coordinate {
 
     Map<String, dynamic> toMap() {
     return {
-      //'coord': coordinate,
       'lat':lat,
       'long' : long,
     };
   }
 
   Coordinate.fromMap(Map<String, dynamic> mapa) {
-  
-  lat = mapa['lat'] ;
-  long = mapa['long'] ;
-
-  coordinate = LatLng(lat, long);
- 
+  lat = mapa['lat'].toDouble();
+  long = mapa['long'].toDouble(); 
 }
 
 }
