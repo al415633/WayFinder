@@ -5,43 +5,44 @@ import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
 import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
 import 'package:WayFinder/viewModel/Price.dart';
 
-class Vehicle implements FavItem{
+class Vehicle implements FavItem {
   // Propiedades
 
-late FuelType fuelType;
-late double consumption;
-late String numberPlate;
-late String name;
-late bool fav;
-Price? price; //para hacer el stategy de si es gasolina, gasoil o electrico
-
+  late FuelType fuelType;
+  late double consumption;
+  late String numberPlate;
+  late String name;
+  late bool fav;
+  Price? price; //para hacer el stategy de si es gasolina, gasoil o electrico
 
   // Constructor
-  Vehicle(FuelType fuelType, double consumption, String numberPlate, String name, {this.fav = false}) {
+  Vehicle(
+      FuelType fuelType, double consumption, String numberPlate, String name,
+      {this.fav = false}) {
     this.fuelType = fuelType;
     this.consumption = consumption;
     this.numberPlate = numberPlate;
     this.name = name;
-    
 
     /*Esto es lo que está mal. Luego a la hora de llamar al método calculatePrice() en PriceProxy, 
     no se puede llamar, siempre devuelve null*/
     switch (fuelType) {
       case FuelType.gasolina:
-        price=Gasolinecarprice();
+        price = Gasolinecarprice();
         break;
       case FuelType.electrico:
-        price=Electriccarprice();
+        price = Electriccarprice();
         break;
       case FuelType.diesel:
-         price=Dieselcarprice();
+        price = Dieselcarprice();
         break;
     }
   }
-  
-void setPriceStrategy(Price priceStrategy) {
+
+  void setPriceStrategy(Price priceStrategy) {
     price = priceStrategy;
   }
+
   @override
   bool getFav() => fav;
 
@@ -49,25 +50,25 @@ void setPriceStrategy(Price priceStrategy) {
   void addFav() {
     fav = true;
   }
-  
+
   @override
   void removeFav() {
     fav = false;
   }
 
-  FuelType getFuelType(){
+  FuelType getFuelType() {
     return fuelType;
   }
 
-  double getConsumption(){
+  double getConsumption() {
     return consumption;
   }
 
-  String getNumberPlate(){
+  String getNumberPlate() {
     return numberPlate;
   }
 
-  String getName(){
+  String getName() {
     return name;
   }
 
@@ -77,7 +78,7 @@ void setPriceStrategy(Price priceStrategy) {
       'consumption': consumption,
       'numberPlate': numberPlate,
       'name': name,
-      'fav' : fav
+      'fav': fav
     };
   }
 
@@ -93,8 +94,21 @@ void setPriceStrategy(Price priceStrategy) {
 
     // Asignación de propiedades con valores del mapa
     fuelType = FuelType.values.firstWhere((e) => e.name == mapa['fueltype']);
-    consumption = mapa['consumption']?.toDouble() ?? 0.0; // Asegúrate de convertir a `double`
-    numberPlate = mapa['numberPlate'] ?? "Sin matrícula"; // Valor por defecto si es nulo
+    switch (fuelType) {
+      case FuelType.gasolina:
+        price = Gasolinecarprice();
+        break;
+      case FuelType.electrico:
+        price = Electriccarprice();
+        break;
+      case FuelType.diesel:
+        price = Dieselcarprice();
+        break;
+    }
+    consumption = mapa['consumption']?.toDouble() ??
+        0.0; // Asegúrate de convertir a `double`
+    numberPlate =
+        mapa['numberPlate'] ?? "Sin matrícula"; // Valor por defecto si es nulo
     name = mapa['name'] ?? "Sin nombre"; // Valor por defecto si es nulo
     fav = mapa['fav'] ?? false; // Valor por defecto si es nulo
   }
@@ -110,5 +124,4 @@ void setPriceStrategy(Price priceStrategy) {
   // Sobrescribe `hashCode` para usar `numberPlate`
   @override
   int get hashCode => numberPlate.hashCode;
-
 }

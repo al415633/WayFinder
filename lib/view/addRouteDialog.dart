@@ -9,7 +9,8 @@ void showAddRouteDialog(
     BuildContext context,
     List<Location> locations,
     List<Vehicle> vehicles,
-    Function(String, Location, Location, TransportMode, RouteMode, Vehicle? ,bool)
+    Function(String, Location, Location, TransportMode, RouteMode, Vehicle?,
+            bool)
         onRouteSelected) {
   // Variables para los datos de la ruta
   String routeNameInput = '';
@@ -21,10 +22,20 @@ void showAddRouteDialog(
   VehicleController vehicleController =
       VehicleController(FirestoreAdapterVehiculo());
 
-
   // Mensajes de error
   String errorMessage = '';
 
+  generateRoute(bool saveRoute) {
+    if (routeNameInput.isEmpty ||
+        startLocationInput == null ||
+        endLocationInput == null) {
+      errorMessage = 'Por favor, complete todos los campos.';
+    } else {
+      onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!,
+          transportModeInput, routeModeInput, selectedVehicle, saveRoute);
+      Navigator.of(context).pop();
+    }
+  }
 
   showDialog(
     context: context,
@@ -91,8 +102,8 @@ void showAddRouteDialog(
                   },
                 ),
                 if (transportModeInput == TransportMode.coche)
-                  vehicles.isNotEmpty ? (
-                    DropdownButton<Vehicle>(
+                  vehicles.isNotEmpty
+                      ? (DropdownButton<Vehicle>(
                           value: selectedVehicle,
                           items: vehicles.map((vehicle) {
                             return DropdownMenuItem<Vehicle>(
@@ -105,14 +116,14 @@ void showAddRouteDialog(
                               selectedVehicle = value;
                             });
                           },
-                    ))
-                    : Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          'El usuario no tiene coches dados de alta',
-                          style: const TextStyle(color: Colors.red),
+                        ))
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'El usuario no tiene coches dados de alta',
+                            style: const TextStyle(color: Colors.red),
+                          ),
                         ),
-                      ),
                 DropdownButton<RouteMode>(
                   hint: const Text('Tipo de ruta:'),
                   value: routeModeInput,
@@ -147,47 +158,13 @@ void showAddRouteDialog(
               ),
               ElevatedButton(
                 onPressed: () async {
-                  print('guardar y generar');
-                  if (routeNameInput.isEmpty ||
-                      startLocationInput == null ||
-                      endLocationInput == null) {
-                    setDialogState(() {
-                      errorMessage = 'Por favor, complete todos los campos.';
-                    });
-                  } else {
-                    onRouteSelected(
-                        routeNameInput,
-                        startLocationInput!,
-                        endLocationInput!,
-                        transportModeInput,
-                        routeModeInput, 
-                        selectedVehicle,
-                        true);
-                    Navigator.of(context).pop();
-                  }
+                  generateRoute(true);
                 },
                 child: const Text('Guardar y generar ruta'),
               ),
               ElevatedButton(
                 onPressed: () async {
-                  print('generar');
-                  if (routeNameInput.isEmpty ||
-                      startLocationInput == null ||
-                      endLocationInput == null) {
-                    setDialogState(() {
-                      errorMessage = 'Por favor, complete todos los campos.';
-                    });
-                  } else {
-                    onRouteSelected(
-                        routeNameInput,
-                        startLocationInput!,
-                        endLocationInput!,
-                        transportModeInput,
-                        routeModeInput, selectedVehicle,
-                        false);
-                    // Navegar a RouteMapScreen
-                    Navigator.of(context).pop();
-                  }
+                  generateRoute(false);
                 },
                 child: const Text('Generar ruta'),
               ),

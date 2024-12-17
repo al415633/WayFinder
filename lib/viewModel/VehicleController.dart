@@ -197,7 +197,9 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
       Set<Vehicle> vehicles = querySnapshot.docs.map((doc) {
         return Vehicle.fromMap(doc.data());
       }).toSet();
-
+      vehicles.forEach((vehicle) {
+        print("getvehicle,$vehicle.toString()");
+      });
       return vehicles;
     } catch (e) {
       throw ConnectionBBDDException();
