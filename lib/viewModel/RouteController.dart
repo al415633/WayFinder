@@ -183,46 +183,26 @@ class RouteController {
     }
   }
 
-  Future<bool> addFav(String routeName) async {
+  void addFav(Routes route) async {
     try {
       // Llamar al adaptador para marcar como favorita en la base de datos
-      bool success = await repository.addFav(routeName);
+      repository.addFav(route);
 
-      if (success) {
-        // Si se actualiza con éxito, reflejar en la lista local
-        final currentSet = await routeList;
-        for (var route in currentSet) {
-          if (route.name == routeName) {
-            route.fav = true; // Actualizar la propiedad `fav` en la lista local
-            break;
-          }
-        }
-      }
-
-      return success;
+      final currentSet = await routeList;
+      route.addFav();
+      routeList = Future.value(currentSet);
     } catch (e) {
       throw ConnectionBBDDException();
     }
   }
 
-  Future<bool> removeFav(String routeName) async {
+  void removeFav(Routes route) async {
     try {
       // Llamar al adaptador para desmarcar como favorita en la base de datos
-      bool success = await repository.removeFav(routeName);
-
-      if (success) {
-        // Si se actualiza con éxito, reflejar en la lista local
-        final currentSet = await routeList;
-        for (var route in currentSet) {
-          if (route.getName == routeName) {
-            route.fav =
-                false; // Actualizar la propiedad `fav` en la lista local
-            break;
-          }
-        }
-      }
-
-      return success;
+      repository.removeFav(route);
+      final currentSet = await routeList;
+      route.removeFav();
+      routeList = Future.value(currentSet);
     } catch (e) {
       throw ConnectionBBDDException();
     }
@@ -355,40 +335,36 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   }
 
   @override
-  Future<bool> addFav(String routeName) async {
+  void addFav(Routes route) async {
     try {
       final querySnapshot = await db
           .collection(_collectionName)
           .doc(_currentUser?.uid)
           .collection("RouteList")
-          .where('name', isEqualTo: routeName)
+          .where('name', isEqualTo: route.getName)
           .get();
 
       for (var doc in querySnapshot.docs) {
         await doc.reference.update({'fav': true});
       }
-
-      return true;
     } catch (e) {
       throw ConnectionBBDDException();
     }
   }
 
   @override
-  Future<bool> removeFav(String routeName) async {
+  void removeFav(Routes route) async {
     try {
       final querySnapshot = await db
           .collection(_collectionName)
           .doc(_currentUser?.uid)
           .collection("RouteList")
-          .where('name', isEqualTo: routeName)
+          .where('name', isEqualTo: route.getName)
           .get();
 
       for (var doc in querySnapshot.docs) {
         await doc.reference.update({'fav': false});
       }
-
-      return true;
     } catch (e) {
       throw ConnectionBBDDException();
     }
@@ -488,8 +464,8 @@ abstract class DbAdapterRoute {
   Future<bool> saveRoute(Routes route);
   Future<bool> deleteRoute(Routes route);
   Future<Set<Routes>> getRouteList();
-  Future<bool> removeFav(String routeName);
-  Future<bool> addFav(String routeName);
+  void removeFav(Routes route);
+  void addFav(Routes route);
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
       TransportMode transportMode, RouteMode routeMode);
   Future<Map<String, dynamic>> getPoints(LatLng initialPoint,

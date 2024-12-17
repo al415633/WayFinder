@@ -357,9 +357,9 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () {
           try {
             if (location.getFav()) {
-              location.removeFav();
+              locationController.removeFav(location);
             } else {
-              location.addFav();
+              locationController.addFav(location);
             }
             _fetchLocations();
             print(location.toponym
@@ -406,9 +406,9 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () async {
           try {
             if (route.getFav()) {
-              route.removeFav();
+              routeController.removeFav(route);
             } else {
-              route.addFav();
+              routeController.addFav(route);
             }
             _fetchRoutes();
           } catch (e) {

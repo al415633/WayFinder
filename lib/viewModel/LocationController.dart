@@ -94,24 +94,26 @@ class LocationController {
     }
   }
 
-  Future<bool> addFav(String topo, String alias) async {
+  void addFav(Location location) async {
     try {
-      bool success = await _dbAdapter.addFav(topo, alias);
-
-      if (success) {
-        // Si la operación fue exitosa, actualizar la lista local
-        final currentSet = await locationList;
-        for (var location in currentSet) {
-          if (location.getToponym() == topo && location.getAlias() == alias) {
-            location.fav = true; // Marcar como favorito en la lista local
-
-            break;
-          }
-        }
-      }
-      return success;
+      _dbAdapter.addFav(location);
+      final currentSet = await locationList;
+      location.addFav();
+      locationList = Future.value(currentSet);
     } catch (e) {
       throw Exception("Error al añadir a favoritos en el controlador: $e");
+    }
+  }
+
+  void removeFav(Location location) async {
+    try {
+      _dbAdapter.removeFav(location);
+      final currentSet = await locationList;
+      location.removeFav();
+      locationList = Future.value(currentSet);
+      
+    } catch (e) {
+      throw Exception("Error al eliminar de favoritos en el controlador: $e");
     }
   }
 
@@ -152,27 +154,6 @@ class LocationController {
       }
     } else {
       throw APIToponimoException();
-    }
-  }
-
-  Future<bool> removeFav(String topo, String alias) async {
-    try {
-      // Llamar al método del adaptador para quitar de favoritos en la base de datos
-      bool success = await _dbAdapter.removeFav(topo, alias);
-
-      if (success) {
-        // Si la operación fue exitosa, actualizar la lista local
-        final currentSet = await locationList;
-        for (var location in currentSet) {
-          if (location.getToponym() == topo && location.getAlias() == alias) {
-            location.fav = false; // Desmarcar como favorito en la lista local
-            break;
-          }
-        }
-      }
-      return success;
-    } catch (e) {
-      throw Exception("Error al eliminar de favoritos en el controlador: $e");
     }
   }
 }
@@ -303,14 +284,14 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
   }
 
   @override
-  Future<bool> addFav(String topo, String alias) async {
+  Future<bool> addFav(Location location) async {
     // Obtener la referencia al documento con el topónimo y alias correspondiente
     final querySnapshot = await db
         .collection(_collectionName)
         .doc(_currentUser?.uid)
         .collection("LocationList")
-        .where("toponym", isEqualTo: topo)
-        .where("alias", isEqualTo: alias)
+        .where("toponym", isEqualTo: location.toponym)
+        .where("alias", isEqualTo: location.alias)
         .get();
 
     if (querySnapshot.docs.isEmpty) {
@@ -324,15 +305,15 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
   }
 
   @override
-  Future<bool> removeFav(String topo, String alias) async {
+  Future<bool> removeFav(Location location) async {
     try {
       // Obtener la referencia al documento con el topónimo y alias correspondiente
       final querySnapshot = await db
           .collection(_collectionName)
           .doc(_currentUser?.uid)
           .collection("LocationList")
-          .where("toponym", isEqualTo: topo)
-          .where("alias", isEqualTo: alias)
+          .where("toponym", isEqualTo: location.toponym)
+          .where("alias", isEqualTo: location.alias)
           .get();
 
       if (querySnapshot.docs.isEmpty) {
@@ -355,6 +336,6 @@ abstract class DbAdapterLocation {
   Future<bool> createLocationFromTopo(Location location);
   Future<bool> deleteLocation(Location location);
   Future<Set<Location>> getLocationList();
-  Future<bool> addFav(String topo, String alias);
-  Future<bool> removeFav(String topo, String alias);
+  Future<bool> addFav(Location location);
+  Future<bool> removeFav(Location location);
 }

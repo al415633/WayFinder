@@ -1,6 +1,5 @@
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';

@@ -86,8 +86,7 @@ class VehicleController {
 
   void addFav(Vehicle vehicle) async {
     try {
-      await _dbAdapter.addFav(vehicle.numberPlate, vehicle.name);
-
+      _dbAdapter.addFav(vehicle);
       // Si la operación fue exitosa, actualizar la lista local
       final currentSet = await vehicleList;
       vehicle.addFav(); // Marcar como favorito en la lista local
@@ -99,7 +98,7 @@ class VehicleController {
 
   void removeFav(Vehicle vehicle) async {
     try {
-      await _dbAdapter.removeFav(vehicle.numberPlate, vehicle.name);
+      _dbAdapter.removeFav(vehicle);
       final currentSet = await vehicleList;
       vehicle.removeFav(); // Marcar como NO favorito en la lista local
       vehicleList = Future.value(currentSet);
@@ -242,35 +241,35 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   }
 
   @override
-  Future<bool> addFav(String numberPlate, String name) async {
+  void addFav(Vehicle vehicle) async {
     // Obtener la referencia al documento con la matricula y nombre correspondiente
     final querySnapshot = await db
         .collection(_collectionName)
         .doc(_currentUser?.uid)
         .collection("VehicleList")
-        .where("numberPlate", isEqualTo: numberPlate)
-        .where("name", isEqualTo: name)
+        .where("numberPlate", isEqualTo: vehicle.numberPlate)
         .get();
 
     if (querySnapshot.docs.isEmpty) {
       throw ConnectionBBDDException();
     }
+    try{
+      // Actualizar el campo 'fav' a true en el primer documento encontrado
+      await querySnapshot.docs.first.reference.update({"fav": true});
+    }catch(e){ 
+      throw Exception("Error al añadir a favoritos en la base de datos: $e");
+    }
 
-    // Actualizar el campo 'fav' a true en el primer documento encontrado
-    await querySnapshot.docs.first.reference.update({"fav": true});
-
-    return true;
   }
 
   @override
-  Future<bool> removeFav(String numberPlate, String name) async {
+  void removeFav(Vehicle vehicle) async {
     // Obtener la referencia al documento con la matricula y nombre correspondiente
     final querySnapshot = await db
         .collection(_collectionName)
         .doc(_currentUser?.uid)
         .collection("VehicleList")
-        .where("numberPlate", isEqualTo: numberPlate)
-        .where("name", isEqualTo: name)
+        .where("numberPlate", isEqualTo: vehicle.numberPlate)
         .get();
 
     if (querySnapshot.docs.isEmpty) {
@@ -280,7 +279,6 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     // Actualizar el campo 'fav' a true en el primer documento encontrado
     await querySnapshot.docs.first.reference.update({"fav": false});
 
-    return true;
   }
 }
 
@@ -288,6 +286,6 @@ abstract class DbAdapterVehicle {
   Future<bool> createVehicle(Vehicle vehicle);
   Future<Set<Vehicle>> getVehicleList();
   Future<bool> deleteVehicle(Vehicle vehicle);
-  Future<bool> addFav(String numberPlate, String name);
-  Future<bool> removeFav(String numberPlate, String name);
+  void addFav(Vehicle vehicle);
+  void removeFav(Vehicle vehicle);
 }
