@@ -57,7 +57,7 @@ class _MapScreenState extends State<MapScreen> {
     _fetchVehicles();
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -72,8 +72,7 @@ class _MapScreenState extends State<MapScreen> {
               // Botones de la barra superior
               Row(
                 children: [
-                  _buildTopButton(
-                      'Lugares de interés', transportMode == 'locations', () {
+                  _buildTopButton('Lugares de interés', transportMode == 'locations', () {
                     _onModeChanged('locations');
                   }),
                   _buildTopButton('Rutas', transportMode == 'routes', () {
@@ -87,10 +86,7 @@ class _MapScreenState extends State<MapScreen> {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.settings, color: Colors.white),
                     onPressed: () {
                       _onModeChanged('settings');
                     },
@@ -99,13 +95,9 @@ class _MapScreenState extends State<MapScreen> {
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () {
                       userAppController?.logOut();
-
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                MiApp()), // Navega a la pantalla de inicio
-                        (Route<dynamic> route) =>
-                            false, // Elimina todas las rutas anteriores
+                        MaterialPageRoute(builder: (context) => MiApp()),
+                        (Route<dynamic> route) => false,
                       );
                     },
                   ),
@@ -115,29 +107,39 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          _buildFlutterMap(),
-          if (showInterestPlaces)
-            _buildSidePanel(
-                'Lugares de interés',
-                locations,
-                (item) => _buildLocationItem(item as Location),
-                () => showAddLocationDialog(context, _onLocationSelected)),
-          if (showRoutes)
-            _buildSidePanel(
-                'Rutas',
-                routes,
-                (item) => _buildRouteItem(item as Routes),
-                () => showAddRouteDialog(
-                    context, locations, vehicles, _onRouteSelected)),
-          if (showVehicles)
-            _buildSidePanel(
-                'Vehículos',
-                vehicles,
-                (item) => _buildVehicleItem(item as Vehicle),
-                () => showAddVehicleDialog(context, _onVehicleSelected)),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final double panelWidth = constraints.maxWidth * 0.3; // 30% del ancho de la pantalla
+          return Stack(
+            children: [
+              _buildFlutterMap(),
+              if (showInterestPlaces)
+                _buildSidePanel('Lugares de interés', locations, (item) => _buildLocationItem(item as Location), () => showAddLocationDialog(context, _onLocationSelected), panelWidth),
+              if (showRoutes)
+                _buildSidePanel('Rutas', routes, (item) => _buildRouteItem(item as Routes), () => showAddRouteDialog(context, locations, vehicles, _onRouteSelected), panelWidth),
+              if (showVehicles)
+                _buildSidePanel('Vehículos', vehicles, (item) => _buildVehicleItem(item as Vehicle), () => showAddVehicleDialog(context, _onVehicleSelected), panelWidth),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // Botón superior personalizado
+  Widget _buildTopButton(String label, bool isSelected, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: isSelected
+              ? const Color.fromARGB(71, 203, 220, 228)
+              : Color.fromARGB(0, 153, 210, 229),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: Text(label),
       ),
     );
   }
@@ -233,14 +235,13 @@ class _MapScreenState extends State<MapScreen> {
     _showRoutes(route);
   }
 
-  Widget _buildSidePanel(String title, List items,
-      Widget Function(dynamic) buildItem, VoidCallback onAddPressed) {
+   Widget _buildSidePanel(String title, List items, Widget Function(dynamic) buildItem, VoidCallback onAddPressed, double panelWidth) {
     return Positioned(
       left: 0,
       top: 0,
       bottom: 0,
       child: Container(
-        width: 250,
+        width: panelWidth,
         color: Colors.white,
         child: Column(
           children: [
@@ -251,7 +252,7 @@ class _MapScreenState extends State<MapScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            Expanded(
+        Expanded(
               child: ListView(
                 children: [
                   ...items.map((item) => buildItem(item)),
@@ -268,25 +269,12 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-// Botón superior personalizado
-  Widget _buildTopButton(
-      String label, bool isSelected, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: isSelected
-              ? const Color.fromARGB(71, 203, 220, 228)
-              : Color.fromARGB(0, 153, 210, 229),
-          foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        child: Text(label),
-      ),
-    );
-  }
+
+
+
+
+
+
 
   void _onModeChanged(String mode) {
     setState(() {

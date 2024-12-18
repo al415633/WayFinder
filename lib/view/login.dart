@@ -38,8 +38,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Center(
             child: Container(
-              width: 700,
-              height: 700,
+              width: MediaQuery.of(context).size.width * 0.8, // 80% del ancho de la pantalla
+              constraints: BoxConstraints(
+                maxWidth: 700, // Ancho máximo
+                maxHeight: 700, // Alto máximo
+              ),
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.9),
@@ -54,19 +57,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget login() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        nombre(),
-        campoUsuario(),
-        const SizedBox(height: 15),
-        contrasena(),
-        campoContraena(),
-        const SizedBox(height: 15),
-        botonEntrar(),
-        const SizedBox(height: 15),
-        nuevaCuenta(),
-      ],
+    return SingleChildScrollView( // Permite desplazamiento si el contenido es demasiado grande
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          nombre(),
+          campoUsuario(),
+          const SizedBox(height: 15),
+          contrasena(),
+          campoContraena(),
+          const SizedBox(height: 15),
+          botonEntrar(),
+          const SizedBox(height: 15),
+          nuevaCuenta(),
+        ],
+      ),
     );
   }
 
@@ -118,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color.fromARGB(255, 147, 164, 173),
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                textStyle: const TextStyle(fontSize: 18),
+        textStyle: const TextStyle(fontSize: 18),
       ),
       onPressed: () {
         _login(); // Llamada a la función de login
