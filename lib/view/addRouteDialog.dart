@@ -20,7 +20,7 @@ void showAddRouteDialog(
   RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
   Vehicle? selectedVehicle;
   VehicleController vehicleController =
-      VehicleController(FirestoreAdapterVehiculo());
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
 
   // Mensajes de error
   String errorMessage = '';

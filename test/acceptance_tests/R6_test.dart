@@ -41,9 +41,6 @@ void main() {
             measurementId: "G-TZLW8P5J8V"),
       );
 
-      adapterLocation =
-          FirestoreAdapterLocation(collectionName: "testCollection");
-      locationController = LocationController.getInstance(adapterLocation);
 
       adapterUserApp =
           FirestoreAdapterUserApp(collectionName: "testCollection");
@@ -115,6 +112,11 @@ void main() {
       await userAppController.createUser(email, password, name);
       userApp = await userAppController.logInCredenciales(email, password);
 
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+
       final double lat = 39.98567;
       final double long = -0.04935;
       final String alias = "castellon";
@@ -133,5 +135,7 @@ void main() {
       final locationList = await locationController.getLocationList();
       expect(locationList.contains(location), true);
     });
+
+
   });
 }

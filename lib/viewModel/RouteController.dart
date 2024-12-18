@@ -44,7 +44,7 @@ class RouteController {
 
   double calculateCostKCal(Routes? route) {
     if (route == null) {
-      throw Invalidcaloriecalculationexception();
+      throw InvalidCalorieCalculationException();
     }
 
     const double walkingKCalPerKMeter = 50.0; //50.0 si es por km
@@ -55,7 +55,7 @@ class RouteController {
     } else if (route.getTransportMode == TransportMode.bicicleta) {
       route.setCalories = route.distance * bikingKCalPerKMeter;
     } else {
-      throw Invalidcaloriecalculationexception();
+      throw InvalidCalorieCalculationException();
     }
     return route.getCalories;
   }
@@ -261,6 +261,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     }
 
     try {
+      print("Llego aqui");
       final querySnapshot = await db
           .collection(_collectionName)
           .doc(_currentUser?.uid)

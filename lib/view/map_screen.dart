@@ -44,7 +44,7 @@ class _MapScreenState extends State<MapScreen> {
       RouteController.getInstance(FirestoreAdapterRoute());
   String? routeName;
   final VehicleController vehicleController =
-      VehicleController(FirestoreAdapterVehiculo());
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
   List<Vehicle> vehicles = [];
   UserAppController? userAppController = UserAppController.getInstance();
   late double cost;

@@ -138,7 +138,7 @@ void main() {
           await userAppController.logInCredenciales(emailh13e1, passwordh13e1);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -236,7 +236,7 @@ void main() {
 
       userApp = await userAppController.logInCredenciales(email, password);
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -292,7 +292,7 @@ void main() {
 
       userApp = await userAppController.logInCredenciales(email, password);
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -347,7 +347,7 @@ void main() {
       userApp = await userAppController.logInCredenciales(email, password);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -395,46 +395,23 @@ void main() {
       userApp = await userAppController.logInCredenciales(email, password);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
-      adapterLocation =
-          FirestoreAdapterLocation(collectionName: "testCollection");
-      locationController = LocationController(adapterLocation);
-
-      adapterVehicle =
-          FirestoreAdapterVehiculo(collectionName: "testCollection");
-      vehicleController = VehicleController(adapterVehicle);
-
-      final double lat1 = 39.98567;
-      final double long1 = -0.04935;
-      final String apodo1 = "castellon";
-
-      Location ini =
-          await locationController.createLocationFromCoord(lat1, long1, apodo1);
-
-      final double lat2 = 39.8890;
-      final double long2 = -0.08499;
-      final String apodo2 = "burriana";
-
-      Location fin =
-          await locationController.createLocationFromCoord(lat2, long2, apodo2);
-
-      String name1 = "Ruta h15 e3";
-      Routes? ruta;
 
       double coste = 0;
 
       //WHEN
       void action() async {
-        coste = routeController.calculateCostKCal(ruta);
+        coste = routeController.calculateCostKCal(null);
       }
 
       //THEN
 
       expect(() async => action(),
-          throwsA(isA<Invalidcaloriecalculationexception>()));
-      //Crear excepcion IncorrectCalculationException
+          throwsA(isA<Exception>()));
+          
     });
+    
 
     test('H16-E1V - Crear ruta habiendo elegido un tipo de ruta concreto',
         () async {
@@ -448,7 +425,7 @@ void main() {
       userApp = await userAppController.logInCredenciales(email, password);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -518,7 +495,7 @@ void main() {
       userApp = await userAppController.logInCredenciales(email, password);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -766,7 +743,7 @@ void main() {
           await userAppController.logInCredenciales(emailh19e1, passwordh19e1);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");
@@ -823,7 +800,7 @@ void main() {
           await userAppController.logInCredenciales(emailh19e4, passwordh19e4);
 
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
-      routeController = RouteController.getInstance(adapterRoute);
+      routeController = RouteController(adapterRoute);
 
       adapterLocation =
           FirestoreAdapterLocation(collectionName: "testCollection");

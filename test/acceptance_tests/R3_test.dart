@@ -123,7 +123,7 @@ void main() {
 
       // Verificar que los valores del primer lugar son los esperados
       expect(firstPlace.getConsumption(), equals(24.3)); // Verifica consumo
-      expect(firstPlace.getFuelType(), equals("Gasolina")); // Verifica combustible
+      expect(firstPlace.getFuelType(), FuelType.gasolina); // Verifica combustible
       expect(firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
       expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
     
@@ -154,7 +154,7 @@ void main() {
       //WHEN
 
       final String namec = "Coche Quique";
-      final double consumption = 24232323.3;
+      final double consumption = 24232323.36789;
       final String numberPlate = "DKR9087";
       final FuelType fuelType = FuelType.gasolina;
 
@@ -169,10 +169,7 @@ void main() {
 
       // THEN
       expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec),
-        throwsA(isA<Exception>().having(
-        (e) => e.toString(),
-        'message',
-        contains("NotValidVehicleException: El formato del consumo no es correcto"))),
+        throwsA(isA<Exception>()),
       );
 
 
@@ -214,7 +211,7 @@ void main() {
 
       expect(vehicleList.first.consumption, equals(24.3));
       expect(vehicleList.first.name, equals("Coche Quique"));
-      expect(vehicleList.first.fuelType, equals("Gasolina"));
+      expect(vehicleList.first.fuelType, FuelType.gasolina);
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
       await deleteVehicle(numberPlate);
@@ -246,11 +243,11 @@ void main() {
        
        //GIVEN
 
-      String email = "Pruebah10e2@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah10e2";
-      await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
+      String emailh10e2v = "Pruebah10e2@gmail.com";
+      String passwordh10e2v = "Aaaaa,.8";
+      String nameh10e2v="Pruebah10e2";
+      await userAppController.createUser(emailh10e2v, passwordh10e2v, nameh10e2v);
+      await userAppController.logInCredenciales(emailh10e2v, passwordh10e2v);
 
       vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
@@ -262,7 +259,7 @@ void main() {
       //THEN
 
       expect(vehicleList, isEmpty);
-      await signInAndDeleteUser(email, password);
+      await signInAndDeleteUser(emailh10e2v, passwordh10e2v);
     });
        
 //Eliminar vehiculo

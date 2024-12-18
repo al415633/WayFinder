@@ -35,7 +35,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   double estimatedTime = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
   VehicleController vehicleController =
-      VehicleController(FirestoreAdapterVehiculo());
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
 
 
   @override
