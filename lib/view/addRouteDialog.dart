@@ -60,7 +60,11 @@ void showAddRouteDialog(
                 DropdownButton<Location>(
                   hint: const Text('Ubicación de inicio'),
                   value: startLocationInput,
-                  items: locations.map((location) {
+                  items: locations
+                      .where((location) =>
+                          location !=
+                          endLocationInput) // Excluir la ubicación de fin
+                      .map((location) {
                     return DropdownMenuItem<Location>(
                       value: location,
                       child: Text(location.getAlias()),
@@ -75,7 +79,11 @@ void showAddRouteDialog(
                 DropdownButton<Location>(
                   hint: const Text('Ubicación de fin'),
                   value: endLocationInput,
-                  items: locations.map((location) {
+                  items: locations
+                      .where((location) =>
+                          location !=
+                          startLocationInput) // Excluir la ubicación de inicio
+                      .map((location) {
                     return DropdownMenuItem<Location>(
                       value: location,
                       child: Text(location.getAlias()),
@@ -98,7 +106,7 @@ void showAddRouteDialog(
                   onChanged: (value) {
                     setDialogState(() {
                       transportModeInput = value!;
-                      if (transportModeInput == TransportMode.aPie || 
+                      if (transportModeInput == TransportMode.aPie ||
                           transportModeInput == TransportMode.bicicleta) {
                         // Asigna un valor predeterminado válido para routeModeInput
                         routeModeInput = RouteMode.economica;
@@ -131,22 +139,23 @@ void showAddRouteDialog(
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),
-                if (transportModeInput != TransportMode.aPie && transportModeInput != TransportMode.bicicleta)
-                DropdownButton<RouteMode>(
-                  hint: const Text('Tipo de ruta:'),
-                  value: routeModeInput,
-                  items: RouteMode.values.map((mode) {
-                    return DropdownMenuItem<RouteMode>(
-                      value: mode,
-                      child: Text(mode.name),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setDialogState(() {
-                      routeModeInput = value!;
-                    });
-                  },
-                ),
+                if (transportModeInput != TransportMode.aPie &&
+                    transportModeInput != TransportMode.bicicleta)
+                  DropdownButton<RouteMode>(
+                    hint: const Text('Tipo de ruta:'),
+                    value: routeModeInput,
+                    items: RouteMode.values.map((mode) {
+                      return DropdownMenuItem<RouteMode>(
+                        value: mode,
+                        child: Text(mode.name),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        routeModeInput = value!;
+                      });
+                    },
+                  ),
                 if (errorMessage.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
