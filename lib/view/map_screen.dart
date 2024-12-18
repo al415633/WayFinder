@@ -60,74 +60,79 @@ class _MapScreenState extends State<MapScreen> {
     _fetchVehicles();
   }
 
- @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF99D2E5),
-        elevation: 0,
-        toolbarHeight: 70,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Botones de la barra superior
-              Row(
-                children: [
-                  _buildTopButton('Lugares de interés', transportMode == 'locations', () {
-                    _onModeChanged('locations');
-                  }),
-                  _buildTopButton('Rutas', transportMode == 'routes', () {
-                    _onModeChanged('routes');
-                  }),
-                  _buildTopButton('Vehículos', transportMode == 'vehicles', () {
-                    _onModeChanged('vehicles');
-                  }),
-                ],
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Color(0xFF99D2E5),
+      elevation: 0,
+      toolbarHeight: 70,
+      title: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Contenedor con scroll para los botones de la barra superior
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildTopButton('Lugares de interés', transportMode == 'locations', () {
+                      _onModeChanged('locations');
+                    }),
+                    _buildTopButton('Rutas', transportMode == 'routes', () {
+                      _onModeChanged('routes');
+                    }),
+                    _buildTopButton('Vehículos', transportMode == 'vehicles', () {
+                      _onModeChanged('vehicles');
+                    }),
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.settings, color: Colors.white),
-                    onPressed: () {
-                      _onModeChanged('settings');
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                    onPressed: () {
-                      userAppController?.logOut();
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => MiApp()),
-                        (Route<dynamic> route) => false,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    _onModeChanged('settings');
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () {
+                    userAppController?.logOut();
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => MiApp()),
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final double panelWidth = constraints.maxWidth * 0.3; // 30% del ancho de la pantalla
-          return Stack(
-            children: [
-              _buildFlutterMap(),
-              if (showInterestPlaces)
-                _buildSidePanel('Lugares de interés', locations, (item) => _buildLocationItem(item as Location), () => showAddLocationDialog(context, _onLocationSelected), panelWidth),
-              if (showRoutes)
-                _buildSidePanel('Rutas', routes, (item) => _buildRouteItem(item as Routes), () => showAddRouteDialog(context, locations, vehicles, _onRouteSelected), panelWidth),
-              if (showVehicles)
-                _buildSidePanel('Vehículos', vehicles, (item) => _buildVehicleItem(item as Vehicle), () => showAddVehicleDialog(context, _onVehicleSelected), panelWidth),
-            ],
-          );
-        },
-      ),
-    );
-  }
+    ),
+    body: LayoutBuilder(
+      builder: (context, constraints) {
+        final double panelWidth = constraints.maxWidth * 0.3; // 30% del ancho de la pantalla
+        return Stack(
+          children: [
+            _buildFlutterMap(),
+            if (showInterestPlaces)
+              _buildSidePanel('Lugares de interés', locations, (item) => _buildLocationItem(item as Location), () => showAddLocationDialog(context, _onLocationSelected), panelWidth),
+            if (showRoutes)
+              _buildSidePanel('Rutas', routes, (item) => _buildRouteItem(item as Routes), () => showAddRouteDialog(context, locations, vehicles, _onRouteSelected), panelWidth),
+            if (showVehicles)
+              _buildSidePanel('Vehículos', vehicles, (item) => _buildVehicleItem(item as Vehicle), () => showAddVehicleDialog(context, _onVehicleSelected), panelWidth),
+          ],
+        );
+      },
+    ),
+  );
+}
 
   // Botón superior personalizado
   Widget _buildTopButton(String label, bool isSelected, VoidCallback onPressed) {
