@@ -753,38 +753,22 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i7.DbAdapterVehicle {
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<bool> addFav(
-    String? numberPlate,
-    String? name,
-  ) =>
-      (super.noSuchMethod(
+  void addFav(_i8.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #addFav,
-          [
-            numberPlate,
-            name,
-          ],
+          [vehicle],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 
   @override
-  _i5.Future<bool> removeFav(
-    String? numberPlate,
-    String? name,
-  ) =>
-      (super.noSuchMethod(
+  void removeFav(_i8.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [
-            numberPlate,
-            name,
-          ],
+          [vehicle],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [DbAdapterUserApp].

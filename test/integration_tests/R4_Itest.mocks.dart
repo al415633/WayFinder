@@ -761,24 +761,22 @@ class MockDbAdapterRoute extends _i1.Mock implements _i7.DbAdapterRoute {
       ) as _i5.Future<Set<_i8.Routes>>);
 
   @override
-  _i5.Future<bool> removeFav(String? routeName) => (super.noSuchMethod(
+  void removeFav(_i8.Routes? route) => super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [routeName],
+          [route],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 
   @override
-  _i5.Future<bool> addFav(String? routeName) => (super.noSuchMethod(
+  void addFav(_i8.Routes? route) => super.noSuchMethod(
         Invocation.method(
           #addFav,
-          [routeName],
+          [route],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i5.Future<Map<String, dynamic>> getRouteData(
@@ -948,34 +946,20 @@ class MockDbAdapterLocation extends _i1.Mock implements _i15.DbAdapterLocation {
       ) as _i5.Future<Set<_i9.Location>>);
 
   @override
-  _i5.Future<bool> addFav(
-    String? topo,
-    String? alias,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> addFav(_i9.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #addFav,
-          [
-            topo,
-            alias,
-          ],
+          [location],
         ),
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<bool> removeFav(
-    String? topo,
-    String? alias,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> removeFav(_i9.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [
-            topo,
-            alias,
-          ],
+          [location],
         ),
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),
@@ -1092,36 +1076,20 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<bool> addFav(
-    String? numberPlate,
-    String? name,
-  ) =>
-      (super.noSuchMethod(
+  void addFav(_i17.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #addFav,
-          [
-            numberPlate,
-            name,
-          ],
+          [vehicle],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 
   @override
-  _i5.Future<bool> removeFav(
-    String? numberPlate,
-    String? name,
-  ) =>
-      (super.noSuchMethod(
+  void removeFav(_i17.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [
-            numberPlate,
-            name,
-          ],
+          [vehicle],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 }

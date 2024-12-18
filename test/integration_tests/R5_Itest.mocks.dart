@@ -698,33 +698,19 @@ class MockDbAdapterLocation extends _i1.Mock implements _i9.DbAdapterLocation {
       ) as _i5.Future<Set<_i10.Location>>);
 
   @override
-  _i5.Future<bool> addFav(
-    String? topo,
-    String? alias,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> addFav(_i10.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #addFav,
-          [
-            topo,
-            alias,
-          ],
+          [location],
         ),
         returnValue: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<bool> removeFav(
-    String? topo,
-    String? alias,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> removeFav(_i10.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [
-            topo,
-            alias,
-          ],
+          [location],
         ),
         returnValue: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);

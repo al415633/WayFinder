@@ -60,14 +60,15 @@ void main() {
       when(mockDbAdapterLocation.createLocationFromCoord(any))
           .thenAnswer((_) async => true);
 
-      await locationController.createLocationFromCoord(lath20e1, longh20e1, aliash20e1);
+      locationController.createLocationFromCoord(lath20e1, longh20e1, aliash20e1);
 
        // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav(topoh20e1, aliash20e1))
-          .thenAnswer((_) async => true);
+      when(mockDbAdapterLocation.addFav(loc)).thenAnswer((_) async {
+        loc.fav = true;
+        return true;
+      });
 
-      await locationController.addFav(topoh20e1, aliash20e1);
-
+      locationController.addFav(loc);
        
       // THEN
       final Set<Location> location = await mockDbAdapterLocation.getLocationList();
@@ -127,13 +128,14 @@ void main() {
 
       // WHEN
        // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav(topoh5e1, "sdg resgw"))
+      when(mockDbAdapterLocation.addFav(any))
         .thenThrow(Exception(),);
 
+      Location location = Location(Coordinate(lath5e1, longh5e1), topoh5e1, "sdg resgw");
        
       // THEN
       expect(
-        () async =>   await locationController.addFav(topoh5e1, "sdg resgw"),
+        () =>locationController.addFav(location),
         throwsA(isA<Exception>()),
       );
 
