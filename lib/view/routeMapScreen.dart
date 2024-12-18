@@ -79,7 +79,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         (RouteMode selectedRouteMode, Vehicle selectedCar) {
           setState(() {
             routeMode = selectedRouteMode;
-            selectedCar = selectedCar;
+            transportMode = newTransportMode;
+
+            // Actualizar el vehículo en la ruta
+            route.setVehicle = selectedCar;
 
             // Actualizar la ruta
             RouteController routeController =
