@@ -75,26 +75,29 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
 
       showCarSelectionDialog(
         context,
-        vehicleList, // Ahora pasas una lista válida
-        (RouteMode selectedRouteMode, Vehicle selectedCar) {
+        vehicleList,
+        route,
+        (RouteMode selectedRouteMode, Vehicle selectedCar) async {
+          // Calcular el coste
+          RouteController routeController =
+              RouteController.getInstance(routeAdapter);
+          double calculatedCost = await routeController.calculatePrice(route, selectedCar);
+
+          // Actualizar el estado en la interfaz
           setState(() {
             routeMode = selectedRouteMode;
             transportMode = newTransportMode;
 
-            // Actualizar el vehículo en la ruta
+            // Actualizar el vehículo y el coste
             route.setVehicle = selectedCar;
+            route.setCost = calculatedCost;
 
-            // Actualizar la ruta
-            RouteController routeController =
-                RouteController.getInstance(routeAdapter);
-            routeController.onTransportChanged(newTransportMode, route);
-
-            transportMode = newTransportMode;
             fetchCoordinates();
           });
         },
       );
     } else {
+      // Para otros modos de transporte
       setState(() {
         RouteController routeController =
             RouteController.getInstance(routeAdapter);
@@ -104,6 +107,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       });
     }
   }
+
 
 
 

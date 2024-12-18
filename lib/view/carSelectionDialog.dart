@@ -1,12 +1,19 @@
+import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 
 void showCarSelectionDialog(
   BuildContext context,
-  List<Vehicle> vehicles, // Lista de vehículos pasados al diálogo
+  List<Vehicle> vehicles, 
+  Routes route, // Lista de vehículos pasados al diálogo
   Function(RouteMode, Vehicle) onSelectionConfirmed,
 ) {
+
+  FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
+
   // Variables locales para la selección
   RouteMode selectedRouteMode = RouteMode.noSeleccionado; // Default
   Vehicle? selectedVehicle;
@@ -60,11 +67,19 @@ void showCarSelectionDialog(
                         child: Text(vehicle.name),
                       );
                     }).toList(),
-                    onChanged: (value) {
-                      setDialogState(() {
-                        selectedVehicle = value;
-                        errorMessage = '';
-                      });
+                    onChanged: (value) async {
+                          selectedVehicle = value;
+
+                          // Recalcular el precio
+                          RouteController routeController =
+                              RouteController.getInstance(FirestoreAdapterRoute());
+                          double newCost = await routeController.calculatePrice(route, selectedVehicle!);
+
+                            setDialogState(() {
+                              selectedVehicle = value;
+                              route.setCost = newCost;
+                              errorMessage = '';
+                            });
                     },
                   )
                 else
