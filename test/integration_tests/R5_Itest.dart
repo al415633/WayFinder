@@ -3,6 +3,8 @@ import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

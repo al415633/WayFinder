@@ -1,3 +1,4 @@
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/view/login.dart'; // Importa el archivo de login
 import 'package:WayFinder/viewModel/UserAppController.dart';

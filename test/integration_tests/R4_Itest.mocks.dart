@@ -18,11 +18,11 @@ import 'package:WayFinder/model/routeMode.dart' as _i11;
 import 'package:WayFinder/model/transportMode.dart' as _i10;
 import 'package:WayFinder/model/UserApp.dart' as _i14;
 import 'package:WayFinder/model/vehicle.dart' as _i17;
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i15;
+import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart' as _i7;
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i13;
+import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart' as _i18;
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart' as _i16;
-import 'package:WayFinder/viewModel/LocationController.dart' as _i15;
-import 'package:WayFinder/viewModel/RouteController.dart' as _i7;
-import 'package:WayFinder/viewModel/UserAppController.dart' as _i13;
-import 'package:WayFinder/viewModel/VehicleController.dart' as _i18;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
