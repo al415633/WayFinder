@@ -1,9 +1,11 @@
+import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -198,8 +200,17 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
-                    onPressed: () {
-                      _onModeChanged('reload');
+                       onPressed: () {
+                        UserAppController userAppController=UserAppController.getInstance();
+                        userAppController.logOut();
+
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                MiApp()), // Navega a la pantalla de inicio
+                        (Route<dynamic> route) =>
+                            false, // Elimina todas las rutas anteriores
+                      );
                     },
                   ),
                 ],

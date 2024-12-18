@@ -18,7 +18,7 @@ void showAddRouteDialog(
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
   RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
-  Vehicle? selectedVehicle = null;
+  Vehicle? selectedVehicle;
   VehicleController vehicleController =
       VehicleController(FirestoreAdapterVehiculo());
 

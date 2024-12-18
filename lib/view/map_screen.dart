@@ -103,7 +103,7 @@ class _MapScreenState extends State<MapScreen> {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) =>
-                                Inicio()), // Navega a la pantalla de inicio
+                                MiApp()), // Navega a la pantalla de inicio
                         (Route<dynamic> route) =>
                             false, // Elimina todas las rutas anteriores
                       );
