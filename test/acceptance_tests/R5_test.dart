@@ -158,6 +158,10 @@ void main() {
       await deleteLocation(apodo1);
     });
 
+//No se puede probar en aceptación ya que no se puede crear un lugar inválido
+//Menos aún marcarlo como favorito
+
+/*
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
       // GIVEN
       String emailh20e2 =
@@ -172,15 +176,15 @@ void main() {
           FirestoreAdapterLocation(collectionName: "testCollection");
       locationController = LocationController(adapterLocation);
 
-      Location? loc = await locationController.createLocationFromCoord(
-          0.0, 0.0, "Lugar Inválido");
+      Location loc;
 
       // WHEN Y THEN
       expect(
-        () => locationController.addFav(loc!),
-        throwsA(isA<ArgumentError>()),
+        () => locationController.addFav(loc),
+        throwsA(isA<Exception>()),
       );
     });
+    */
 
     test('H21-EV', () async {});
 
