@@ -4,8 +4,6 @@ import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:flutter/material.dart';
-//IMPORT PARA LA BASE DE DATOS
-
 
 class CreateUserView extends StatefulWidget {
   const CreateUserView({super.key});
@@ -15,20 +13,19 @@ class CreateUserView extends StatefulWidget {
 }
 
 class _CreateUserViewState extends State<CreateUserView> {
-
   final TextEditingController _userEnter = TextEditingController();
   final TextEditingController _userNameEnter = TextEditingController();
   final TextEditingController _passwordEnter = TextEditingController();
   final TextEditingController _confirmPasswordEnter = TextEditingController();
-  
- String _errorMessage = '';
+
+  String _errorMessage = '';
   final Map<String, bool> _passwordValidation = {
     "length": false,
     "uppercase": false,
     "numeric": false,
     "special": false,
   };
-  bool _showPasswordValidation = false; //  variable para controlar cuándo mostrar los requisitos
+  bool _showPasswordValidation = false;
 
   @override
   void dispose() {
@@ -39,10 +36,8 @@ class _CreateUserViewState extends State<CreateUserView> {
     super.dispose();
   }
 
-
-
   @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Registro nuevo usuario'),
@@ -57,8 +52,10 @@ class _CreateUserViewState extends State<CreateUserView> {
           ),
           Center(
             child: Container(
-              width: 700,
-              height: 700,
+              width: MediaQuery.of(context).size.width * 0.9, // 90% del ancho de la pantalla
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.8, // Máximo 80% de la altura de la pantalla
+              ),
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.9),
@@ -72,43 +69,45 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
-
-   Widget registro() {
+  Widget registro() {
     return Container(
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            nombre(),
-            campoUsuario(),
-            const SizedBox(height: 15), // separacion para que quede bonito
+        child: SingleChildScrollView( // Permite el desplazamiento si el contenido es demasiado grande
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              nombre(),
+              campoUsuario(),
+              const SizedBox(height: 15),
 
-            nombreUsuario(),
-            campoNombre(),
+              nombreUsuario(),
+              campoNombre(),
 
-            contrasena(),
-            campoContrasena(),
-            if (_showPasswordValidation) validarContrasena(), // Mostrar validación solo si es necesario
-            const SizedBox(height: 15), // separacion para que quede bonito
+              contrasena(),
+              campoContrasena(),
+              if (_showPasswordValidation) validarContrasena(),
+              const SizedBox(height: 15),
 
-            repetirContrasena(),
-            confirmarContrasena(),
-            const SizedBox(height: 15),
-            
-            Text(
-              _errorMessage,
-              style: const TextStyle(color: Colors.red), // Mensaje de error
-            ),
-            botonRegistrar()
-          ],
+              repetirContrasena(),
+              confirmarContrasena(),
+              const SizedBox(height: 15),
+
+              Text(
+                _errorMessage,
+                style: const TextStyle(color: Colors.red),
+              ),
+              botonRegistrar()
+            ],
+          ),
         ),
       ),
     );
   }
- Widget nombre() {
-    return  Text(
+
+  Widget nombre() {
+    return Text(
       "Email",
-      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
+      style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 
@@ -126,14 +125,14 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
- Widget nombreUsuario() {
-    return  Text(
+  Widget nombreUsuario() {
+    return Text(
       "Nombre de usuario",
-      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
+      style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 
-    Widget campoNombre() {
+  Widget campoNombre() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       child: TextField(
@@ -147,11 +146,10 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
-
   Widget contrasena() {
-    return  Text(
+    return Text(
       "Contraseña",
-      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
+      style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 
@@ -161,7 +159,7 @@ class _CreateUserViewState extends State<CreateUserView> {
       child: TextField(
         controller: _passwordEnter,
         obscureText: true,
-        onChanged: _validatePassword,  // Validar la contraseña en tiempo real
+                onChanged: _validatePassword,  // Validar la contraseña en tiempo real
         decoration: const InputDecoration(
           hintText: "Contraseña",
           fillColor: Colors.white,
@@ -184,7 +182,7 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
-  // Formato para mostrar la validación en verde o rojo, dependiendo de los reuisitos que sí cumple y los que no
+  // Formato para mostrar la validación en verde o rojo, dependiendo de los requisitos que sí cumple y los que no
   Widget validacionTexto(String texto, bool valido) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3.0),
@@ -209,20 +207,20 @@ class _CreateUserViewState extends State<CreateUserView> {
   }
 
   Widget repetirContrasena() {
-      return  Text(
-        "Por favor confirma la contraseña",
-      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
-      );
-    }
+    return Text(
+      "Por favor confirma la contraseña",
+      style: Theme.of(context).textTheme.headlineSmall,
+    );
+  }
 
-     Widget confirmarContrasena() {
+  Widget confirmarContrasena() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       child: TextField(
         controller: _confirmPasswordEnter,
         obscureText: true,
         decoration: const InputDecoration(
-          hintText: "Contraseña",
+          hintText: "Confirmar contraseña",
           fillColor: Colors.white,
           filled: true,
         ),
@@ -247,45 +245,25 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
-
-    // Valida si la contraseña cumple con los requisitos
+  // Valida si la contraseña cumple con los requisitos
   bool _validatePassword(String password) {
     setState(() {
-  _passwordValidation["length"] = password.length >= 8;
-    _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
-    _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
-    _passwordValidation["special"] = password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
+      _passwordValidation["length"] = password.length >= 8;
+      _passwordValidation["uppercase"] = password.contains(RegExp(r'[A-Z]'));
+      _passwordValidation["numeric"] = password.contains(RegExp(r'[0-9]'));
+      _passwordValidation["special"] = password.contains(RegExp(r'[.,@$&*=\[¡#%^&()!,.?¿":{}|<>]'));
     });
 
     // Verificar si todos los requisitos son verdaderos
     return !_passwordValidation.containsValue(false);
-}
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- void _register() async {
+  void _register() async {
     String email = _userEnter.text;
     String name = _userNameEnter.text;
     String password = _passwordEnter.text;
     String confirmPassword = _confirmPasswordEnter.text;
-     _showPasswordValidation = true;
-
+    _showPasswordValidation = true;
 
     // Verificar que las contraseñas coincidan y que la contraseña cumpla con los requisitos
     if (password.trim() != confirmPassword.trim()) {
@@ -296,41 +274,37 @@ class _CreateUserViewState extends State<CreateUserView> {
       return;
     }
 
-
-
     if (!_validatePassword(password)) {
       // Si la contraseña no es válida, mostrar los mensajes de validación
       setState(() {
         _showPasswordValidation = true;
-      
         _errorMessage = 'La contraseña no cumple con los requisitos.';
       });
-   
       return;
     }
-   try {
-    
-    UserAppController? userAppController = UserAppController.getInstance();
-    
-    UserApp? user= await userAppController.createUser(email, password, name);
 
-   if (user != null) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MapScreen()),
-    );
+    try {
+      UserAppController? userAppController = UserAppController.getInstance();
+      UserApp? user = await userAppController.createUser (email, password, name);
+
+      if (user != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MapScreen()),
+        );
+      }
+    } on NotValidEmailException {
+      setState(() {
+        _errorMessage = 'Email no válido';
+      });
+    } on IncorrectPasswordException {
+      setState(() {
+        _errorMessage = 'Contraseña no válida';
+      });
+    } catch (e) {
+            setState(() {
+        _errorMessage = 'El usuario ya existe';
+      });
+    }
   }
-} on NotValidEmailException {
-  _errorMessage = 'Email no valido';
-} on IncorrectPasswordException {
-  _errorMessage = 'Contraseña no válida';
-}  catch (e) {
-  _errorMessage = 'El usuario ya existe';
-}
-
-  }
-
-
-
-
 }
