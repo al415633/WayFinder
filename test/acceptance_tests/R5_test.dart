@@ -237,7 +237,7 @@ void main() {
       String email =
           "Pruebah22e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String password = "Aaaaa,.8";
-      String name = "Pruebah21e1";
+      String name = "Pruebah22e1";
 
       UserApp? userApp =
           await userAppController.createUser(email, password, name);

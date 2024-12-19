@@ -126,8 +126,7 @@ void _initializeAuthListener() {
 
     @override
   void setRouteModeDefault(RouteMode routeMode) {
-    throw UnimplementedError();
-    /*
+
     if (_currentUser == null) {
       throw UserNotAuthenticatedException();
     }
@@ -137,8 +136,6 @@ void _initializeAuthListener() {
       'defaultRouteMode': routeMode.name,
 
     });
-
-    */
 
   }
 }
