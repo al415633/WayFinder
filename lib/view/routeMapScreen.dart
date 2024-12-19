@@ -39,7 +39,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   VehicleController vehicleController =
       VehicleController.getInstance(FirestoreAdapterVehiculo());
 
-
   @override
   void initState() {
     super.initState();
@@ -54,22 +53,18 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     fetchCoordinates();
   }
 
-    void fetchCoordinates() async {
+  void fetchCoordinates() async {
     setState(() {
       points = route.getPoints;
       distance = route.getDistance;
       estimatedTime = route.getTime;
-      
-      });
-
-    
+    });
   }
 
   void _onTransportChanged(TransportMode newTransportMode) async {
     if ((transportMode == TransportMode.aPie ||
             transportMode == TransportMode.bicicleta) &&
         newTransportMode == TransportMode.coche) {
-      // Esperar a que se complete la lista de vehículos
       Set<Vehicle> vehicleSet = await vehicleController.getVehicleList();
       List<Vehicle> vehicleList = vehicleSet.toList();
 
@@ -78,26 +73,21 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         vehicleList,
         route,
         (RouteMode selectedRouteMode, Vehicle selectedCar) async {
-          // Calcular el coste
           RouteController routeController =
               RouteController.getInstance(routeAdapter);
-          double calculatedCost = await routeController.calculatePrice(route, selectedCar);
+          double calculatedCost =
+              await routeController.calculatePrice(route, selectedCar);
 
-          // Actualizar el estado en la interfaz
           setState(() {
             routeMode = selectedRouteMode;
             transportMode = newTransportMode;
-
-            // Actualizar el vehículo y el coste
             route.setVehicle = selectedCar;
             route.setCost = calculatedCost;
-
             fetchCoordinates();
           });
         },
       );
     } else {
-      // Para otros modos de transporte
       setState(() {
         RouteController routeController =
             RouteController.getInstance(routeAdapter);
@@ -107,9 +97,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
       });
     }
   }
-
-
-
 
   void _onModeChanged(String mode) {
     setState(() {
@@ -141,90 +128,66 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         toolbarHeight: 70,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Botones de la barra superior
-              Row(
-                children: [
-                  _buildTopButton('Lugares de interés', () {
-                    _onModeChanged('locations');
-                  }),
-                  _buildTopButton('Rutas', () {
-                    _onModeChanged('routes');
-                  }),
-                  _buildTopButton('Vehículos', () {
-                    _onModeChanged('vehicles');
-                  }),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ToggleButtons(
-                  isSelected: [
-                    transportMode == TransportMode.coche,
-                    transportMode == TransportMode.aPie,
-                    transportMode == TransportMode.bicicleta,
-                  ],
-                  onPressed: (int index) {
-                    if (index == 0) {
-                      _onTransportChanged(TransportMode.coche);
-                    } else if (index == 1) {
-                      _onTransportChanged(TransportMode.aPie);
-                    } else if (index == 2) {
-                      _onTransportChanged(TransportMode.bicicleta);
-                    }
-                  },
-                  children: const <Widget>[
-                    Icon(Icons.directions_car),
-                    Icon(Icons.directions_walk),
-                    Icon(Icons.directions_bike),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    _buildTopButton('Lugares de interés', () {
+                      _onModeChanged('locations');
+                    }),
+                    _buildTopButton('Rutas', () {
+                      _onModeChanged('routes');
+                    }),
+                    _buildTopButton('Vehículos', () {
+                      _onModeChanged('vehicles');
+                    }),
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Text('Distancia: ${distance < 1 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km'}'),
-                    Text(
-                      'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
-                      if (transportMode == TransportMode.aPie || transportMode == TransportMode.bicicleta)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ToggleButtons(
+                    isSelected: [
+                      transportMode == TransportMode.coche,
+                      transportMode == TransportMode.aPie,
+                      transportMode == TransportMode.bicicleta,
+                    ],
+                    onPressed: (int index) {
+                      if (index == 0) {
+                        _onTransportChanged(TransportMode.coche);
+                      } else if (index == 1) {
+                        _onTransportChanged(TransportMode.aPie);
+                      } else if (index == 2) {
+                        _onTransportChanged(TransportMode.bicicleta);
+                      }
+                    },
+                    children: const <Widget>[
+                      Icon(Icons.directions_car),
+                      Icon(Icons.directions_walk),
+                      Icon(Icons.directions_bike),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                          'Distancia: ${distance < 1 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km'}'),
+                      Text(
+                          'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
+                      if (transportMode == TransportMode.aPie ||
+                          transportMode == TransportMode.bicicleta)
                         Text('Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
                       if (transportMode == TransportMode.coche)
-                        Text('Coste: ${route.getCost.toStringAsFixed(2)} €'), // Mostrar el coste
-                  ],
+                        Text('Coste: ${route.getCost.toStringAsFixed(2)} €'),
+                    ],
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      _onModeChanged('settings');
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                       onPressed: () {
-                        UserAppController userAppController=UserAppController.getInstance();
-                        userAppController.logOut();
-
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                MiApp()), // Navega a la pantalla de inicio
-                        (Route<dynamic> route) =>
-                            false, // Elimina todas las rutas anteriores
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -271,8 +234,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                   polylines: [
                     Polyline(
                       points: points
-                          .map((point) =>
-                              LatLng(point.latitude, point.longitude))
+                          .map((point) => LatLng(point.latitude, point.longitude))
                           .toList(),
                       color: Colors.blue,
                       strokeWidth: 4.0,
@@ -287,17 +249,14 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     );
   }
 
-  // Botón superior personalizado
-  Widget _buildTopButton(
-      String label, VoidCallback onPressed) {
+  Widget _buildTopButton(String label, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Text(label),
       ),
