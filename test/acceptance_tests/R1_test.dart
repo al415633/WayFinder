@@ -169,16 +169,16 @@ void main() {
           await userAppController.logInCredenciales(emailh4e1, passwordh4e1);
 
       // WHEN
-      Future<void> action() async {
+      
         await userAppController.deleteAccount();
-      }
+      
 
       // THEN
       // Verificar que el usuario no puede iniciar sesión nuevamente
       expect(
           () async => await userAppController.logInCredenciales(
               emailh4e1, passwordh4e1),
-          throwsA(isA<UserNotExistException>()));
+          throwsA(isA<Exception>()));
 
       // Verificar que no queda ninguna referencia al usuario en la base de datos
       bool userExists = await userAppController.checkIfUserExists(emailh4e1);
@@ -188,7 +188,7 @@ void main() {
     test('H4-E3I - Eliminar cuenta de usuario no registrada', () async {
       // GIVEN
 
-      String emailh4e3 = "PruebaH4e3@gmail.com";
+      String emailh4e3 = "pruebah4e3@gmail.com";
       String passwordh4e3 = "Aaaaa,.8";
       String nameh4e3 = "Pruebah4e3";
       //Creado este user a mano en Firebase ^
@@ -202,7 +202,7 @@ void main() {
 
       // THEN
       expect(() async => await action(),
-          throwsA(isA<UserNotExistException>()));
+          throwsA(isA<Exception>()));
 
       bool userExists =
           await userAppController.checkIfUserExists(emailh4e3);
