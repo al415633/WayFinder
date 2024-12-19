@@ -1,6 +1,8 @@
 // precio_luz_service_acceptance_test.dart
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
@@ -149,11 +151,9 @@ void main() {
 
       // THEN
       final locationList = locations.toList();
-      print(locationList.toString());
-      print(locationList[0].toString());
+    
       final Location primerLugar = locationList[0];
 
-      print(primerLugar.getFav());
 
       expect(primerLugar.getFav(),
           equals(true)); // Verifica que el lugar se haya marcado como favorito
@@ -190,9 +190,39 @@ void main() {
     });
     */
 
-    test('H21-EV', () async {});
+    test(
+        'H21-EV1 Como usuario quiero establecer un modo de transporte por defecto',
+        () async {
+      // GIVEN
+      String email = "Pruebah21e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah21e1";
 
-    test('H21-EI', () async {});
+      userApp = await userAppController.logInCredenciales(email, password);
+
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+      // WHEN
+      userAppController.setTransportMode(TransportMode.bicicleta, null);
+//THEN
+      expect(userApp?.getDefaultTransportMode, TransportMode.bicicleta);
+    });
+
+
+    test('H21-EI', () async {
+        // GIVEN
+      userApp = null; 
+
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+    //WHEN Y THEN
+    expect(()  => 
+      userAppController.setTransportMode(TransportMode.bicicleta, null), throwsA(isA<NotAuthenticatedUserException>()));
+    });
 
     test('H22-EV', () async {});
 

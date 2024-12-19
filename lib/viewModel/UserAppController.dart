@@ -1,6 +1,8 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 
 class UserAppController {
@@ -52,6 +54,11 @@ class UserAppController {
     UserApp? user = await repository.createUser(email, password);
     user?.setName = name;
     return user;
+  }
+
+
+  TransportMode setTransportMode(TransportMode transportMode, Vehicle? vehicle)  {
+    throw UnimplementedError();
   }
 
   Future<UserApp?> logInCredenciales(String email, String password) async {
