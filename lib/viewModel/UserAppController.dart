@@ -60,14 +60,14 @@ class UserAppController {
     return user;
   }
 
-  void setTransportModeDefault(UserApp? userApp, TransportMode transportMode, Vehicle? vehicle) {
+  void setTransportModeDefault(
+      UserApp? userApp, TransportMode transportMode, Vehicle? vehicle) {
     if (userApp == null) {
       throw UserNotAuthenticatedException();
     }
     repository.setTransportModeDefault(transportMode, vehicle);
     userApp.setDefaultTransportMode = transportMode;
     userApp.setVehicleDefault = vehicle;
-    
   }
 
   Future<UserApp?> logInCredenciales(String email, String password) async {
@@ -84,7 +84,35 @@ class UserAppController {
   Future<bool> logOut() async {
     return repository.logOut();
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      await repository.deleteAccount();
+    } catch (e) {
+      if (e is UserNotAuthenticatedException) {
+        throw UserNotAuthenticatedException();
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> deleteAccountForEmail(String email) async {
+    if (!(await checkIfUserExists(email))) {
+      throw UserNotExistException();
+    }
+    await repository.deleteAccountForEmail(email);
+  }
+
+  Future<bool> checkIfUserExists(String email) async {
+    if (!isValidEmail(email)) {
+      throw NotValidEmailException();
+    }
+
+    try {
+      return await repository.checkIfUserExists(email);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
-
-
-

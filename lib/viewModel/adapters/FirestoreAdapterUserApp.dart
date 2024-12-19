@@ -101,6 +101,7 @@ void _initializeAuthListener() {
     }
   }
 
+  @override
   Future<void> deleteAccount() async {
     User? currentUser = auth.currentUser;
 
@@ -121,6 +122,7 @@ void _initializeAuthListener() {
     }
   }
 
+  @override
   Future<void> deleteAccountForEmail(String email) async {
     var querySnapshot = await db
         .collection(_collectionName)
@@ -136,6 +138,7 @@ void _initializeAuthListener() {
     await db.collection(_collectionName).doc(userDoc.id).delete();
   }
 
+  @override
   Future<bool> checkIfUserExists(String email) async {
     try {
       // Verificar si el email ya está registrado en Firebase Authentication
