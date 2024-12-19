@@ -1,5 +1,6 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
+import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';
@@ -19,19 +20,19 @@ void main() {
     var collectionRef = FirebaseFirestore.instance.collection('testCollection');
     var querySnapshot = await collectionRef.get();
     for (var doc in querySnapshot.docs) {
-      await doc.reference.delete(); 
+      await doc.reference.delete();
     }
   }
 
-
   Future<UserApp?> signInAndDeleteUser(String email, String password) async {
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
     await cleanUp();
     await userCredential.user!.delete();
-    
+
     return null;
   }
 
@@ -59,7 +60,8 @@ void main() {
       String name = "PruebaH1E1";
 
       // WHEN
-      UserApp? newUserApp = await userAppController.createUser(email, password, name);
+      UserApp? newUserApp =
+          await userAppController.createUser(email, password, name);
 
       // THEN
       expect(newUserApp, isNotNull);
@@ -81,17 +83,14 @@ void main() {
 
       // THEN
       expect(action(), throwsA(isA<IncorrectPasswordException>()));
-
-
     });
 
     test('H2-E2V - Permite Iniciar Sesión', () async {
       // GIVEN (realizado en setUpAll)
       String email = "Pruebahh2e2@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebah2e2";
+      String name = "Pruebah2e2";
       await userAppController.createUser(email, password, name);
-
 
       // WHEN
       userApp = await userAppController.logInCredenciales(email, password);
@@ -99,19 +98,16 @@ void main() {
       // THEN
       expect(userApp, isNotNull);
       expect(userApp?.email, equals(email));
-      
-    
+
       await signInAndDeleteUser(email, password);
-
-
     });
 
     test('H2-E3I - No permite Iniciar Sesión por password inválido', () async {
       // GIVEN (realizado en setUpAll)
-      
+
       String email = "PruebaH22e3@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebahhh2e3";
+      String name = "Pruebahhh2e3";
       await userAppController.createUser(email, password, name);
 
       // WHEN
@@ -121,19 +117,16 @@ void main() {
 
       // THEN
       expect(action(), throwsA(isA<IncorrectPasswordException>()));
-      
-      await signInAndDeleteUser(email, password);
 
+      await signInAndDeleteUser(email, password);
     });
 
     test('H3-E1V - Cerrar sesion valido', () async {
-
-
       // GIVEN
 
       String email = "PruebaH3e1@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebah3e1";
+      String name = "Pruebah3e1";
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
 
@@ -144,12 +137,11 @@ void main() {
       expect(closedSession, isTrue);
 
       await signInAndDeleteUser(email, password);
-
     });
 
     test('H3-E4I - Cerrar sesion sin estar conectado', () async {
       // GIVEN
- 
+
       String email = "pruebaH3e4@gmail.com";
       String password = "Aaaaacccccc,.8";
       String name = "pruebah3e2";
@@ -157,15 +149,64 @@ void main() {
       //Pero no logeado
 
       // WHEN
-       Future<void> action() async {
-          await userAppController.logOut(); 
-        }
+      Future<void> action() async {
+        await userAppController.logOut();
+      }
 
- 
-       expect(() async => await action(), throwsA(isA<UserNotAuthenticatedException>()));
+      expect(() async => await action(),
+          throwsA(isA<UserNotAuthenticatedException>()));
+    });
 
+    test('H4-E1V - Eliminar cuenta de usuario', () async {
+      // GIVEN
 
+      String emailh4e1 =
+          "Pruebah4e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh4e1 = "Aaaaa,.8";
+      String nameh4e1 = "Pruebah4e1";
+      await userAppController.createUser(emailh4e1, passwordh4e1, nameh4e1);
+      userApp =
+          await userAppController.logInCredenciales(emailh4e1, passwordh4e1);
 
+      // WHEN
+      Future<void> action() async {
+        await userAppController.deleteAccount();
+      }
+
+      // THEN
+      // Verificar que el usuario no puede iniciar sesión nuevamente
+      expect(
+          () async => await userAppController.logInCredenciales(
+              emailh4e1, passwordh4e1),
+          throwsA(isA<UserNotExistException>()));
+
+      // Verificar que no queda ninguna referencia al usuario en la base de datos
+      bool userExists = await userAppController.checkIfUserExists(emailh4e1);
+      expect(userExists, isFalse);
+    });
+
+    test('H4-E3I - Eliminar cuenta de usuario no registrada', () async {
+      // GIVEN
+
+      String emailh4e3 = "PruebaH4e3@gmail.com";
+      String passwordh4e3 = "Aaaaa,.8";
+      String nameh4e3 = "Pruebah4e3";
+      //Creado este user a mano en Firebase ^
+      userApp =
+          await userAppController.logInCredenciales(emailh4e3, passwordh4e3);
+
+      // WHEN
+      Future<void> action() async {
+        await userAppController.deleteAccountForEmail("anaaaaaa@gmail.com");
+      }
+
+      // THEN
+      expect(() async => await action(),
+          throwsA(isA<UserNotExistException>()));
+
+      bool userExists =
+          await userAppController.checkIfUserExists(emailh4e3);
+      expect(userExists, isTrue);
     });
   });
 }

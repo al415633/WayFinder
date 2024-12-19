@@ -68,7 +68,16 @@ class UserAppController {
   Future<bool> logOut() async {
     return repository.logOut();
   }
+
+  Future<void> deleteAccount() async {
+    throw UnimplementedError("No está implementado");
+  }
+
+  Future<void> deleteAccountForEmail(String email) async {
+    throw UnimplementedError("No está implementado");
+  }
+
+  Future<bool> checkIfUserExists(String email) async {
+    throw UnimplementedError("No está implementado");
+  }
 }
-
-
-
