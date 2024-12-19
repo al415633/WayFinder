@@ -188,10 +188,11 @@ void main() {
     test('H4-E3I - Eliminar cuenta de usuario no registrada', () async {
       // GIVEN
 
-      String emailh4e3 = "pruebah4e3@gmail.com";
+      String emailh4e3 =
+          "Pruebah4e3${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String passwordh4e3 = "Aaaaa,.8";
-      String nameh4e3 = "Pruebah4e3";
-      //Creado este user a mano en Firebase ^
+      String nameh4e3 = "Pruebah4e1";
+      await userAppController.createUser(emailh4e3, passwordh4e3, nameh4e3);
       userApp =
           await userAppController.logInCredenciales(emailh4e3, passwordh4e3);
 
