@@ -21,16 +21,6 @@ void showCarSelectionDialog(
   // Mensaje de error si no se selecciona algo
   String errorMessage = '';
 
-  void confirmSelection() {
-    if (selectedRouteMode != RouteMode.noSeleccionado &&
-        selectedVehicle != null) {
-      onSelectionConfirmed(selectedRouteMode, selectedVehicle!);
-      Navigator.of(context).pop();
-    } else {
-      errorMessage = 'Seleccione un tipo de ruta y un vehículo.';
-    }
-  }
-
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -43,7 +33,9 @@ void showCarSelectionDialog(
               children: [
                 DropdownButton<RouteMode>(
                   hint: const Text('Tipo de ruta'),
-                  value: selectedRouteMode,
+                  value: selectedRouteMode == RouteMode.noSeleccionado
+                      ? null
+                      : selectedRouteMode,
                   items: RouteMode.values.map((mode) {
                     return DropdownMenuItem<RouteMode>(
                       value: mode,
@@ -53,7 +45,7 @@ void showCarSelectionDialog(
                   onChanged: (value) {
                     setDialogState(() {
                       selectedRouteMode = value!;
-                      errorMessage = '';
+                      errorMessage = ''; // Limpiar error al cambiar tipo de ruta
                     });
                   },
                 ),
@@ -68,18 +60,20 @@ void showCarSelectionDialog(
                       );
                     }).toList(),
                     onChanged: (value) async {
-                          selectedVehicle = value;
+                      setDialogState(() {
+                        selectedVehicle = value;
+                        errorMessage = ''; // Limpiar error al seleccionar vehículo
+                      });
 
-                          // Recalcular el precio
-                          RouteController routeController =
-                              RouteController.getInstance(FirestoreAdapterRoute());
-                          double newCost = await routeController.calculatePrice(route, selectedVehicle!);
-
-                            setDialogState(() {
-                              selectedVehicle = value;
-                              route.setCost = newCost;
-                              errorMessage = '';
-                            });
+                      // Recalcular el precio cuando se seleccione un vehículo
+                      if (value != null) {
+                        RouteController routeController =
+                            RouteController.getInstance(FirestoreAdapterRoute());
+                        double newCost = await routeController.calculatePrice(route, value);
+                        setDialogState(() {
+                          route.setCost = newCost;
+                        });
+                      }
                     },
                   )
                 else
@@ -111,7 +105,19 @@ void showCarSelectionDialog(
               ElevatedButton(
                 onPressed: vehicles.isEmpty
                     ? null
-                    : confirmSelection, // Desactiva el botón si no hay vehículos
+                    : () {
+                        if (selectedRouteMode != RouteMode.noSeleccionado &&
+                            selectedVehicle != null) {
+                          // Confirmar la selección si todo es válido
+                          onSelectionConfirmed(selectedRouteMode, selectedVehicle!);
+                          Navigator.of(context).pop();
+                        } else {
+                          // Actualizar el mensaje de error dentro de setDialogState
+                          setDialogState(() {
+                            errorMessage = 'Seleccione un tipo de ruta y un vehículo.';
+                          });
+                        }
+                    },
                 child: const Text('Confirmar'),
               ),
             ],

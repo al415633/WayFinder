@@ -231,5 +231,91 @@ class RouteController {
       print("OnTransportChanged: ${route.getCost}");
     }
   }
-}
 
+  Future<Routes> editRoute(Routes oldRoute, TransportMode newTransportMode,
+      Vehicle? vehicle, RouteMode? newRouteMode) async {
+    if (vehicle != null && newRouteMode != null) {
+      if (newTransportMode == TransportMode.coche &&
+          newRouteMode == RouteMode.economica) {
+        Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
+            oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.corta);
+
+        List<LatLng> pointsShortest =
+            pointsDataShortest['points'] as List<LatLng>;
+        //print(points);
+        double distanceShortest = pointsDataShortest['distance'] as double;
+        //print("Distanciaaaa:$distance");
+        double timeShortest = pointsDataShortest['duration'] as double;
+        //print("Tiempooooo $time");
+        Routes routeShortest = Routes(
+            oldRoute.getName,
+            oldRoute.getStart,
+            oldRoute.getEnd,
+            pointsShortest,
+            distanceShortest,
+            timeShortest,
+            newTransportMode,
+            RouteMode.corta,
+            vehicle);
+
+        double precioShortest = await calculatePrice(routeShortest, vehicle!);
+
+        Map<String, dynamic> pointsDataFastest = await repository.getRouteData(
+            oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.rapida);
+
+        List<LatLng> pointsFastest =
+            pointsDataFastest['points'] as List<LatLng>;
+        //print(points);
+        double distanceFastest = pointsDataFastest['distance'] as double;
+        //print("Distanciaaaa:$distance");
+        double timeFastest = pointsDataFastest['duration'] as double;
+        //print("Tiempooooo $time");
+
+        Routes routeFastest = Routes(
+            oldRoute.getName,
+            oldRoute.getStart,
+            oldRoute.getEnd,
+            pointsFastest,
+            distanceFastest,
+            timeFastest,
+            newTransportMode,
+            RouteMode.rapida,
+            vehicle);
+
+        double precioFastest = await calculatePrice(routeFastest, vehicle);
+
+        if (precioFastest < precioShortest) {
+          routeFastest.setCost = precioFastest;
+          return routeFastest;
+        } else {
+          routeShortest.setCost = precioShortest;
+
+          return routeShortest;
+        }
+      }
+
+      Map<String, dynamic> pointsData =
+          await repository.getRouteData(oldRoute.getStart, oldRoute.getEnd, newTransportMode, newRouteMode!);
+
+      List<LatLng> points = pointsData['points'] as List<LatLng>;
+      //print(points);
+      double distance = pointsData['distance'] as double;
+      //print("Distanciaaaa:$distance");
+      double time = pointsData['duration'] as double;
+      //print("Tiempooooo $time");
+      Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
+          newTransportMode, newRouteMode, vehicle);
+      if (vehicle != null) {
+        double cost = await calculatePrice(route, vehicle);
+        print("cost $cost");
+        route.setCost = cost;
+      } else {
+        route.setCalories = calculateCostKCal(route);
+      }
+
+      return route;
+    }else{
+      return null;
+    }
+  }
+}
