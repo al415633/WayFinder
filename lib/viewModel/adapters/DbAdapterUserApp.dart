@@ -1,4 +1,6 @@
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 
 abstract class DbAdapterUserApp {
   Future<UserApp?> createUser(String email, String password);
@@ -7,4 +9,5 @@ abstract class DbAdapterUserApp {
   Future<bool> checkIfUserExists(String email);
   Future<void> deleteAccountForEmail(String email);
   Future<bool> logOut();
+  void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle);
 }

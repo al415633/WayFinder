@@ -1,9 +1,13 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
+import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,9 +16,18 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
-  FirestoreAdapterUserApp({String collectionName = "production"})
-      : _collectionName = collectionName;
+  User? _currentUser;
 
+  FirestoreAdapterUserApp({String collectionName = "production"})
+      : _collectionName = collectionName{
+  _initializeAuthListener();
+}
+
+void _initializeAuthListener() {
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    _currentUser = user; // Actualizar el usuario actual
+  });
+}
   @override
   Future<UserApp?> createUser(String email, String password) async {
     var existingUser = await auth.fetchSignInMethodsForEmail(email);
@@ -140,6 +153,28 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       return querySnapshot.docs.isNotEmpty;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  @override
+  void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle) {
+
+    if (_currentUser == null) {
+      throw UserNotAuthenticatedException();
+    }
+
+    if (transportMode == TransportMode.bicicleta ||
+        transportMode == TransportMode.aPie) {
+      db.collection(_collectionName).doc(_currentUser?.uid).update({
+        'defaultTransportMode': transportMode.name,
+      });
+    } else if (transportMode == TransportMode.coche) {
+      db.collection(_collectionName).doc(_currentUser?.uid).update({
+        'defaultTransportMode': transportMode.name,
+        'vehicleDefault': vehicle?.toMap(),
+      });
+    } else {
+      throw MissingInformationRouteException();
     }
   }
 }

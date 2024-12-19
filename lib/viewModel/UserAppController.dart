@@ -1,8 +1,12 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 
 class UserAppController {
@@ -56,6 +60,16 @@ class UserAppController {
     return user;
   }
 
+  void setTransportModeDefault(UserApp? userApp, TransportMode transportMode, Vehicle? vehicle) {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    repository.setTransportModeDefault(transportMode, vehicle);
+    userApp.setDefaultTransportMode = transportMode;
+    userApp.setVehicleDefault = vehicle;
+    
+  }
+
   Future<UserApp?> logInCredenciales(String email, String password) async {
     if (!isValidEmail(email)) {
       throw NotValidEmailException();
@@ -70,35 +84,7 @@ class UserAppController {
   Future<bool> logOut() async {
     return repository.logOut();
   }
-
-  Future<void> deleteAccount() async {
-    try {
-      await repository.deleteAccount();
-    } catch (e) {
-      if (e is UserNotAuthenticatedException) {
-        throw UserNotAuthenticatedException();
-      } else {
-        rethrow;
-      }
-    }
-  }
-
-  Future<void> deleteAccountForEmail(String email) async {
-    if (!(await checkIfUserExists(email))) {
-      throw UserNotExistException();
-    }
-    await repository.deleteAccountForEmail(email);
-  }
-
-  Future<bool> checkIfUserExists(String email) async {
-    if (!isValidEmail(email)) {
-      throw NotValidEmailException();
-    }
-
-    try {
-      return await repository.checkIfUserExists(email);
-    } catch (e) {
-      rethrow;
-    }
-  }
 }
+
+
+
