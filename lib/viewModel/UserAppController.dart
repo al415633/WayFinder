@@ -1,5 +1,7 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
+import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 
@@ -70,14 +72,33 @@ class UserAppController {
   }
 
   Future<void> deleteAccount() async {
-    throw UnimplementedError("No está implementado");
+    try {
+      await repository.deleteAccount();
+    } catch (e) {
+      if (e is UserNotAuthenticatedException) {
+        throw UserNotAuthenticatedException();
+      } else {
+        rethrow;
+      }
+    }
   }
 
   Future<void> deleteAccountForEmail(String email) async {
-    throw UnimplementedError("No está implementado");
+    if (!(await checkIfUserExists(email))) {
+      throw UserNotExistException();
+    }
+    await repository.deleteAccountForEmail(email);
   }
 
   Future<bool> checkIfUserExists(String email) async {
-    throw UnimplementedError("No está implementado");
+    if (!isValidEmail(email)) {
+      throw NotValidEmailException();
+    }
+
+    try {
+      return await repository.checkIfUserExists(email);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

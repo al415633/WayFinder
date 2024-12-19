@@ -8,7 +8,6 @@ import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class FirestoreAdapterUserApp implements DbAdapterUserApp {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -62,8 +61,8 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       );
 
       User? user = userCredential.user;
-      UserApp usuario=UserApp(user!.uid, user.displayName??'', email);
-      usuario.setUser=user;
+      UserApp usuario = UserApp(user!.uid, user.displayName ?? '', email);
+      usuario.setUser = user;
       return usuario;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -90,14 +89,57 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   }
 
   Future<void> deleteAccount() async {
-    throw UnimplementedError("No está implementado");
+    User? currentUser = auth.currentUser;
+
+    if (currentUser == null) {
+      throw UserNotAuthenticatedException();
+    }
+
+    try {
+      await db.collection(_collectionName).doc(currentUser.uid).delete();
+
+      await currentUser.delete();
+    } catch (e) {
+      if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
+        throw UserNotAuthenticatedException();
+      } else {
+        rethrow;
+      }
+    }
   }
 
   Future<void> deleteAccountForEmail(String email) async {
-    throw UnimplementedError("No está implementado");
+    var querySnapshot = await db
+        .collection(_collectionName)
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw UserNotExistException();
+    }
+
+    // Elimina el usuario de la base de datos
+    var userDoc = querySnapshot.docs.first;
+    await db.collection(_collectionName).doc(userDoc.id).delete();
   }
 
-   Future<bool> checkIfUserExists(String email) async {
-    throw UnimplementedError("No está implementado");
-   }
+  Future<bool> checkIfUserExists(String email) async {
+    try {
+      // Verificar si el email ya está registrado en Firebase Authentication
+      var methods = await auth.fetchSignInMethodsForEmail(email);
+      if (methods.isNotEmpty) {
+        return true;
+      }
+
+      // Verificar si el email existe en la colección de Firestore
+      var querySnapshot = await db
+          .collection(_collectionName)
+          .where('email', isEqualTo: email)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
