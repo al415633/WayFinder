@@ -6,6 +6,7 @@ import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
@@ -121,5 +122,23 @@ void _initializeAuthListener() {
     } else {
       throw MissingInformationRouteException();
     }
+  }
+
+    @override
+  void setRouteModeDefault(RouteMode routeMode) {
+    throw UnimplementedError();
+    /*
+    if (_currentUser == null) {
+      throw UserNotAuthenticatedException();
+    }
+
+
+    db.collection(_collectionName).doc(_currentUser?.uid).update({
+      'defaultRouteMode': routeMode.name,
+
+    });
+
+    */
+
   }
 }

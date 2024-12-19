@@ -3,6 +3,7 @@ import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
@@ -66,6 +67,12 @@ class UserAppController {
     userApp.setDefaultTransportMode = transportMode;
     userApp.setVehicleDefault = vehicle;
     
+  }
+
+
+
+  void setRouteModeDefault(UserApp? userApp, RouteMode routeMode) {
+    throw UnimplementedError();
   }
 
   Future<UserApp?> logInCredenciales(String email, String password) async {

@@ -1,3 +1,4 @@
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,15 +13,20 @@ class UserApp {
   
   // Por defeto que se ponga a A Pie  el modo de transporte y que se pueda cambiar
   late TransportMode defaultTransportMode = TransportMode.aPie;
+  // Por defeto que se ponga a corta el modo de ruta y que se pueda cambiar
+  late RouteMode defaultRouteMode = RouteMode.corta;
   //Para si elige en coche
   late Vehicle? vehicledefault;
 
   TransportMode get getDefaultTransportMode => defaultTransportMode;
+  RouteMode get getDefaultRouteMode => defaultRouteMode;
+
   Vehicle? get getVehicleDefault => vehicledefault;
 
 
   set setDefaultTransportMode(TransportMode defaultTransportMode) => this.defaultTransportMode = defaultTransportMode;
   set setVehicleDefault(Vehicle? vehicledefault) => this.vehicledefault = vehicledefault;
+  set setDefaultRouteMode(RouteMode defaultRouteMode) => this.defaultRouteMode = defaultRouteMode;
 
 
   // Constructor
@@ -56,6 +62,7 @@ class UserApp {
     return {
       'defaultTransportMode': defaultTransportMode.name,
       'vehicledefault': vehicledefault?.toMap(),
+      'defaultRouteMode': defaultRouteMode.name,
     };
   }
 

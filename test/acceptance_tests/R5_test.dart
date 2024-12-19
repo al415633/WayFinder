@@ -3,6 +3,7 @@ import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
@@ -229,8 +230,44 @@ void main() {
           throwsA(isA<UserNotAuthenticatedException>()));
     });
 
-    test('H22-EV', () async {});
+    test(
+        'H22-EV1 Como usuario quiero establecer un modo de ruta por defecto',
+        () async {
+      // GIVEN
+      String email =
+          "Pruebah22e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah21e1";
 
-    test('H22-EI', () async {});
+      UserApp? userApp =
+          await userAppController.createUser(email, password, name);
+      userApp = await userAppController.logInCredenciales(email, password);
+
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+      // WHEN
+      userAppController.setRouteModeDefault(
+          userApp!, RouteMode.corta);
+      //THEN
+      expect(userApp?.getDefaultRouteMode, RouteMode.corta);
+
+      await signInAndDeleteUser(email, password);
+    });
+
+    test(
+        'H22-EI4 No se puede establecer un modo de ruta por defecto si no hay usuario registrado',
+        () async {
+      // GIVEN
+      userApp = null;
+
+      //WHEN Y THEN
+      expect(
+          () => userAppController.setRouteModeDefault(
+              userApp, RouteMode.corta),
+          throwsA(isA<UserNotAuthenticatedException>()));
+    });
+
   });
 }
