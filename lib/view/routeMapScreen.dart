@@ -1,11 +1,9 @@
-import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
-import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
@@ -54,45 +52,58 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
   void fetchCoordinates() async {
+    
     setState(() {
+   
       points = route.getPoints;
       distance = route.getDistance;
       estimatedTime = route.getTime;
+
     });
   }
 
   void _onTransportChanged(TransportMode newTransportMode) async {
+    print("en la vista");
+    print(transportMode);
+    late RouteMode selectedRouteMode;
+    late Vehicle selectedCar;
+    
+    
     if ((transportMode == TransportMode.aPie ||
             transportMode == TransportMode.bicicleta) &&
         newTransportMode == TransportMode.coche) {
       Set<Vehicle> vehicleSet = await vehicleController.getVehicleList();
       List<Vehicle> vehicleList = vehicleSet.toList();
-
+      
       showCarSelectionDialog(
         context,
         vehicleList,
         route,
-        (RouteMode selectedRouteMode, Vehicle selectedCar) async {
+        ( selectedRouteMode,  selectedCar) async {
           RouteController routeController =
               RouteController.getInstance(routeAdapter);
           double calculatedCost =
               await routeController.calculatePrice(route, selectedCar);
 
-          setState(() {
+          setState (() async {
             routeMode = selectedRouteMode;
             transportMode = newTransportMode;
             route.setVehicle = selectedCar;
             route.setCost = calculatedCost;
+            route= await routeController.editRoute(route, newTransportMode, selectedCar, selectedRouteMode);
+
             fetchCoordinates();
           });
         },
       );
     } else {
-      setState(() {
+      setState(() async {
         RouteController routeController =
             RouteController.getInstance(routeAdapter);
         routeController.onTransportChanged(newTransportMode, route);
         transportMode = newTransportMode;
+
+        route= await routeController.editRoute(route, newTransportMode, null, null);
         fetchCoordinates();
       });
     }

@@ -1,13 +1,7 @@
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
-import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
-import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
-import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class UserAppController {
   // Propiedad privada

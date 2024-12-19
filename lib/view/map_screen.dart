@@ -1,4 +1,3 @@
-import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/fuelType.dart';

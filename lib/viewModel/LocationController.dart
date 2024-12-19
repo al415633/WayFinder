@@ -1,15 +1,10 @@
 import 'package:WayFinder/exceptions/%20APICoordenadasException.dart';
 import 'package:WayFinder/exceptions/APIToponimoException.dart';
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/InvalidCoordinatesException.dart';
 import 'package:WayFinder/exceptions/InvalidToponimoException.dart';
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
-import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/APIs/apiConection.dart';

@@ -1,11 +1,7 @@
-import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class VehicleController {
   // Propiedades

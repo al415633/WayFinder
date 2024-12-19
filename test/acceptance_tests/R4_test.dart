@@ -1,7 +1,6 @@
 // precio_luz_ContUserController_acceptance_test.dart
 
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
-import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';

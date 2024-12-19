@@ -159,7 +159,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   @override
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
       TransportMode transportMode, RouteMode routeMode) async {
-    if (routeMode == RouteMode.noSeleccionado) {
+   
+    if (routeMode == RouteMode.noSeleccionado ) {
       throw MissingInformationRouteException();
     }
     LatLng initialPoint =
