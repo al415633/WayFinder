@@ -74,6 +74,13 @@ class VehicleController {
     return vehicle;
   }
 
+
+Future<Vehicle> editVehicle(Vehicle vehicle, double newConsumo, String newNombre ){
+  throw UnimplementedError();
+}
+
+
+
   Future<bool> deleteVehicle(Vehicle vehicle) async {
     try {
       bool success = await _dbAdapter.deleteVehicle(vehicle);

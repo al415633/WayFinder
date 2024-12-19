@@ -1,5 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
+import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -334,6 +335,62 @@ void main() {
       );
     });
 
+
+
+    test('H12-E1V -Se debe de poder cambiar los datos del vehiculo', () async {
+      //GIVEN
+      //Loguear usuario
+      String email ="Pruebah12e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah12e1";
+
+      await userAppController.logInCredenciales(email, password);
+
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      FuelType combustible = FuelType.gasolina;
+      String nombre = "Coche Quique";
+      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+
+      //WHEN
+      
+      double newconsumo = 55.0;
+      String newnombre = "Coche Cambiado";
+      vehicleController.editVehicle(vehicle1, newconsumo, newnombre);
+
+      //THEN
+      expect(vehicle1.getConsumption(), equals(55));
+      expect(vehicle1.getName(), equals("Coche Cambiado"));
+    });
+
+
+      test('H12-E3V -No se debe poder camiar un vehiculo si los datos no son validos', () async {
+      //GIVEN
+      //Loguear usuario
+      String email ="Pruebah12e2@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah12e2";
+
+      await userAppController.logInCredenciales(email, password);
+
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      String matricula = "0909AAA";
+      double consumo = 12.7;
+      FuelType combustible = FuelType.gasolina;
+      String nombre = "Coche Quique2";
+      Vehicle vehicle2 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+
+      //WHEN
+      
+      double newconsumo = -1;
+      String newnombre = "Coche Cambiado";
+
+
+      //THEN
+         expect(() => vehicleController.editVehicle(vehicle2, newconsumo, newnombre), throwsA(isA<NotValidVehicleException>()));
+
+    });
 
   });
   
