@@ -1,3 +1,3 @@
-class Invalidcaloriecalculationexception {
+class InvalidCalorieCalculationException  implements Exception {
   //TODO
 }

@@ -1,3 +1,6 @@
 class ConnectionBBDDException implements Exception {
-  //TODO
+ final String message = "Error de conexión a la BBDD.";
+
+  @override
+  String toString() => "ConnectionBBDDException: $message";
 }

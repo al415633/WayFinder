@@ -67,5 +67,21 @@ class Location implements FavItem{
   String toString() {
     return 'Location(toponym: $toponym, alias: $alias, coordinate: $coordinate, fav: $fav)';
   }
+
+  // Sobrescribe `==` para comparar por nombre
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true; // Compara la referencia
+    if (other is! Location) return false; // Verifica el tipo
+    return alias == other.alias; 
+  }
+
+    //return alias == other.alias && coordinate == other.coordinate && toponym == other.toponym;
+
+  // Sobrescribe `hashCode` para usar `alias`
+  @override
+  int get hashCode => alias.hashCode;
+
+  //Object.hash(alias, coordinate, toponym);
   
 }

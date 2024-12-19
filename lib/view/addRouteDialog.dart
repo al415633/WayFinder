@@ -2,6 +2,7 @@ import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
@@ -9,22 +10,33 @@ void showAddRouteDialog(
     BuildContext context,
     List<Location> locations,
     List<Vehicle> vehicles,
-    Function(String, Location, Location, TransportMode, RouteMode, Vehicle? ,bool)
+    Function(String, Location, Location, TransportMode, RouteMode, Vehicle?,
+            bool)
         onRouteSelected) {
   // Variables para los datos de la ruta
   String routeNameInput = '';
   Location? startLocationInput;
   Location? endLocationInput;
   TransportMode transportModeInput = TransportMode.coche; // Default value
-  RouteMode routeModeInput = RouteMode.rapida; // Default value
+  RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
   Vehicle? selectedVehicle;
   VehicleController vehicleController =
-      VehicleController(FirestoreAdapterVehiculo());
-
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
 
   // Mensajes de error
   String errorMessage = '';
 
+  generateRoute(bool saveRoute) {
+    if (routeNameInput.isEmpty ||
+        startLocationInput == null ||
+        endLocationInput == null) {
+      errorMessage = 'Por favor, complete todos los campos.';
+    } else {
+      onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!,
+          transportModeInput, routeModeInput, selectedVehicle, saveRoute);
+      Navigator.of(context).pop();
+    }
+  }
 
   showDialog(
     context: context,
@@ -49,7 +61,11 @@ void showAddRouteDialog(
                 DropdownButton<Location>(
                   hint: const Text('Ubicación de inicio'),
                   value: startLocationInput,
-                  items: locations.map((location) {
+                  items: locations
+                      .where((location) =>
+                          location !=
+                          endLocationInput) // Excluir la ubicación de fin
+                      .map((location) {
                     return DropdownMenuItem<Location>(
                       value: location,
                       child: Text(location.getAlias()),
@@ -64,7 +80,11 @@ void showAddRouteDialog(
                 DropdownButton<Location>(
                   hint: const Text('Ubicación de fin'),
                   value: endLocationInput,
-                  items: locations.map((location) {
+                  items: locations
+                      .where((location) =>
+                          location !=
+                          startLocationInput) // Excluir la ubicación de inicio
+                      .map((location) {
                     return DropdownMenuItem<Location>(
                       value: location,
                       child: Text(location.getAlias()),
@@ -87,12 +107,19 @@ void showAddRouteDialog(
                   onChanged: (value) {
                     setDialogState(() {
                       transportModeInput = value!;
+                      if (transportModeInput == TransportMode.aPie ||
+                          transportModeInput == TransportMode.bicicleta) {
+                        // Asigna un valor predeterminado válido para routeModeInput
+                        routeModeInput = RouteMode.economica;
+                      } else {
+                        routeModeInput = RouteMode.noSeleccionado;
+                      }
                     });
                   },
                 ),
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
-                      ? DropdownButton<Vehicle>(
+                      ? (DropdownButton<Vehicle>(
                           value: selectedVehicle,
                           items: vehicles.map((vehicle) {
                             return DropdownMenuItem<Vehicle>(
@@ -105,7 +132,7 @@ void showAddRouteDialog(
                               selectedVehicle = value;
                             });
                           },
-                        )
+                        ))
                       : Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
@@ -113,20 +140,23 @@ void showAddRouteDialog(
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),
-                DropdownButton<RouteMode>(
-                  value: routeModeInput,
-                  items: RouteMode.values.map((mode) {
-                    return DropdownMenuItem<RouteMode>(
-                      value: mode,
-                      child: Text(mode.name),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setDialogState(() {
-                      routeModeInput = value!;
-                    });
-                  },
-                ),
+                if (transportModeInput != TransportMode.aPie &&
+                    transportModeInput != TransportMode.bicicleta)
+                  DropdownButton<RouteMode>(
+                    hint: const Text('Tipo de ruta:'),
+                    value: routeModeInput,
+                    items: RouteMode.values.map((mode) {
+                      return DropdownMenuItem<RouteMode>(
+                        value: mode,
+                        child: Text(mode.name),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        routeModeInput = value!;
+                      });
+                    },
+                  ),
                 if (errorMessage.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
@@ -146,44 +176,13 @@ void showAddRouteDialog(
               ),
               ElevatedButton(
                 onPressed: () async {
-                  if (routeNameInput.isEmpty ||
-                      startLocationInput == null ||
-                      endLocationInput == null) {
-                    setDialogState(() {
-                      errorMessage = 'Por favor, complete todos los campos.';
-                    });
-                  } else {
-                    onRouteSelected(
-                        routeNameInput,
-                        startLocationInput!,
-                        endLocationInput!,
-                        transportModeInput,
-                        routeModeInput, selectedVehicle,
-                        true);
-                    Navigator.of(context).pop();
-                  }
+                  generateRoute(true);
                 },
                 child: const Text('Guardar y generar ruta'),
               ),
               ElevatedButton(
                 onPressed: () async {
-                  if (routeNameInput.isEmpty ||
-                      startLocationInput == null ||
-                      endLocationInput == null) {
-                    setDialogState(() {
-                      errorMessage = 'Por favor, complete todos los campos.';
-                    });
-                  } else {
-                    onRouteSelected(
-                        routeNameInput,
-                        startLocationInput!,
-                        endLocationInput!,
-                        transportModeInput,
-                        routeModeInput, selectedVehicle,
-                        false);
-                    // Navegar a RouteMapScreen
-                    Navigator.of(context).pop();
-                  }
+                  generateRoute(false);
                 },
                 child: const Text('Generar ruta'),
               ),

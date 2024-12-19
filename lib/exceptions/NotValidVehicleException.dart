@@ -1,3 +1,6 @@
 class NotValidVehicleException implements Exception {
-  //TODO
+ final String message = "Error, el vehículo introducido no es válido.";
+
+  @override
+  String toString() => "NotValidVehicleException: $message";
 }

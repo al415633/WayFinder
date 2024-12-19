@@ -1,3 +1,6 @@
 class NotAuthenticatedUserException implements Exception {
-  //TODO
+ final String message = "Error, actualmente no hay ningún usuario autenticado.";
+
+  @override
+  String toString() => "NotAuthenticatedUserException: $message";
 }

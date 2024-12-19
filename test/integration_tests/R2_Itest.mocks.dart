@@ -13,8 +13,8 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
 import 'package:WayFinder/model/location.dart' as _i8;
 import 'package:WayFinder/model/UserApp.dart' as _i10;
-import 'package:WayFinder/viewModel/LocationController.dart' as _i7;
-import 'package:WayFinder/viewModel/UserAppController.dart' as _i9;
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i7;
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -744,6 +744,17 @@ class MockDbAdapterLocation extends _i1.Mock implements _i7.DbAdapterLocation {
       ) as _i5.Future<bool>);
 
   @override
+  _i5.Future<bool> deleteLocation(_i8.Location? location) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteLocation,
+          [location],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+        returnValueForMissingStub: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
   _i5.Future<Set<_i8.Location>> getLocationList() => (super.noSuchMethod(
         Invocation.method(
           #getLocationList,
@@ -755,34 +766,20 @@ class MockDbAdapterLocation extends _i1.Mock implements _i7.DbAdapterLocation {
       ) as _i5.Future<Set<_i8.Location>>);
 
   @override
-  _i5.Future<bool> addFav(
-    String? topo,
-    String? alias,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> addFav(_i8.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #addFav,
-          [
-            topo,
-            alias,
-          ],
+          [location],
         ),
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<bool> removeFav(
-    String? topo,
-    String? alias,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> removeFav(_i8.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [
-            topo,
-            alias,
-          ],
+          [location],
         ),
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),

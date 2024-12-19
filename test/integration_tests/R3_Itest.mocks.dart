@@ -13,8 +13,8 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
 import 'package:WayFinder/model/UserApp.dart' as _i10;
 import 'package:WayFinder/model/vehicle.dart' as _i8;
-import 'package:WayFinder/viewModel/UserAppController.dart' as _i9;
-import 'package:WayFinder/viewModel/VehicleController.dart' as _i7;
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i9;
+import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -743,38 +743,32 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i7.DbAdapterVehicle {
       ) as _i5.Future<Set<_i8.Vehicle>>);
 
   @override
-  _i5.Future<bool> addFav(
-    String? numberPlate,
-    String? name,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> deleteVehicle(_i8.Vehicle? vehicle) => (super.noSuchMethod(
         Invocation.method(
-          #addFav,
-          [
-            numberPlate,
-            name,
-          ],
+          #deleteVehicle,
+          [vehicle],
         ),
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<bool> removeFav(
-    String? numberPlate,
-    String? name,
-  ) =>
-      (super.noSuchMethod(
+  void addFav(_i8.Vehicle? vehicle) => super.noSuchMethod(
+        Invocation.method(
+          #addFav,
+          [vehicle],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void removeFav(_i8.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #removeFav,
-          [
-            numberPlate,
-            name,
-          ],
+          [vehicle],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [DbAdapterUserApp].

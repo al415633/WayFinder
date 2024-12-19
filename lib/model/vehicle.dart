@@ -1,43 +1,48 @@
 import 'package:WayFinder/model/favItem.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/viewModel/DieselCarPrice.dart';
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
 import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
 import 'package:WayFinder/viewModel/Price.dart';
 
-class Vehicle implements FavItem{
+class Vehicle implements FavItem {
   // Propiedades
 
-late String fuelType;
-late double consumption;
-late String numberPlate;
-late String name;
-late bool fav;
-Price? price; //para hacer el stategy de si es gasolina, gasoil o electrico
-
+  late FuelType fuelType;
+  late double consumption;
+  late String numberPlate;
+  late String name;
+  late bool fav;
+  Price? price; //para hacer el stategy de si es gasolina, gasoil o electrico
 
   // Constructor
-  Vehicle(String fuelType, double consumption, String numberPlate, String name, {this.fav = false}) {
+  Vehicle(
+      FuelType fuelType, double consumption, String numberPlate, String name,
+      {this.fav = false}) {
     this.fuelType = fuelType;
     this.consumption = consumption;
     this.numberPlate = numberPlate;
     this.name = name;
-    
-    switch (fuelType.toLowerCase()) {
-      case 'gasolina':
-        price=Gasolinecarprice();
+
+    /*Esto es lo que está mal. Luego a la hora de llamar al método calculatePrice() en PriceProxy, 
+    no se puede llamar, siempre devuelve null*/
+    switch (fuelType) {
+      case FuelType.gasolina:
+        price = Gasolinecarprice();
         break;
-      case 'eléctrico':
-        price=Electriccarprice();
+      case FuelType.electrico:
+        price = Electriccarprice();
         break;
-      case 'diésel':
-         price=Dieselcarprice();
+      case FuelType.diesel:
+        price = Dieselcarprice();
         break;
+    }
   }
-  }
-  
-void setPriceStrategy(Price priceStrategy) {
+
+  void setPriceStrategy(Price priceStrategy) {
     price = priceStrategy;
   }
+
   @override
   bool getFav() => fav;
 
@@ -45,35 +50,35 @@ void setPriceStrategy(Price priceStrategy) {
   void addFav() {
     fav = true;
   }
-  
+
   @override
   void removeFav() {
     fav = false;
   }
 
-  String getFuelType(){
+  FuelType getFuelType() {
     return fuelType;
   }
 
-  double getConsumption(){
+  double getConsumption() {
     return consumption;
   }
 
-  String getNumberPlate(){
+  String getNumberPlate() {
     return numberPlate;
   }
 
-  String getName(){
+  String getName() {
     return name;
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'fueltype': fuelType,
+      'fueltype': fuelType.name,
       'consumption': consumption,
       'numberPlate': numberPlate,
       'name': name,
-      'fav' : fav
+      'fav': fav
     };
   }
 
@@ -88,11 +93,35 @@ void setPriceStrategy(Price priceStrategy) {
     }
 
     // Asignación de propiedades con valores del mapa
-    fuelType = mapa['fueltype'] ?? "Desconocido"; // Valor por defecto si es nulo
-    consumption = mapa['consumption']?.toDouble() ?? 0.0; // Asegúrate de convertir a `double`
-    numberPlate = mapa['numberPlate'] ?? "Sin matrícula"; // Valor por defecto si es nulo
+    fuelType = FuelType.values.firstWhere((e) => e.name == mapa['fueltype']);
+    switch (fuelType) {
+      case FuelType.gasolina:
+        price = Gasolinecarprice();
+        break;
+      case FuelType.electrico:
+        price = Electriccarprice();
+        break;
+      case FuelType.diesel:
+        price = Dieselcarprice();
+        break;
+    }
+    consumption = mapa['consumption']?.toDouble() ??
+        0.0; // Asegúrate de convertir a `double`
+    numberPlate =
+        mapa['numberPlate'] ?? "Sin matrícula"; // Valor por defecto si es nulo
     name = mapa['name'] ?? "Sin nombre"; // Valor por defecto si es nulo
     fav = mapa['fav'] ?? false; // Valor por defecto si es nulo
   }
 
+  // Sobrescribe `==` para comparar por matrícula
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true; // Compara la referencia
+    if (other is! Vehicle) return false; // Verifica el tipo
+    return numberPlate == other.numberPlate; // Compara matrículas
+  }
+
+  // Sobrescribe `hashCode` para usar `numberPlate`
+  @override
+  int get hashCode => numberPlate.hashCode;
 }

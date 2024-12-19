@@ -1,5 +1,6 @@
 import 'package:WayFinder/main.dart';
 import 'package:WayFinder/model/favItem.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/routeMode.dart';
@@ -13,6 +14,9 @@ import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -43,7 +47,7 @@ class _MapScreenState extends State<MapScreen> {
       RouteController.getInstance(FirestoreAdapterRoute());
   String? routeName;
   final VehicleController vehicleController =
-      VehicleController(FirestoreAdapterVehiculo());
+      VehicleController.getInstance(FirestoreAdapterVehiculo());
   List<Vehicle> vehicles = [];
   UserAppController? userAppController = UserAppController.getInstance();
   late double cost;
@@ -68,28 +72,32 @@ class _MapScreenState extends State<MapScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Botones de la barra superior
-              Row(
-                children: [
-                  _buildTopButton(
-                      'Lugares de interés', transportMode == 'locations', () {
-                    _onModeChanged('locations');
-                  }),
-                  _buildTopButton('Rutas', transportMode == 'routes', () {
-                    _onModeChanged('routes');
-                  }),
-                  _buildTopButton('Vehículos', transportMode == 'vehicles', () {
-                    _onModeChanged('vehicles');
-                  }),
-                ],
+              // Contenedor con scroll para los botones de la barra superior
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildTopButton(
+                          'Lugares de interés', transportMode == 'locations',
+                          () {
+                        _onModeChanged('locations');
+                      }),
+                      _buildTopButton('Rutas', transportMode == 'routes', () {
+                        _onModeChanged('routes');
+                      }),
+                      _buildTopButton('Vehículos', transportMode == 'vehicles',
+                          () {
+                        _onModeChanged('vehicles');
+                      }),
+                    ],
+                  ),
+                ),
               ),
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.settings, color: Colors.white),
                     onPressed: () {
                       _onModeChanged('settings');
                     },
@@ -98,13 +106,9 @@ class _MapScreenState extends State<MapScreen> {
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () {
                       userAppController?.logOut();
-
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Inicio()), // Navega a la pantalla de inicio
-                        (Route<dynamic> route) =>
-                            false, // Elimina todas las rutas anteriores
+                        MaterialPageRoute(builder: (context) => MiApp()),
+                        (Route<dynamic> route) => false,
                       );
                     },
                   ),
@@ -114,28 +118,58 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          _buildFlutterMap(),
-          if (showInterestPlaces)
-            _buildSidePanel(
-                'Lugares de interés',
-                locations,
-                (item) => _buildLocationItem(item as Location),
-                () => showAddLocationDialog(context, _onLocationSelected)),
-          if (showRoutes)
-            _buildSidePanel(
-                'Rutas',
-                routes,
-                (item) => _buildRouteItem(item as Routes),
-                () => showAddRouteDialog(context, locations,vehicles,  _onRouteSelected)),
-          if (showVehicles)
-            _buildSidePanel(
-                'Vehículos',
-                vehicles,
-                (item) => _buildVehicleItem(item as Vehicle),
-                () => showAddVehicleDialog(context, _onVehicleSelected)),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final double panelWidth =
+              constraints.maxWidth * 0.3; // 30% del ancho de la pantalla
+          return Stack(
+            children: [
+              _buildFlutterMap(),
+              if (showInterestPlaces)
+                _buildSidePanel(
+                    'Lugares de interés',
+                    locations,
+                    (item) => _buildLocationItem(item as Location),
+                    () => showAddLocationDialog(context, _onLocationSelected),
+                    panelWidth),
+              if (showRoutes)
+                _buildSidePanel(
+                    'Rutas',
+                    routes,
+                    (item) => _buildRouteItem(item as Routes),
+                    () => showAddRouteDialog(
+                        context, locations, vehicles, _onRouteSelected),
+                    panelWidth),
+              if (showVehicles)
+                _buildSidePanel(
+                    'Vehículos',
+                    vehicles,
+                    (item) => _buildVehicleItem(item as Vehicle),
+                    () => showAddVehicleDialog(context, _onVehicleSelected),
+                    panelWidth),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // Botón superior personalizado
+  Widget _buildTopButton(
+      String label, bool isSelected, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: isSelected
+              ? const Color.fromARGB(71, 203, 220, 228)
+              : Color.fromARGB(0, 153, 210, 229),
+          foregroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: Text(label),
       ),
     );
   }
@@ -181,7 +215,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _onVehicleSelected(String name, String fuelType,
+  Future<bool> _onVehicleSelected(String name, FuelType fuelType,
       double consumption, String numberPlate) async {
     try {
       await vehicleController.createVehicle(
@@ -190,23 +224,25 @@ class _MapScreenState extends State<MapScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Vehículo guardado exitosamente.')),
       );
+      return true;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar el vehículo: $e')),
-      );
+      return false;
     }
   }
 
-  Future<void> _onRouteSelected(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle, bool save) async {
+  Future<void> _onRouteSelected(
+      String name,
+      Location start,
+      Location end,
+      TransportMode transportMode,
+      RouteMode routeMode,
+      Vehicle? vehicle,
+      bool save) async {
     late Routes route;
-    
     try {
       route = await routeController.createRoute(
           name, start, end, transportMode, routeMode, vehicle);
       print(vehicle);
-      cost = await vehicleController.calculatePrice(route, vehicle!);
-      print(cost);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al crear la ruta: $e')),
@@ -222,20 +258,24 @@ class _MapScreenState extends State<MapScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar la ubicación: $e')),
+        SnackBar(content: Text('Error al guardar la ruta: $e')),
       );
     }
     _showRoutes(route);
   }
 
-  Widget _buildSidePanel(String title, List items,
-      Widget Function(dynamic) buildItem, VoidCallback onAddPressed) {
+  Widget _buildSidePanel(
+      String title,
+      List items,
+      Widget Function(dynamic) buildItem,
+      VoidCallback onAddPressed,
+      double panelWidth) {
     return Positioned(
       left: 0,
       top: 0,
       bottom: 0,
       child: Container(
-        width: 250,
+        width: panelWidth,
         color: Colors.white,
         child: Column(
           children: [
@@ -259,26 +299,6 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-// Botón superior personalizado
-  Widget _buildTopButton(
-      String label, bool isSelected, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: isSelected
-              ? const Color.fromARGB(71, 203, 220, 228)
-              : Color.fromARGB(0, 153, 210, 229),
-          foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        child: Text(label),
       ),
     );
   }
@@ -352,9 +372,9 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () {
           try {
             if (location.getFav()) {
-              location.removeFav();
+              locationController.removeFav(location);
             } else {
-              location.addFav();
+              locationController.addFav(location);
             }
             _fetchLocations();
             print(location.toponym
@@ -374,7 +394,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
+            onPressed: () async {
+              await locationController.deleteLocation(location);
+              _fetchLocations();
               print('Eliminar ${location.getAlias()}');
             },
           ),
@@ -399,9 +421,9 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () async {
           try {
             if (route.getFav()) {
-              route.removeFav();
+              routeController.removeFav(route);
             } else {
-              route.addFav();
+              routeController.addFav(route);
             }
             _fetchRoutes();
           } catch (e) {
@@ -420,8 +442,8 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
-              routeController.deleteRoute(route);
+            onPressed: () async {
+              await routeController.deleteRoute(route);
               _fetchRoutes();
               print('Eliminar ruta');
             },
@@ -446,12 +468,12 @@ class _MapScreenState extends State<MapScreen> {
           vehicle.getFav() ? Icons.star : Icons.star_border,
           color: vehicle.getFav() ? Colors.yellow : Colors.grey,
         ),
-        onPressed: () async {
+        onPressed: () {
           try {
             if (vehicle.getFav()) {
-              vehicle.removeFav();
+              vehicleController.removeFav(vehicle);
             } else {
-              vehicle.addFav();
+              vehicleController.addFav(vehicle);
             }
             _fetchVehicles(); // Actualizar la lista de coches
           } catch (e) {
@@ -468,7 +490,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
+            onPressed: () async {
+              await vehicleController.deleteVehicle(vehicle);
+              _fetchVehicles();
               print('Eliminar $vehicle');
             },
           ),
@@ -527,7 +551,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _fetchVehicles() async {
     try {
-      print("entra en fetchvehicles"); //sí que entra
       final fetchedVehicles =
           await vehicleController.getVehicleList(); // Obtener la lista de rutas
       setState(() {

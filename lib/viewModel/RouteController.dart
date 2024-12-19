@@ -1,15 +1,24 @@
+import 'package:WayFinder/exceptions/APIRoutesExcpetion.dart';
+import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
+import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
+import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/model/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/PriceProxy.dart';
+import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:math';
 
 class RouteController {
   // Propiedades
@@ -36,98 +45,119 @@ class RouteController {
   }
 
   double calculateCostKCal(Routes? route) {
-    if (route == null || route.transportMode == TransportMode.coche) {
-      throw Invalidcaloriecalculationexception();
+    if (route == null) {
+      throw InvalidCalorieCalculationException();
     }
 
     const double walkingKCalPerKMeter = 50.0; //50.0 si es por km
     const double bikingKCalPerKMeter = 30.0; //30.0 si es por km
 
-    switch (route.transportMode) {
-      case TransportMode.aPie:
-        return route.distance * walkingKCalPerKMeter;
-      case TransportMode.bicicleta:
-        return route.distance * bikingKCalPerKMeter;
-      default:
-        throw Invalidcaloriecalculationexception();
-    }
-  }
-
-  Future<Map<String, dynamic>> getPoints(LatLng initialPoint,
-      LatLng destination, TransportMode transportMode) async {
-    //más adelante se tnedrá que tener en cuenta el tipo de ruta
-    var ini = '${initialPoint.longitude}, ${initialPoint.latitude}';
-    var fin = '${destination.longitude}, ${destination.latitude}';
-    http.Response? response;
-    if (transportMode == TransportMode.coche) {
-      response = await http.get(getCarRouteUrl(ini, fin));
-    } else if (transportMode == TransportMode.aPie) {
-      response = await http.get(getWalkRouteUrl(ini, fin));
-    } else if (transportMode == TransportMode.bicicleta) {
-      response = await http.get(getBikeRouteUrl(ini, fin));
-    }
-    if (response?.statusCode == 200) {
-      var data = jsonDecode(response!.body);
-      var listOfPoints = data['features'][0]['geometry']['coordinates'];
-      List<LatLng> points = listOfPoints
-          .map<LatLng>((p) => LatLng(p[1].toDouble(), p[0].toDouble()))
-          .toList();
-      double distance = data['features'][0]['properties']['segments'][0]
-              ['distance'] /
-          1000; // Convertir a km
-      double duration = data['features'][0]['properties']['segments'][0]
-              ['duration'] /
-          3600; // Convertir a horas
-      return {
-        'points': points,
-        'distance': distance,
-        'duration': duration,
-      };
+    if (route.getTransportMode == TransportMode.aPie) {
+      route.setCalories = route.distance * walkingKCalPerKMeter;
+    } else if (route.getTransportMode == TransportMode.bicicleta) {
+      route.setCalories = route.distance * bikingKCalPerKMeter;
     } else {
-      return {
-        'points': [],
-        'distance': 0.0,
-        'duration': 0.0,
-      };
+      throw InvalidCalorieCalculationException();
     }
+    return route.getCalories;
   }
 
-  Future<List<LatLng>> fetchRoutePoints(LatLng initialPoint, LatLng destination,
-      TransportMode transportMode) async {
-    try {
-      Map<String, dynamic> pointsData =
-          await getPoints(initialPoint, destination, transportMode);
-      return pointsData['points'] as List<LatLng>;
-    } catch (e) {
-      throw Exception("Error al obtener los puntos de la ruta: $e");
-    }
-  }
+  Future<Routes> createRoute(
+      String name,
+      Location start,
+      Location end,
+      TransportMode transportMode,
+      RouteMode? routeMode,
+      Vehicle? vehicle) async {
+    if (transportMode == TransportMode.coche &&
+        routeMode == RouteMode.economica) {
+      Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
+          start, end, transportMode, RouteMode.corta);
 
-  Future<Routes> createRoute(String name, Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode, Vehicle? vehicle) async {
-    LatLng initialPoint =
-        LatLng(start.getCoordinate().getLat, start.getCoordinate().getLong);
-    LatLng destination =
-        LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
-    List<LatLng> points =
-        await fetchRoutePoints(initialPoint, destination, transportMode);
-    double distance = calculateDistance(points);
-    double time = calculateTime(transportMode, distance);
-    Routes route = Routes(
-        name, start, end, points, distance, time, transportMode, routeMode, vehicle);
+      List<LatLng> pointsShortest =
+          pointsDataShortest['points'] as List<LatLng>;
+      //print(points);
+      double distanceShortest = pointsDataShortest['distance'] as double;
+      //print("Distanciaaaa:$distance");
+      double timeShortest = pointsDataShortest['duration'] as double;
+      //print("Tiempooooo $time");
+      Routes routeShortest = Routes(
+          name,
+          start,
+          end,
+          pointsShortest,
+          distanceShortest,
+          timeShortest,
+          transportMode,
+          RouteMode.corta,
+          vehicle);
+
+      double precioShortest = await calculatePrice(routeShortest, vehicle!);
+
+      Map<String, dynamic> pointsDataFastest = await repository.getRouteData(
+          start, end, transportMode, RouteMode.rapida);
+
+      List<LatLng> pointsFastest = pointsDataFastest['points'] as List<LatLng>;
+      //print(points);
+      double distanceFastest = pointsDataFastest['distance'] as double;
+      //print("Distanciaaaa:$distance");
+      double timeFastest = pointsDataFastest['duration'] as double;
+      //print("Tiempooooo $time");
+
+      Routes routeFastest = Routes(
+          name,
+          start,
+          end,
+          pointsFastest,
+          distanceFastest,
+          timeFastest,
+          transportMode,
+          RouteMode.rapida,
+          vehicle);
+
+      double precioFastest = await calculatePrice(routeFastest, vehicle);
+
+      if (precioFastest < precioShortest) {
+        routeFastest.setCost = precioFastest;
+        return routeFastest;
+      } else {
+        routeShortest.setCost = precioShortest;
+
+        return routeShortest;
+      }
+    }
+
+    Map<String, dynamic> pointsData =
+        await repository.getRouteData(start, end, transportMode, routeMode!);
+
+    List<LatLng> points = pointsData['points'] as List<LatLng>;
+    //print(points);
+    double distance = pointsData['distance'] as double;
+    //print("Distanciaaaa:$distance");
+    double time = pointsData['duration'] as double;
+    //print("Tiempooooo $time");
+    Routes route = Routes(name, start, end, points, distance, time,
+        transportMode, routeMode, vehicle);
+    if (vehicle != null) {
+      double cost = await calculatePrice(route, vehicle);
+      print("cost $cost");
+      route.setCost = cost;
+    } else {
+      route.setCalories = calculateCostKCal(route);
+    }
+
     return route;
   }
 
-  Future<bool> deleteRoute(Routes route) async{
-      try {
+  Future<bool> deleteRoute(Routes route) async {
+    try {
       bool success = await repository.deleteRoute(route);
 
       if (success) {
         final currentSet = await routeList;
         // Agregar el nuevo Location al Set
         currentSet.remove(route);
-        routeList = Future.value(currentSet) ;
-
+        routeList = Future.value(currentSet);
       }
 
       return success;
@@ -137,6 +167,7 @@ class RouteController {
   }
 
   Future<bool> saveRoute(Routes route) async {
+    print(route);
     try {
       bool success = await repository.saveRoute(route);
 
@@ -154,228 +185,150 @@ class RouteController {
     }
   }
 
-  double calculateDistance(List<LatLng> points) {
-    var distance = 0.0;
-    for (int i = 0; i < points.length - 1; i++) {
-      distance += Distance().as(LengthUnit.Meter, points[i], points[i + 1]);
-    }
-    return distance / 1000;
-  }
-
-  double calculateTime(TransportMode transportMode, double distance) {
-    double speed;
-    if (transportMode == TransportMode.coche) {
-      speed = 60.0;
-    } else if (transportMode == TransportMode.aPie) {
-      speed = 5.0;
-    } else if (transportMode == TransportMode.bicicleta) {
-      speed = 15.0;
-    } else {
-      speed = 0.0;
-    }
-    return distance / speed; //en horas
-  }
-
-  Future<bool> addFav(String routeName) async {
+  void addFav(Routes route) async {
     try {
       // Llamar al adaptador para marcar como favorita en la base de datos
-      bool success = await repository.addFav(routeName);
+      repository.addFav(route);
 
-      if (success) {
-        // Si se actualiza con éxito, reflejar en la lista local
-        final currentSet = await routeList;
-        for (var route in currentSet) {
-          if (route.name == routeName) {
-            route.fav = true; // Actualizar la propiedad `fav` en la lista local
-            break;
-          }
-        }
-      }
-
-      return success;
+      final currentSet = await routeList;
+      route.addFav();
+      routeList = Future.value(currentSet);
     } catch (e) {
-      throw Exception(
-          "Error al añadir el location a favoritos en el controlador: $e");
+      throw ConnectionBBDDException();
     }
   }
 
-  Future<bool> removeFav(String routeName) async {
+  void removeFav(Routes route) async {
     try {
       // Llamar al adaptador para desmarcar como favorita en la base de datos
-      bool success = await repository.removeFav(routeName);
+      repository.removeFav(route);
+      final currentSet = await routeList;
+      route.removeFav();
+      routeList = Future.value(currentSet);
+    } catch (e) {
+      throw ConnectionBBDDException();
+    }
+  }
 
-      if (success) {
-        // Si se actualiza con éxito, reflejar en la lista local
-        final currentSet = await routeList;
-        for (var route in currentSet) {
-          if (route.getName == routeName) {
-            route.fav =
-                false; // Actualizar la propiedad `fav` en la lista local
-            break;
-          }
+  Future<double> calculatePrice(Routes? route, Vehicle vehiculo) async {
+    if (route == null) {
+      throw Incorrectcalculationexception();
+    }
+
+    double num = await PriceProxy.getPrice(route);
+
+    return num;
+  }
+
+  void onTransportChanged(TransportMode newTransportMode, Routes route) async {
+    route.setTransportMode = newTransportMode;
+    RouteController routeController =
+        RouteController.getInstance(FirestoreAdapterRoute());
+    if (newTransportMode == TransportMode.coche) {
+      route.setCost = await calculatePrice(route, route.vehicle!);
+    } else {
+      routeController.calculateCostKCal(route);
+      print("OnTransportChanged: ${route.getCost}");
+    }
+  }
+
+  Future<Routes> editRoute(Routes oldRoute, TransportMode newTransportMode,
+      Vehicle? vehicle, RouteMode? newRouteMode) async {
+
+         print("en edit");
+    print(newTransportMode);
+              //Es en coche pero y economica
+
+    if (vehicle != null && newRouteMode != null) {
+      if (newRouteMode == RouteMode.economica) {
+        Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
+            oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.corta);
+
+        List<LatLng> pointsShortest =
+            pointsDataShortest['points'] as List<LatLng>;
+        //print(points);
+        double distanceShortest = pointsDataShortest['distance'] as double;
+        //print("Distanciaaaa:$distance");
+        double timeShortest = pointsDataShortest['duration'] as double;
+        //print("Tiempooooo $time");
+       
+        Routes routeShortest = Routes(
+            oldRoute.getName,
+            oldRoute.getStart,
+            oldRoute.getEnd,
+            pointsShortest,
+            distanceShortest,
+            timeShortest,
+            newTransportMode,
+            RouteMode.corta,
+            vehicle);
+
+        double precioShortest = await calculatePrice(routeShortest, vehicle);
+
+        Map<String, dynamic> pointsDataFastest = await repository.getRouteData(
+            oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.rapida);
+
+        List<LatLng> pointsFastest =
+            pointsDataFastest['points'] as List<LatLng>;
+        double distanceFastest = pointsDataFastest['distance'] as double;
+        double timeFastest = pointsDataFastest['duration'] as double;
+
+        Routes routeFastest = Routes(
+            oldRoute.getName,
+            oldRoute.getStart,
+            oldRoute.getEnd,
+            pointsFastest,
+            distanceFastest,
+            timeFastest,
+            newTransportMode,
+            RouteMode.rapida,
+            vehicle);
+
+        double precioFastest = await calculatePrice(routeFastest, vehicle);
+
+        if (precioFastest < precioShortest) {
+          routeFastest.setCost = precioFastest;
+          return routeFastest;
+        } else {
+          routeShortest.setCost = precioShortest;
+
+          return routeShortest;
         }
       }
 
-      return success;
-    } catch (e) {
-      throw Exception(
-          "Error al eliminar el location a favoritos en el controlador: $e");
-    }
-  }
-}
+      //Es en coche pero no economica
 
-class FirestoreAdapterRoute implements DbAdapterRoute {
-  final String _collectionName;
-  final FirebaseFirestore db = FirebaseFirestore.instance;
+      Map<String, dynamic> pointsData =
+          await repository.getRouteData(oldRoute.getStart, oldRoute.getEnd, newTransportMode, newRouteMode);
 
-  User? _currentUser; // Propiedad para almacenar el usuario actual
-
-  FirestoreAdapterRoute({String collectionName = "production"})
-      : _collectionName = collectionName {
-    // Configurar el listener para authStateChanges
-    _initializeAuthListener();
-  }
-
-  // Método para inicializar el listener de autenticación
-  void _initializeAuthListener() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      _currentUser = user; // Actualizar el usuario actual
-    });
-  }
-
-  @override
-  Future<Set<Routes>> getRouteList() async {
-
-    /*
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear la ruta.');
-    }
-
-    */
+      List<LatLng> points = pointsData['points'] as List<LatLng>;
+      //print(points);
+      double distance = pointsData['distance'] as double;
+      //print("Distanciaaaa:$distance");
+      double time = pointsData['duration'] as double;
+      //print("Tiempooooo $time");
+      Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
+          newTransportMode, newRouteMode, vehicle);
+      double cost = await calculatePrice(route, vehicle);
+      route.setCost = cost;
     
-    try {
-      final querySnapshot = await db
-          .collection(_collectionName)
-          .doc(_currentUser?.uid)
-          .collection("RouteList")
-          .get();
+      return route;
+    }
+    else{
+      
+      Map<String, dynamic> pointsData =
+          await repository.getRouteData(oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.rapida);
 
-      // Convertir cada documento a una instancia de Route
-      Set<Routes> routes = querySnapshot.docs.map((doc) {
-        return Routes.fromMap(doc.data());
-      }).toSet();
+      List<LatLng> points = pointsData['points'] as List<LatLng>;
+      double distance = pointsData['distance'] as double;
+      double time = pointsData['duration'] as double;
+      Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
+          newTransportMode, newRouteMode, vehicle);
 
-      return routes;
-    } catch (e) {
-      throw Exception("Error al obtener la lista de rutas: $e");
+      await calculateCostKCal(route);
+      return route;
+
+
     }
   }
-
-  @override
-  Future<bool> saveRoute(Routes route) async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      throw Exception('Usuario no autenticado. No se puede crear el location.');
-    }
-    try {
-      await db
-          .collection(_collectionName)
-          .doc(_currentUser?.uid)
-          .collection("RouteList")
-          .add(route.toMap());
-      return true;
-    } catch (e) {
-      print("Error al guardar la ruta: $e");
-      return false;
-    }
-  }
-
- @override
-   Future<bool> deleteRoute(Routes route) async {
-    
-     final user = FirebaseAuth.instance.currentUser;
-
-      if (user == null) {
-        throw Exception('Usuario no autenticado. No se puede eliminar la ruta.');
-      }
-
-      try {
-        // Obtener la colección de rutas del usuario
-        var collectionRef = db
-            .collection(_collectionName)
-            .doc(_currentUser?.uid)
-            .collection("RouteList");
-
-        // Buscar el documento por algún atributo único de la ruta, por ejemplo, 'name'
-        var querySnapshot = await collectionRef
-            .where('name', isEqualTo: route.getName)
-            .get();
-
-        // Verificar si se encontró el documento
-        if (querySnapshot.docs.isEmpty) {
-          throw Exception('Ruta no encontrada.');
-        }
-
-        // Eliminar el primer documento encontrado (asumiendo que el nombre es único)
-        await querySnapshot.docs.first.reference.delete();
-
-        return true;
-      } catch (e) {
-        throw Exception("Error al eliminar la ruta: $e");
-      }
-  }
-
-
-  @override
-  Future<bool> addFav(String routeName) async {
-    try {
-      final querySnapshot = await db
-          .collection(_collectionName)
-          .doc(_currentUser?.uid)
-          .collection("RouteList")
-          .where('name', isEqualTo: routeName)
-          .get();
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.update({'fav': true});
-      }
-
-      return true;
-    } catch (e) {
-      print("Error al añadir la ruta a favoritos en la base de datos: $e");
-      return false;
-    }
-  }
-
-  @override
-  Future<bool> removeFav(String routeName) async {
-    try {
-      final querySnapshot = await db
-          .collection(_collectionName)
-          .doc(_currentUser?.uid)
-          .collection("RouteList")
-          .where('name', isEqualTo: routeName)
-          .get();
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.update({'fav': false});
-      }
-
-      return true;
-    } catch (e) {
-      print("Error al eliminar la ruta de favoritos en la base de datos: $e");
-      return false;
-    }
-  }
-}
-
-abstract class DbAdapterRoute {
-  Future<bool> saveRoute(Routes route);
-  Future<bool> deleteRoute(Routes route);
-  Future<Set<Routes>> getRouteList();
-  Future<bool> removeFav(String routeName);
-  Future<bool> addFav(String routeName);
 }

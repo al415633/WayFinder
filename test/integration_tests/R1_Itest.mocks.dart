@@ -12,7 +12,7 @@ import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
 import 'package:WayFinder/model/UserApp.dart' as _i8;
-import 'package:WayFinder/viewModel/UserAppController.dart' as _i7;
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

@@ -1,9 +1,10 @@
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:flutter/material.dart';
 
-void showAddVehicleDialog(BuildContext context, Function(String, String, double, String) onVehicleSelected) {
+void showAddVehicleDialog(BuildContext context, Function(String, FuelType, double, String) onVehicleSelected) {
   // Variables para los datos del vehículo
   String vehicleNameInput = '';
-  String fuelTypeInput = '';
+  FuelType fuelTypeInput = FuelType.gasolina;
   double consumptionInput = 0.0;
   String numberPlateInput = '';
 
@@ -30,22 +31,21 @@ void showAddVehicleDialog(BuildContext context, Function(String, String, double,
                     });
                   },
                 ),
-                DropdownButtonFormField<String>(
+                DropdownButtonFormField<FuelType>(
                   decoration:
                       const InputDecoration(labelText: 'Tipo de combustible'),
                   items: const [
                     DropdownMenuItem(
-                        value: 'Gasolina', child: Text('Gasolina')),
-                    DropdownMenuItem(value: 'Diésel', child: Text('Diésel')),
+                        value: FuelType.gasolina, child: Text('Gasolina')),
+                    DropdownMenuItem(value: FuelType.diesel, child: Text('Diésel')),
                     DropdownMenuItem(
-                        value: 'Eléctrico', child: Text('Eléctrico')),
+                        value: FuelType.electrico, child: Text('Eléctrico')),
                   ],
                   onChanged: (value) {
                     setDialogState(() {
-                      fuelTypeInput = value ?? '';
+                      fuelTypeInput = value!;
                     });
                   },
-                  value: fuelTypeInput.isEmpty ? null : fuelTypeInput,
                 ),
                 TextField(
                   decoration:
@@ -86,15 +86,21 @@ void showAddVehicleDialog(BuildContext context, Function(String, String, double,
               ElevatedButton(
                 onPressed: () async {
                   if (vehicleNameInput.isEmpty ||
-                      fuelTypeInput.isEmpty ||
                       consumptionInput <= 0 ||
                       numberPlateInput.isEmpty) {
                     setDialogState(() {
                       errorMessage = 'Por favor, completa todos los campos.';
                     });
                   } else {
-                    onVehicleSelected(vehicleNameInput, fuelTypeInput, consumptionInput, numberPlateInput); // Notifica a la pantalla principal
-                    Navigator.of(context).pop();
+                      // Llamar a la función para crear el vehículo
+                      bool res = await onVehicleSelected(vehicleNameInput, fuelTypeInput, consumptionInput, numberPlateInput);
+                      if (!res){
+                        setDialogState(() {
+                        errorMessage = 'Ya existe un vehículo con esa matrícula.';  // Muestra el error en el diálogo
+                      });
+                      }else{
+                        Navigator.of(context).pop();
+                      }
                   }
                 },
                 child: const Text('Crear'),

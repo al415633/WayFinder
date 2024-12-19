@@ -1,30 +1,17 @@
-import 'package:WayFinder/APIs/apiConection.dart';
-import 'package:WayFinder/view/createUserView.dart';
-import 'package:WayFinder/view/errorPage.dart';
-import 'package:WayFinder/viewModel/UserAppController.dart';
-
-import 'package:WayFinder/view/map_screen.dart';
-
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';
 import 'package:flutter/material.dart';
-
-// IMPORT PARA LA BASE DE DATOS
-
-//IMPORT DE LA PLANTILLA
+import 'package:WayFinder/view/login.dart'; // Importa el archivo de login
+import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:WayFinder/APIs/apiConection.dart';
 import 'themes/app_theme.dart';
 
 late UserAppController userAppController;
-void main() async {
-  
-  WidgetsFlutterBinding.ensureInitialized();
 
-  // Cargar la configuración desde firebase_config.json
-  //final response = await http.get(Uri.parse('/firebase_config.json'));
-  //final config = json.decode(response.body);
-    
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await firebaseConnection();
   await initializeControllers();
-
-  runApp(MiApp(userAppController));
+  runApp(MiApp());
 }
 
 Future<void> initializeControllers() async {
@@ -33,201 +20,16 @@ Future<void> initializeControllers() async {
 }
 
 class MiApp extends StatelessWidget {
-  final UserAppController userAppController;
 
-  const MiApp(this.userAppController, {super.key});
+  const MiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "WayFinder",
       theme: AppTheme.lightTheme,
-      home: const Inicio(),
+      home: const LoginPage(), 
       debugShowCheckedModeBanner: false,
     );
   }
-}
-
-class Inicio extends StatefulWidget {
-  const Inicio({super.key});
-
-  @override
-  _InicioState createState() => _InicioState();
-}
-
-
-class _InicioState extends State<Inicio> {
-  final TextEditingController _usuarioController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    
-  }
-
-  @override
-  void dispose() { 
-    // Libera los controladores cuando ya no se necesiten
-    _usuarioController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Inicio de sesión'),
-      ),
-         body: Stack(
-        children: [
-           Positioned.fill(
-  child: Image.asset(
-    'lib/assets/images/mapa.PNG',
-    fit: BoxFit.cover, // Ajusta para cubrir toda el área disponible.
-  ),            
-          ),
-          Center(
-            child: Container(
-              width: 700, 
-              height: 700,
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9), 
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: login(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-Widget login() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        nombre(),
-        campoUsuario(),
-        const SizedBox(height: 15),
-        contrasena(),
-        campoContraena(),
-        const SizedBox(height: 15),
-        botonEntrar(),
-        const SizedBox(height: 15),
-        nuevaCuenta(),
-      ],
-    );
-  }
-
-
-   Widget nombre() {
-    return Text(
-      "Usuario",
-      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
-    );
-  }
-
-  Widget campoUsuario() { //TextField para escribir el nombre del usurio
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      child: TextField(
-        controller: _usuarioController, // Asignar el controlador al campo de usuario
-        decoration: const InputDecoration(
-          hintText: "Email",
-          fillColor: Colors.white,
-          filled: true,
-        ),
-      ),
-    );
-  }
-
-  Widget contrasena() {
-    return  Text(
-      "Contraseña",
-      style: Theme.of(context).textTheme.headlineSmall,  // Aplica el estilo headlineSmall del tema
-    );
-  }
-
-  Widget campoContraena() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      child: TextField(
-        controller: _passwordController, // Asignar el controlador al campo de contraseña
-        obscureText: true, // Ocultar el texto para la contraseña
-        decoration: const InputDecoration(
-          hintText: "Contraseña",
-          fillColor: Colors.white,
-          filled: true,
-        ),
-      ),
-    );
-  }
-
-  Widget botonEntrar() {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color.fromARGB(255, 147, 164, 173), // Cambia el color de fondo del botón
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10), // Ajusta el padding
-        textStyle: const TextStyle(fontSize: 18), // Opcional: ajusta el estilo del texto
-      ),
-      onPressed: () {
-        
-       _login(); // Llamada a la función de login
-
-      },
-      child: const Text(
-        "Iniciar sesión",
-        style: TextStyle(fontSize: 25, color: Colors.white),
-      ),
-    );
-  }
-
-
- Widget nuevaCuenta() {
-  return ElevatedButton(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CreateUserView()),
-      );
-    },
-    child: const Text("¿No tienes cuenta?, ¡Clica aquí para hacerte una!"),
-  );
-}
-
-
-
-// Iniciar sesión con Firebase en Flutter Web
-void _login() async {
-  String email = _usuarioController.text;
-  String password = _passwordController.text;
-
-  try {
-    
-    UserAppController? userAppController = UserAppController.getInstance();
-
-    await userAppController.logInCredenciales(email, password);
-    _usuarioController.clear();
-    _passwordController.clear();
-
-     Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MapScreen()),
-    );
-  } on Exception {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ErrorPage(message: 'Ha surgido un error en el inicio de sesión',)), 
-      );
-    
-  }
-}
-
-
-
-
- 
 }

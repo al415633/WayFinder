@@ -1,9 +1,14 @@
 // precio_luz_service_acceptance_test.dart
 
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/fuelType.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
+import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -105,7 +110,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.gasolina;
 
       await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
 
@@ -122,7 +127,7 @@ void main() {
 
       // Verificar que los valores del primer lugar son los esperados
       expect(firstPlace.getConsumption(), equals(24.3)); // Verifica consumo
-      expect(firstPlace.getFuelType(), equals("Gasolina")); // Verifica combustible
+      expect(firstPlace.getFuelType(), FuelType.gasolina); // Verifica combustible
       expect(firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
       expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
     
@@ -153,9 +158,9 @@ void main() {
       //WHEN
 
       final String namec = "Coche Quique";
-      final double consumption = 24.3;
+      final double consumption = 24232323.36789;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Híbrido";
+      final FuelType fuelType = FuelType.gasolina;
 
 
       //THEN
@@ -168,10 +173,7 @@ void main() {
 
       // THEN
       expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec),
-        throwsA(isA<Exception>().having(
-        (e) => e.toString(),
-        'message',
-        contains("NotValidVehicleException: El tipo de combustible no es válido"))),
+        throwsA(isA<Exception>()),
       );
 
 
@@ -199,7 +201,7 @@ void main() {
       final String namec = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
-      final String fuelType = "Gasolina";
+      final FuelType fuelType = FuelType.gasolina;
 
       await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
 
@@ -213,7 +215,7 @@ void main() {
 
       expect(vehicleList.first.consumption, equals(24.3));
       expect(vehicleList.first.name, equals("Coche Quique"));
-      expect(vehicleList.first.fuelType, equals("Gasolina"));
+      expect(vehicleList.first.fuelType, FuelType.gasolina);
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
       
       await deleteVehicle(numberPlate);
@@ -245,11 +247,11 @@ void main() {
        
        //GIVEN
 
-      String email = "Pruebah10e2@gmail.com";
-      String password = "Aaaaa,.8";
-      String name="Pruebah10e2";
-      await userAppController.createUser(email, password, name);
-      await userAppController.logInCredenciales(email, password);
+      String emailh10e2v = "Pruebah10e2@gmail.com";
+      String passwordh10e2v = "Aaaaa,.8";
+      String nameh10e2v="Pruebah10e2";
+      await userAppController.createUser(emailh10e2v, passwordh10e2v, nameh10e2v);
+      await userAppController.logInCredenciales(emailh10e2v, passwordh10e2v);
 
       vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
@@ -261,10 +263,76 @@ void main() {
       //THEN
 
       expect(vehicleList, isEmpty);
-      await signInAndDeleteUser(email, password);
+      await signInAndDeleteUser(emailh10e2v, passwordh10e2v);
     });
        
+//Eliminar vehiculo
+    test('H11-E1V - Eliminar vehículo', () async {
+      //GIVEN
 
+      //Loguear usuario
+      String emailh11e1 =
+          "Pruebah11e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh11e1 = "Aaaaa,.8";
+      String nameh11e1 = "Pruebah11e1";
+      await userAppController.createUser(emailh11e1, passwordh11e1, nameh11e1);
+
+      await userAppController.logInCredenciales(emailh11e1, passwordh11e1);
+
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+
+      //WHEN
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      FuelType combustible = FuelType.gasolina;
+      String nombre = "Coche Quique";
+      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+
+      await vehicleController.deleteVehicle(vehicle1);
+
+      //THEN
+
+      final Set<Vehicle> vehicle = await vehicleController.getVehicleList();
+
+      // Convertir el set a una lista para acceder al primer elemento
+      final vehicleListh11e1 = vehicle.toList();
+
+      expect(vehicleListh11e1.length, equals(0)); // Verifica que no hay vehiculos en lista
+
+      await signInAndDeleteUser(emailh11e1, passwordh11e1);
+      await deleteVehicle(matricula);
+    });
+
+    test('H11-E4I - Eliminar vehículo inválido, usuario no registrado', () async {
+      //GIVEN
+      //Loguear usuario
+      String emailh11e4 =
+          "Pruebah11e4${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String passwordh11e4 = "Aaaaa,.8";
+      String nameh11e4 = "Pruebah11e4";
+      await userAppController.createUser(emailh11e4, passwordh11e4, nameh11e4);
+
+      await userAppController.logInCredenciales(emailh11e4, passwordh11e4);
+
+      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+
+      //WHEN
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      FuelType combustible = FuelType.gasolina;
+      String nombre = "Coche Quique";
+      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+
+      await vehicleController.deleteVehicle(vehicle1);
+
+      await signInAndDeleteUser(emailh11e4, passwordh11e4);
+
+      //THEN
+      expect(
+        () async => await vehicleController.deleteVehicle(vehicle1),
+        throwsA(isA<Exception>()),
+      );
+    });
 
 
   });

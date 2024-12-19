@@ -3,6 +3,8 @@ import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
+import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -60,14 +62,15 @@ void main() {
       when(mockDbAdapterLocation.createLocationFromCoord(any))
           .thenAnswer((_) async => true);
 
-      await locationController.createLocationFromCoord(lath20e1, longh20e1, aliash20e1);
+      locationController.createLocationFromCoord(lath20e1, longh20e1, aliash20e1);
 
        // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav(topoh20e1, aliash20e1))
-          .thenAnswer((_) async => true);
+      when(mockDbAdapterLocation.addFav(loc)).thenAnswer((_) async {
+        loc.fav = true;
+        return true;
+      });
 
-      await locationController.addFav(topoh20e1, aliash20e1);
-
+      locationController.addFav(loc);
        
       // THEN
       final Set<Location> location = await mockDbAdapterLocation.getLocationList();
@@ -127,13 +130,14 @@ void main() {
 
       // WHEN
        // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav(topoh5e1, "sdg resgw"))
+      when(mockDbAdapterLocation.addFav(any))
         .thenThrow(Exception(),);
 
+      Location location = Location(Coordinate(lath5e1, longh5e1), topoh5e1, "sdg resgw");
        
       // THEN
       expect(
-        () async =>   await locationController.addFav(topoh5e1, "sdg resgw"),
+        () =>locationController.addFav(location),
         throwsA(isA<Exception>()),
       );
 
