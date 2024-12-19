@@ -146,5 +146,28 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     await querySnapshot.docs.first.reference.update({"fav": false});
 
   }
+
+
+
+    @override
+  Future<bool> editVehicle(Vehicle vehicle) async {
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+
+    if (user == null) {
+      throw NotAuthenticatedUserException();
+    }
+
+    try {
+      await db
+          .collection(_collectionName)
+          .doc(user.uid)
+          .collection("VehicleList")
+          .add(vehicle.toMap());
+      return true;
+    } catch (e) {
+      throw ConnectionBBDDException();
+    }
+  }
 }
 

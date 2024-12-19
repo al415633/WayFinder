@@ -6,4 +6,5 @@ abstract class DbAdapterVehicle {
   Future<bool> deleteVehicle(Vehicle vehicle);
   void addFav(Vehicle vehicle);
   void removeFav(Vehicle vehicle);
+  Future<bool> editVehicle(Vehicle vehicle);
 }

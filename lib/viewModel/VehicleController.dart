@@ -74,12 +74,34 @@ class VehicleController {
     return vehicle;
   }
 
+  Future<Vehicle> editVehicle(
+      Vehicle vehicle, double newConsumo, String newNombre) async {
+    // Validar consumo
+    if (!threeDecimalPlacesMax(newConsumo)) {
+      throw NotValidVehicleException();
+    }
 
-Future<Vehicle> editVehicle(Vehicle vehicle, double newConsumo, String newNombre ){
-  throw UnimplementedError();
-}
+    late Vehicle newVehicle;
 
+    // Verificar si ya existe un vehículo con la misma matrícula
+    final currentSet = await vehicleList;
+    final exists = currentSet
+        .any((oldvehicle) => oldvehicle.numberPlate == vehicle.numberPlate);
 
+    if (exists) {
+      newVehicle =
+          Vehicle(vehicle.fuelType, newConsumo, vehicle.numberPlate, newNombre);
+      deleteVehicle(vehicle);
+      _dbAdapter.editVehicle(newVehicle);
+
+      final currentSet = await vehicleList;
+      currentSet.add(newVehicle);
+      vehicleList = Future.value(currentSet);
+    }
+
+    // Devolver el vehículo creado
+    return newVehicle;
+  }
 
   Future<bool> deleteVehicle(Vehicle vehicle) async {
     try {
