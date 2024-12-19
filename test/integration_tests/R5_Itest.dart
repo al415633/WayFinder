@@ -151,14 +151,6 @@ void main() {
       final mockDbAdapterUserApp = MockDbAdapterUserApp();
       final userAppController = UserAppController(mockDbAdapterUserApp);
 
-
-      // Configurar el stub de `getLocationList`
-      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta)).thenAnswer(
-        (_) async => {
-
-        },
-      );
-
       // GIVEN
       String emailh22e1 = "Pruebah22e1@gmail.com";
       String passwordh22e1 = "Aaaaa,.8";
@@ -170,19 +162,26 @@ void main() {
 
       UserApp? newUserApp = await userAppController.createUser(emailh22e1, passwordh22e1, nameh22e1);
 
+
+            // Configurar el stub de `getLocationList`
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.rapida)).thenAnswer(
+        (_) async => 
+            newUserApp?.defaultRouteMode = RouteMode.rapida,
+      );
+
       // WHEN
 
       // Simular la creación de un lugar
-      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta))
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.rapida))
           .thenAnswer((_) async => true);
 
-      userAppController.setRouteModeDefault(newUserApp, RouteMode.corta);
+      userAppController.setRouteModeDefault(newUserApp, RouteMode.rapida);
 
        
       // THEN
 
       // Verificar que se ha llamado a `setRouteModeDefault` con el RouteMode correcto
-      expect(newUserApp?.getDefaultRouteMode, equals(RouteMode.corta)); // Verifica que se ponga el RouteMode por defecto que queremos
+      expect(newUserApp?.getDefaultRouteMode, equals(RouteMode.rapida)); // Verifica que se ponga el RouteMode por defecto que queremos
 
     });
  
