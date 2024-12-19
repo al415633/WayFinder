@@ -1,6 +1,7 @@
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/routeMode.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
@@ -144,8 +145,72 @@ void main() {
 
     });
 
+    test('H22-E1V - Como usuario quiero establecer un modo de ruta por defecto', () async {
+      // Configurar los mocks y el controlador dentro del test
+      final mockAuth = MockFirebaseAuth();
+      final mockDbAdapterUserApp = MockDbAdapterUserApp();
+      final userAppController = UserAppController(mockDbAdapterUserApp);
 
 
+      // Configurar el stub de `getLocationList`
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta)).thenAnswer(
+        (_) async => {
+
+        },
+      );
+
+      // GIVEN
+      String emailh22e1 = "Pruebah22e1@gmail.com";
+      String passwordh22e1 = "Aaaaa,.8";
+      String nameh22e1 = "Pruebah22e1";
+
+      // Simular la creación del usuario
+      when(userAppController.repository.createUser(emailh22e1, passwordh22e1))
+          .thenAnswer((_) async => UserApp("id", nameh22e1, emailh22e1));
+
+      UserApp? newUserApp = await userAppController.createUser(emailh22e1, passwordh22e1, nameh22e1);
+
+      // WHEN
+
+      // Simular la creación de un lugar
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta))
+          .thenAnswer((_) async => true);
+
+      userAppController.setRouteModeDefault(newUserApp, RouteMode.corta);
+
+       
+      // THEN
+
+      // Verificar que se ha llamado a `setRouteModeDefault` con el RouteMode correcto
+      expect(newUserApp?.getDefaultRouteMode, equals(RouteMode.corta)); // Verifica que se ponga el RouteMode por defecto que queremos
+
+    });
+ 
+    test('H22-EI4 No se puede establecer un modo de ruta por defecto si no hay usuario registrado', () async {
+      
+      // Configurar los mocks y el controlador dentro del test
+      final mockAuth = MockFirebaseAuth();
+      final mockDbAdapterUserApp = MockDbAdapterUserApp();
+      final userAppController = UserAppController(mockDbAdapterUserApp);
+
+
+      // GIVEN
+      UserApp? newUserApp = null;
+
+      // WHEN
+
+      // Simular el metodo setRouteModeDefault
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta))
+        .thenThrow(Exception(),);
+      
+      // THEN
+
+      expect(
+        () =>userAppController.setRouteModeDefault(newUserApp, RouteMode.corta),
+        throwsA(isA<Exception>()),
+      );      
+
+    });
 
  });
 

@@ -12,7 +12,10 @@ import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
 import 'package:WayFinder/model/location.dart' as _i8;
+import 'package:WayFinder/model/routeMode.dart' as _i13;
+import 'package:WayFinder/model/transportMode.dart' as _i11;
 import 'package:WayFinder/model/UserApp.dart' as _i10;
+import 'package:WayFinder/model/vehicle.dart' as _i12;
 import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i7;
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i9;
 
@@ -833,4 +836,29 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i9.DbAdapterUserApp {
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);
+
+  @override
+  void setTransportModeDefault(
+    _i11.TransportMode? transportMode,
+    _i12.Vehicle? vehicle,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setTransportModeDefault,
+          [
+            transportMode,
+            vehicle,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setRouteModeDefault(_i13.RouteMode? routeMode) => super.noSuchMethod(
+        Invocation.method(
+          #setRouteModeDefault,
+          [routeMode],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
