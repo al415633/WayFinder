@@ -49,6 +49,16 @@ class VehicleController {
       throw NotValidVehicleException();
     }
 
+    // Verificar si ya existe un vehículo con la misma matrícula
+    final currentSet = await vehicleList;
+    final exists =
+        currentSet.any((vehicle) => vehicle.numberPlate == numberPlate);
+
+    if (exists) {
+      throw Exception(
+          "A vehicle with the number plate $numberPlate already exists.");
+    }
+
     // Crear el objeto Vehicle
     Vehicle vehicle = Vehicle(fuelType, consumption, numberPlate, name);
 
@@ -140,4 +150,3 @@ class VehicleController {
     return divisions[1].length <= 3;
   }
 }
-

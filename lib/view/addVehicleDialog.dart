@@ -92,8 +92,15 @@ void showAddVehicleDialog(BuildContext context, Function(String, FuelType, doubl
                       errorMessage = 'Por favor, completa todos los campos.';
                     });
                   } else {
-                    onVehicleSelected(vehicleNameInput, fuelTypeInput, consumptionInput, numberPlateInput); // Notifica a la pantalla principal
-                    Navigator.of(context).pop();
+                      // Llamar a la función para crear el vehículo
+                      bool res = await onVehicleSelected(vehicleNameInput, fuelTypeInput, consumptionInput, numberPlateInput);
+                      if (!res){
+                        setDialogState(() {
+                        errorMessage = 'Ya existe un vehículo con esa matrícula.';  // Muestra el error en el diálogo
+                      });
+                      }else{
+                        Navigator.of(context).pop();
+                      }
                   }
                 },
                 child: const Text('Crear'),
