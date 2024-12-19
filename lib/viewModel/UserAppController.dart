@@ -1,6 +1,10 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 
 class UserAppController {
@@ -54,6 +58,16 @@ class UserAppController {
     return user;
   }
 
+  void setTransportModeDefault(UserApp? userApp, TransportMode transportMode, Vehicle? vehicle) {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    repository.setTransportModeDefault(transportMode, vehicle);
+    userApp.setDefaultTransportMode = transportMode;
+    userApp.setVehicleDefault = vehicle;
+    
+  }
+
   Future<UserApp?> logInCredenciales(String email, String password) async {
     if (!isValidEmail(email)) {
       throw NotValidEmailException();
@@ -69,6 +83,3 @@ class UserAppController {
     return repository.logOut();
   }
 }
-
-
-

@@ -1,10 +1,27 @@
+import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserApp {
+
+
   late String id;
   late String name;
   late String email;
   late User? user;
+  
+  // Por defeto que se ponga a A Pie  el modo de transporte y que se pueda cambiar
+  late TransportMode defaultTransportMode = TransportMode.aPie;
+  //Para si elige en coche
+  late Vehicle? vehicledefault;
+
+  TransportMode get getDefaultTransportMode => defaultTransportMode;
+  Vehicle? get getVehicleDefault => vehicledefault;
+
+
+  set setDefaultTransportMode(TransportMode defaultTransportMode) => this.defaultTransportMode = defaultTransportMode;
+  set setVehicleDefault(Vehicle? vehicledefault) => this.vehicledefault = vehicledefault;
+
 
   // Constructor
   UserApp(this.id, this.name, this.email);
@@ -28,4 +45,18 @@ class UserApp {
   String toString() {
     return 'User name: $name, email: $email';
   }
+
+  // Método fromMap
+   UserApp.fromMap(Map<String, dynamic> map) {
+    defaultTransportMode= map['defaultTransportMode'];
+  vehicledefault = map['vehicledefault'] != null ? Vehicle.fromMap(map['vehicledefault']) : null;  }
+
+  // Método toMap   
+  Map<String, dynamic> toMap() {
+    return {
+      'defaultTransportMode': defaultTransportMode.name,
+      'vehicledefault': vehicledefault?.toMap(),
+    };
+  }
+
 }
