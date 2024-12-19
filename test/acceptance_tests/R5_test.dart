@@ -1,5 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/transportMode.dart';
@@ -151,9 +152,8 @@ void main() {
 
       // THEN
       final locationList = locations.toList();
-    
-      final Location primerLugar = locationList[0];
 
+      final Location primerLugar = locationList[0];
 
       expect(primerLugar.getFav(),
           equals(true)); // Verifica que el lugar se haya marcado como favorito
@@ -194,10 +194,13 @@ void main() {
         'H21-EV1 Como usuario quiero establecer un modo de transporte por defecto',
         () async {
       // GIVEN
-      String email = "Pruebah21e1@gmail.com";
+      String email =
+          "Pruebah21e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
       String password = "Aaaaa,.8";
       String name = "Pruebah21e1";
 
+      UserApp? userApp =
+          await userAppController.createUser(email, password, name);
       userApp = await userAppController.logInCredenciales(email, password);
 
       adapterLocation =
@@ -205,23 +208,25 @@ void main() {
       locationController = LocationController(adapterLocation);
 
       // WHEN
-      userAppController.setTransportMode(TransportMode.bicicleta, null);
-//THEN
+      userAppController.setTransportModeDefault(
+          userApp!, TransportMode.bicicleta, null);
+      //THEN
       expect(userApp?.getDefaultTransportMode, TransportMode.bicicleta);
+
+      await signInAndDeleteUser(email, password);
     });
 
+    test(
+        'H21-EI3 No se puede establecer un modo de transporte por defecto si no hay usuario registrado',
+        () async {
+      // GIVEN
+      userApp = null;
 
-    test('H21-EI', () async {
-        // GIVEN
-      userApp = null; 
-
-      adapterLocation =
-          FirestoreAdapterLocation(collectionName: "testCollection");
-      locationController = LocationController(adapterLocation);
-
-    //WHEN Y THEN
-    expect(()  => 
-      userAppController.setTransportMode(TransportMode.bicicleta, null), throwsA(isA<NotAuthenticatedUserException>()));
+      //WHEN Y THEN
+      expect(
+          () => userAppController.setTransportModeDefault(
+              userApp, TransportMode.bicicleta, null),
+          throwsA(isA<UserNotAuthenticatedException>()));
     });
 
     test('H22-EV', () async {});
