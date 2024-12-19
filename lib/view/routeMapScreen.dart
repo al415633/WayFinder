@@ -52,58 +52,54 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
   void fetchCoordinates() async {
-    
     setState(() {
-   
       points = route.getPoints;
       distance = route.getDistance;
       estimatedTime = route.getTime;
-
     });
   }
 
   void _onTransportChanged(TransportMode newTransportMode) async {
-    print("en la vista");
-    print(transportMode);
+    
     late RouteMode selectedRouteMode;
     late Vehicle selectedCar;
-    
-    
+    RouteController routeController = RouteController.getInstance(routeAdapter);
+
     if ((transportMode == TransportMode.aPie ||
             transportMode == TransportMode.bicicleta) &&
         newTransportMode == TransportMode.coche) {
       Set<Vehicle> vehicleSet = await vehicleController.getVehicleList();
       List<Vehicle> vehicleList = vehicleSet.toList();
-      
+
       showCarSelectionDialog(
         context,
         vehicleList,
         route,
-        ( selectedRouteMode,  selectedCar) async {
-          RouteController routeController =
-              RouteController.getInstance(routeAdapter);
-          double calculatedCost =
-              await routeController.calculatePrice(route, selectedCar);
+        (selectedRouteMode, selectedCar) async {
+          Routes newroute = await routeController.editRoute(
+              route, newTransportMode, selectedCar, selectedRouteMode);
+          
 
-          setState (() async {
+          setState(() {
+            route = newroute;
             routeMode = selectedRouteMode;
             transportMode = newTransportMode;
             route.setVehicle = selectedCar;
-            route.setCost = calculatedCost;
-            route= await routeController.editRoute(route, newTransportMode, selectedCar, selectedRouteMode);
+
+            route.setCost = newroute.getCost;
 
             fetchCoordinates();
           });
         },
       );
     } else {
-      setState(() async {
-        RouteController routeController =
-            RouteController.getInstance(routeAdapter);
+      Routes newroute =
+          await routeController.editRoute(route, newTransportMode, null, null);
+      setState(()  {
+        route=newroute;
         routeController.onTransportChanged(newTransportMode, route);
         transportMode = newTransportMode;
 
-        route= await routeController.editRoute(route, newTransportMode, null, null);
         fetchCoordinates();
       });
     }
@@ -191,7 +187,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                           'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
                       if (transportMode == TransportMode.aPie ||
                           transportMode == TransportMode.bicicleta)
-                        Text('Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
+                        Text(
+                            'Calorías: ${route.getCalories.toStringAsFixed(0)} kcal'),
                       if (transportMode == TransportMode.coche)
                         Text('Coste: ${route.getCost.toStringAsFixed(2)} €'),
                     ],
@@ -245,7 +242,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                   polylines: [
                     Polyline(
                       points: points
-                          .map((point) => LatLng(point.latitude, point.longitude))
+                          .map((point) =>
+                              LatLng(point.latitude, point.longitude))
                           .toList(),
                       color: Colors.blue,
                       strokeWidth: 4.0,
@@ -267,7 +265,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         onPressed: onPressed,
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Text(label),
       ),

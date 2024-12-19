@@ -310,7 +310,6 @@ class RouteController {
       Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
           newTransportMode, newRouteMode, vehicle);
       double cost = await calculatePrice(route, vehicle);
-      print("cost $cost");
       route.setCost = cost;
     
       return route;

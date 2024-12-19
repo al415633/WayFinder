@@ -7,11 +7,10 @@ import 'package:WayFinder/model/vehicle.dart';
 
 void showCarSelectionDialog(
   BuildContext context,
-  List<Vehicle> vehicles, 
+  List<Vehicle> vehicles,
   Routes route, // Lista de vehículos pasados al diálogo
   Function(RouteMode, Vehicle) onSelectionConfirmed,
 ) {
-
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
 
   // Variables locales para la selección
@@ -45,7 +44,8 @@ void showCarSelectionDialog(
                   onChanged: (value) {
                     setDialogState(() {
                       selectedRouteMode = value!;
-                      errorMessage = ''; // Limpiar error al cambiar tipo de ruta
+                      errorMessage =
+                          ''; // Limpiar error al cambiar tipo de ruta
                     });
                   },
                 ),
@@ -62,18 +62,9 @@ void showCarSelectionDialog(
                     onChanged: (value) async {
                       setDialogState(() {
                         selectedVehicle = value;
-                        errorMessage = ''; // Limpiar error al seleccionar vehículo
+                        errorMessage =
+                            ''; // Limpiar error al seleccionar vehículo
                       });
-
-                      // Recalcular el precio cuando se seleccione un vehículo
-                      if (value != null) {
-                        RouteController routeController =
-                            RouteController.getInstance(FirestoreAdapterRoute());
-                        double newCost = await routeController.calculatePrice(route, value);
-                        setDialogState(() {
-                          route.setCost = newCost;
-                        });
-                      }
                     },
                   )
                 else
@@ -109,15 +100,17 @@ void showCarSelectionDialog(
                         if (selectedRouteMode != RouteMode.noSeleccionado &&
                             selectedVehicle != null) {
                           // Confirmar la selección si todo es válido
-                          onSelectionConfirmed(selectedRouteMode, selectedVehicle!);
+                          onSelectionConfirmed(
+                              selectedRouteMode, selectedVehicle!);
                           Navigator.of(context).pop();
                         } else {
                           // Actualizar el mensaje de error dentro de setDialogState
                           setDialogState(() {
-                            errorMessage = 'Seleccione un tipo de ruta y un vehículo.';
+                            errorMessage =
+                                'Seleccione un tipo de ruta y un vehículo.';
                           });
                         }
-                    },
+                      },
                 child: const Text('Confirmar'),
               ),
             ],
