@@ -25,6 +25,11 @@ class VehicleController {
     return _instance!;
   }
 
+  static void destroyInstance() {
+    _instance = null;
+  }
+
+
   Future<Set<Vehicle>> getVehicleList() async {
     return vehicleList;
   }

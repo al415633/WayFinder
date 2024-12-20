@@ -11,8 +11,10 @@ import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/view/addRouteDialog.dart';
 import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
+import 'package:WayFinder/view/login.dart';
 import 'package:WayFinder/view/defaultTransportDialog.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
+import 'package:WayFinder/view/showConfirmationDialog.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -60,6 +62,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    /*
+    locationController.clearList();
+    routeController.clearList();
+    vehicleController.clearList();
+    */
     userApp = widget.userApp;
     userAppController?.getDefaults(userApp);
     _fetchLocations();
@@ -113,7 +120,7 @@ class _MapScreenState extends State<MapScreen> {
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () {
-                      userAppController?.logOut();
+                      _logOut();
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => MiApp()),
                         (Route<dynamic> route) => false,
@@ -329,13 +336,15 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildSettingsSidePanel(String title, double panelWidth) {
-    return Positioned(
-      left: 0,
-      top: 0,
-      bottom: 0,
-      child: Container(
-        width: panelWidth,
-        color: Colors.white,
+  return Positioned(
+    left: 0,
+    top: 0,
+    bottom: 0,
+    child: Container(
+      width: panelWidth,
+      color: Colors.white,
+      child: SingleChildScrollView(
+        // Permite desplazamiento vertical
         child: Column(
           children: [
             Padding(
@@ -345,36 +354,86 @@ class _MapScreenState extends State<MapScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            Expanded(
-              child: ListView(
-                children: [
-                  ElevatedButton(
-                    child: const Text('Seleccionar transporte por defecto'),
-                    onPressed: () {
-                      showDefalutTransportDialog(
-                          context, vehicles, userApp, onDefaultTransportSelected);
-                    },
-                  ),
-                  ElevatedButton(
-                    child: const Text('Seleccionar tipo de ruta por defecto'),
-                    onPressed: () {
-                      //vueltra función de llamada al dialog
-                    },
-                  ),
-                  ElevatedButton(
-                    child: const Text('Borrar cuenta y datos relacionados'),
-                    onPressed: () {
-                      //vueltra función de llamada al dialog
-                    },
-                  ),
-                ],
+            ElevatedButton(
+              child: const Text('Seleccionar transporte por defecto'),
+              onPressed: () {
+                showDefalutTransportDialog(
+                    context, vehicles, userApp, onDefaultTransportSelected);
+              },
+            ),
+            const SizedBox(height: 12), // Espacio adicional entre botones
+            ElevatedButton(
+              child: const Text('Seleccionar tipo de ruta por defecto'),
+              onPressed: () {
+                // Función para seleccionar ruta por defecto
+              },
+            ),
+            const SizedBox(height: 20), // Espacio adicional
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // Fondo rojo
+                padding: const EdgeInsets.symmetric(
+                    vertical: 8, horizontal: 16), // Ajusta el padding
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Bordes redondeados
+                ),
+                minimumSize: const Size(150, 40), // Ajusta el tamaño mínimo
+              ),
+              onPressed: () {
+                showConfirmationDialog(
+                  context: context,
+                  title: 'Confirmación',
+                  question:
+                      '¿Estás seguro de que deseas eliminar tu cuenta y todos los datos relacionados?',
+                  onConfirm: (bool confirmed) {
+                    if (confirmed) {
+                      // Llama al controlador para eliminar la cuenta
+                      UserAppController userAppController =
+                          UserAppController.getInstance();
+                      userAppController.deleteAccount();
+
+                      // Muestra un mensaje de éxito o redirige
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cuenta eliminada con éxito.'),
+                        ),
+                      );
+
+                      // Opcionalmente, navega a otra pantalla o cierra sesión
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => MiApp(), // Página inicial
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    } else {
+                      // Acción cancelada
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Acción cancelada.'),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+              child: const Text(
+                'Eliminar cuenta',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16), // Texto blanco y tamaño de fuente
               ),
             ),
+            const SizedBox(height: 16), // Espacio final
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   void _onTopMenuSelectionChanged(TopMenuSelection menuSelection) {
     setState(() {
@@ -619,5 +678,22 @@ class _MapScreenState extends State<MapScreen> {
         SnackBar(content: Text('Error al cargar vehículos: $e')),
       );
     }
+  }
+
+  void _logOut() async {
+    UserAppController userAppController = UserAppController.getInstance();
+    RouteController routeController =
+        RouteController.getInstance(FirestoreAdapterRoute());
+    VehicleController vehicleController =
+        VehicleController.getInstance(FirestoreAdapterVehiculo());
+    LocationController locationController =
+        LocationController.getInstance(FirestoreAdapterLocation());
+
+    // Limpia los estados y destruye las instancias
+    userAppController.logOut();
+    //UserAppController.destroyInstance();
+    RouteController.destroyInstance();
+    VehicleController.destroyInstance();
+    LocationController.destroyInstance();
   }
 }

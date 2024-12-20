@@ -641,6 +641,35 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i7.DbAdapterUserApp {
       ) as _i5.Future<_i8.UserApp?>);
 
   @override
+  _i5.Future<void> deleteAccount() => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAccount,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<bool> checkIfUserExists(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #checkIfUserExists,
+          [email],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  _i5.Future<void> deleteAccountForEmail(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAccountForEmail,
+          [email],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<bool> logOut() => (super.noSuchMethod(
         Invocation.method(
           #logOut,

@@ -26,6 +26,11 @@ class LocationController {
     return _instance!;
   }
 
+  static void destroyInstance() {
+    _instance = null;
+  }
+
+
   Future<Set<Location>> getLocationList() async {
     return locationList;
   }
