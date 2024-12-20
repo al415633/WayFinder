@@ -1,3 +1,4 @@
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +13,7 @@ class UserApp {
   
   // Por defeto que se ponga a A Pie  el modo de transporte y que se pueda cambiar
   TransportMode defaultTransportMode = TransportMode.noSeleccionado;
+  RouteMode defaultRouteMode = RouteMode.noSeleccionado;
   //Para si elige en coche
   late Vehicle? vehicledefault;
 
