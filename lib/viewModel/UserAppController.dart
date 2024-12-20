@@ -97,7 +97,13 @@ class UserAppController {
     }
     repository.setRouteModeDefault(routeMode);
     userApp.setDefaultRouteMode = routeMode;
-    
+  }
+
+  RouteMode getRouteModeDefault(UserApp? userApp){
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp.getDefaultRouteMode;
   }
 
   Future<UserApp?> logInCredenciales(String email, String password) async {

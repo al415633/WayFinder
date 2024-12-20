@@ -3,6 +3,7 @@ import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
@@ -19,7 +20,7 @@ Future<void> showAddRouteDialog(
   Location? startLocationInput;
   Location? endLocationInput;
   TransportMode transportModeInput = userAppController.getTransportModeDefault(userApp);// Default value
-  RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
+  RouteMode routeModeInput = userAppController.getRouteModeDefault(userApp); // Default value
   Vehicle? selectedVehicle;
 
   // Mensajes de error
@@ -111,8 +112,6 @@ Future<void> showAddRouteDialog(
                           transportModeInput == TransportMode.bicicleta) {
                         // Asigna un valor predeterminado válido para routeModeInput
                         routeModeInput = RouteMode.economica;
-                      } else {
-                        routeModeInput = RouteMode.noSeleccionado;
                       }
                     });
                   },

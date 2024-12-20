@@ -259,10 +259,13 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
           if (data != null) {
             var defaultTransportMode = data['defaultTransportMode'];
             var vehicleData = data['vehicleDefault'];
+            var defaultRouteMode = data['defaultRouteMode'];
             Vehicle? vehicle;
             userApp!.setDefaultTransportMode = TransportMode.values
                 .firstWhere((element) => element.name == defaultTransportMode);
             userApp.setVehicleDefault = null;
+            userApp.setDefaultRouteMode = RouteMode.values
+                .firstWhere((element) => element.name == defaultRouteMode);
             if (vehicleData != null) {
               vehicle = Vehicle.fromMap(vehicleData);
               userApp.setVehicleDefault = vehicle;

@@ -57,7 +57,8 @@ class UserApp {
   // Método fromMap
    UserApp.fromMap(Map<String, dynamic> map) {
     defaultTransportMode= map['defaultTransportMode'];
-  vehicledefault = map['vehicledefault'] != null ? Vehicle.fromMap(map['vehicledefault']) : null;  }
+  vehicledefault = map['vehicledefault'] != null ? Vehicle.fromMap(map['vehicledefault']) : null;  
+  defaultRouteMode = map['defaultRouteMode'];}
 
   // Método toMap   
   Map<String, dynamic> toMap() {
