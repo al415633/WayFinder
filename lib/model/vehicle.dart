@@ -72,6 +72,37 @@ class Vehicle implements FavItem {
     return name;
   }
 
+  void setFuelType(FuelType fuelType) {
+    this.fuelType = fuelType;
+    switch (fuelType) {
+      case FuelType.gasolina:
+        price = Gasolinecarprice();
+        break;
+      case FuelType.electrico:
+        price = Electriccarprice();
+        break;
+      case FuelType.diesel:
+        price = Dieselcarprice();
+        break;
+    }
+  }
+
+  void setConsumption(double consumption) {
+    this.consumption = consumption;
+  }
+
+  void setNumberPlate(String numberPlate) {
+    this.numberPlate = numberPlate;
+  }
+
+  void setName(String name) {
+    this.name = name;
+  }
+
+  void setFav(bool fav) {
+    this.fav = fav;
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'fueltype': fuelType.name,

@@ -16,42 +16,38 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
-
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  group('R3: Gestión de vehículos', ()  {
-
+  group('R3: Gestión de vehículos', () {
     late DbAdapterVehicle vehicleAdapter;
     late VehicleController vehicleController;
 
-
     late DbAdapterUserApp userAppAdapter;
     late UserAppController userAppController;
-
 
     setUpAll(() async {
       // Inicializar Firebase
       await Firebase.initializeApp(
         options: FirebaseOptions(
-        apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
-        authDomain: "wayfinder-df8eb.firebaseapp.com",
-        projectId: "wayfinder-df8eb",
-        storageBucket: "wayfinder-df8eb.appspot.com",
-        messagingSenderId: "571791500413",
-        appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
-        measurementId: "G-TZLW8P5J8V",
+          apiKey: "AIzaSyDXulZRRGURCCXX9PDfHJR_DMiYHjz2ahU",
+          authDomain: "wayfinder-df8eb.firebaseapp.com",
+          projectId: "wayfinder-df8eb",
+          storageBucket: "wayfinder-df8eb.appspot.com",
+          messagingSenderId: "571791500413",
+          appId: "1:571791500413:web:18f7fd23d9a98f2433fd14",
+          measurementId: "G-TZLW8P5J8V",
         ),
       );
 
-      userAppAdapter = FirestoreAdapterUserApp(collectionName: "testCollection");
+      userAppAdapter =
+          FirestoreAdapterUserApp(collectionName: "testCollection");
       userAppController = UserAppController(userAppAdapter);
-
     });
-    
 
     tearDownAll(() async {
       // Borrar todos los documentos de testCollection
-      var collectionRef = FirebaseFirestore.instance.collection('testCollection');
+      var collectionRef =
+          FirebaseFirestore.instance.collection('testCollection');
       var querySnapshot = await collectionRef.get();
 
       for (var doc in querySnapshot.docs) {
@@ -65,46 +61,52 @@ void main() {
       }
     });
 
- Future<void> deleteVehicle(String numberPlate) async {
-  var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-  var querySnapshot = await collectionRef.where('numberPlate', isEqualTo: numberPlate).get();
+    Future<void> deleteVehicle(String numberPlate) async {
+      var collectionRef =
+          FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot = await collectionRef
+          .where('numberPlate', isEqualTo: numberPlate)
+          .get();
 
-  for (var doc in querySnapshot.docs) {
-    await doc.reference.delete();
-  }
-  vehicleController.vehicleList = Future.value(<Vehicle>{});
- }
-
-  Future<void> cleanUp() async {
-    var collectionRef = FirebaseFirestore.instance.collection('testCollection');
-    var querySnapshot = await collectionRef.get();
-    for (var doc in querySnapshot.docs) {
-      await doc.reference.delete(); 
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+      vehicleController.vehicleList = Future.value(<Vehicle>{});
     }
-  }
-   Future<UserApp?> signInAndDeleteUser(String email, String password) async {
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    await cleanUp();
-    await userCredential.user!.delete();
-    return null;
-  }
+
+    Future<void> cleanUp() async {
+      var collectionRef =
+          FirebaseFirestore.instance.collection('testCollection');
+      var querySnapshot = await collectionRef.get();
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+    }
+
+    Future<UserApp?> signInAndDeleteUser(String email, String password) async {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await cleanUp();
+      await userCredential.user!.delete();
+      return null;
+    }
 
     test('H9-E1V - Crear vehiculo', () async {
-
       //GIVEN
 
       //Loguear usuario
-       String email = "Pruebah9e1@gmail.com";
+      String email = "Pruebah9e1@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebah9e1";
+      String name = "Pruebah9e1";
 
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
 
-      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleAdapter =
+          FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
       //WHEN
 
@@ -113,8 +115,8 @@ void main() {
       final String numberPlate = "DKR9087";
       final FuelType fuelType = FuelType.gasolina;
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
-
+      await vehicleController.createVehicle(
+          numberPlate, consumption, fuelType, namec);
 
       //THEN
 
@@ -122,39 +124,36 @@ void main() {
 
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleList = vehicles.toList();
-      
+
       // Acceder al primer objeto en la lista
       final firstPlace = vehicleList[0];
 
       // Verificar que los valores del primer lugar son los esperados
       expect(firstPlace.getConsumption(), equals(24.3)); // Verifica consumo
-      expect(firstPlace.getFuelType(), FuelType.gasolina); // Verifica combustible
-      expect(firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
-      expect(firstPlace.getName(), equals("Coche Quique"));  // Verifica nombre
-    
-    
-    await signInAndDeleteUser(email, password);
-    await deleteVehicle(numberPlate);
+      expect(
+          firstPlace.getFuelType(), FuelType.gasolina); // Verifica combustible
+      expect(
+          firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
+      expect(firstPlace.getName(), equals("Coche Quique")); // Verifica nombre
 
-
-
+      await signInAndDeleteUser(email, password);
+      await deleteVehicle(numberPlate);
     });
-
 
     test('H9-E3I - Crear vehículo inválido', () async {
       //GIVEN
       String email = "Pruebah9e3@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebah9e3";
+      String name = "Pruebah9e3";
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
 
-      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleAdapter =
+          FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
 
       //Loguear usuario
       //Hecho en el SetUpAll
-
 
       //WHEN
 
@@ -163,27 +162,21 @@ void main() {
       final String numberPlate = "DKR9087";
       final FuelType fuelType = FuelType.gasolina;
 
-
       //THEN
 
       Set<Vehicle> result = await vehicleController.getVehicleList();
 
-
-
-
-
       // THEN
-      expect(() async => await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec),
+      expect(
+        () async => await vehicleController.createVehicle(
+            numberPlate, consumption, fuelType, namec),
         throwsA(isA<Exception>()),
       );
 
-
-      expect(result.isEmpty, true); 
+      expect(result.isEmpty, true);
 
       await signInAndDeleteUser(email, password);
-
     });
-
 
     test('H10-E1V - Listar vehículos válido', () async {
       //GIVEN
@@ -191,11 +184,12 @@ void main() {
       //Hecho en el setUpAll
       String email = "Pruebah10e1@gmail.com";
       String password = "Aaaaa,.8";
-      String name="Pruebah10e1";
+      String name = "Pruebah10e1";
       await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
 
-      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleAdapter =
+          FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
 
       //Tiene vehículo {nombre: "Coche Quique", consumo: 24.3, matricula: "DKR9087", combustible: "Gasolina"}
@@ -204,10 +198,8 @@ void main() {
       final String numberPlate = "DKR9087";
       final FuelType fuelType = FuelType.gasolina;
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, namec);
-
-
-
+      await vehicleController.createVehicle(
+          numberPlate, consumption, fuelType, namec);
 
       //WHEN
       Set<Vehicle> vehicleList = await vehicleController.getVehicleList();
@@ -218,16 +210,13 @@ void main() {
       expect(vehicleList.first.name, equals("Coche Quique"));
       expect(vehicleList.first.fuelType, FuelType.gasolina);
       expect(vehicleList.first.numberPlate, equals("DKR9087"));
-      
+
       await deleteVehicle(numberPlate);
       await signInAndDeleteUser(email, password);
-
-
     });
 
-
     test('H10-4I - Listar vehículos sin conexion a la BBDD', () async {
-    /*
+      /*
     //WHEN
       void action() async {
        final Set<Vehicle> vehicles = await vehicleController.getVehicleList();
@@ -239,34 +228,31 @@ void main() {
   );
 
   */
-
-
     });
 
-
     test('H10-E2V - Listar vehículos BBDD vacía', () async {
-       
-       //GIVEN
+      //GIVEN
 
       String emailh10e2v = "Pruebah10e2@gmail.com";
       String passwordh10e2v = "Aaaaa,.8";
-      String nameh10e2v="Pruebah10e2";
-      await userAppController.createUser(emailh10e2v, passwordh10e2v, nameh10e2v);
+      String nameh10e2v = "Pruebah10e2";
+      await userAppController.createUser(
+          emailh10e2v, passwordh10e2v, nameh10e2v);
       await userAppController.logInCredenciales(emailh10e2v, passwordh10e2v);
 
-      vehicleAdapter = FirestoreAdapterVehiculo(collectionName: "testCollection");
+      vehicleAdapter =
+          FirestoreAdapterVehiculo(collectionName: "testCollection");
       vehicleController = VehicleController(vehicleAdapter);
       //WHEN
 
       final vehicleList = await vehicleController.getVehicleList();
-
 
       //THEN
 
       expect(vehicleList, isEmpty);
       await signInAndDeleteUser(emailh10e2v, passwordh10e2v);
     });
-       
+
 //Eliminar vehiculo
     test('H11-E1V - Eliminar vehículo', () async {
       //GIVEN
@@ -280,14 +266,16 @@ void main() {
 
       await userAppController.logInCredenciales(emailh11e1, passwordh11e1);
 
-      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      vehicleController = VehicleController(
+          FirestoreAdapterVehiculo(collectionName: "testCollection"));
 
       //WHEN
       String matricula = "9087DKR";
       double consumo = 24.3;
       FuelType combustible = FuelType.gasolina;
       String nombre = "Coche Quique";
-      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+      Vehicle vehicle1 = await vehicleController.createVehicle(
+          matricula, consumo, combustible, nombre);
 
       await vehicleController.deleteVehicle(vehicle1);
 
@@ -298,13 +286,15 @@ void main() {
       // Convertir el set a una lista para acceder al primer elemento
       final vehicleListh11e1 = vehicle.toList();
 
-      expect(vehicleListh11e1.length, equals(0)); // Verifica que no hay vehiculos en lista
+      expect(vehicleListh11e1.length,
+          equals(0)); // Verifica que no hay vehiculos en lista
 
       await signInAndDeleteUser(emailh11e1, passwordh11e1);
       await deleteVehicle(matricula);
     });
 
-    test('H11-E4I - Eliminar vehículo inválido, usuario no registrado', () async {
+    test('H11-E4I - Eliminar vehículo inválido, usuario no registrado',
+        () async {
       //GIVEN
       //Loguear usuario
       String emailh11e4 =
@@ -315,14 +305,16 @@ void main() {
 
       await userAppController.logInCredenciales(emailh11e4, passwordh11e4);
 
-      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      vehicleController = VehicleController(
+          FirestoreAdapterVehiculo(collectionName: "testCollection"));
 
       //WHEN
       String matricula = "9087DKR";
       double consumo = 24.3;
       FuelType combustible = FuelType.gasolina;
       String nombre = "Coche Quique";
-      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+      Vehicle vehicle1 = await vehicleController.createVehicle(
+          matricula, consumo, combustible, nombre);
 
       await vehicleController.deleteVehicle(vehicle1);
 
@@ -335,26 +327,27 @@ void main() {
       );
     });
 
-
-
     test('H12-E1V -Se debe de poder cambiar los datos del vehiculo', () async {
       //GIVEN
-      //Loguear usuario
-      String email ="Pruebah12e1@gmail.com";
+      //crear y loguear usuario
+      String email = "Pruebah12e1@gmail.com";
       String password = "Aaaaa,.8";
       String name = "Pruebah12e1";
 
+      await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
 
-      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      vehicleController = VehicleController(
+          FirestoreAdapterVehiculo(collectionName: "testCollection"));
       String matricula = "9087DKR";
       double consumo = 24.3;
       FuelType combustible = FuelType.gasolina;
       String nombre = "Coche Quique";
-      Vehicle vehicle1 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+      Vehicle vehicle1 = await vehicleController.createVehicle(
+          matricula, consumo, combustible, nombre);
 
       //WHEN
-      
+
       double newconsumo = 55.0;
       String newnombre = "Coche Cambiado";
       vehicleController.editVehicle(vehicle1, newconsumo, newnombre);
@@ -362,36 +355,43 @@ void main() {
       //THEN
       expect(vehicle1.getConsumption(), equals(55));
       expect(vehicle1.getName(), equals("Coche Cambiado"));
+
+   //   await vehicleController.deleteVehicle(vehicle1);
+     // await signInAndDeleteUser(email, password);
     });
 
-
-      test('H12-E3V -No se debe poder camiar un vehiculo si los datos no son validos', () async {
+    test(
+        'H12-E3V -No se debe poder cambiar un vehiculo si los datos no son válidos',
+        () async {
       //GIVEN
-      //Loguear usuario
-      String email ="Pruebah12e2@gmail.com";
+      //Crear y loguear usuario
+      String email = "Pruebah12e2@gmail.com";
       String password = "Aaaaa,.8";
       String name = "Pruebah12e2";
-
+      await userAppController.createUser(email, password, name);
       await userAppController.logInCredenciales(email, password);
 
-      vehicleController = VehicleController(FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      vehicleController = VehicleController(
+          FirestoreAdapterVehiculo(collectionName: "testCollection"));
       String matricula = "0909AAA";
       double consumo = 12.7;
       FuelType combustible = FuelType.gasolina;
       String nombre = "Coche Quique2";
-      Vehicle vehicle2 = await vehicleController.createVehicle(matricula, consumo, combustible, nombre);
+      Vehicle vehicle2 = await vehicleController.createVehicle(
+          matricula, consumo, combustible, nombre);
 
       //WHEN
-      
+
       double newconsumo = -1;
       String newnombre = "Coche Cambiado";
 
-
       //THEN
-         expect(() => vehicleController.editVehicle(vehicle2, newconsumo, newnombre), throwsA(isA<NotValidVehicleException>()));
+      expect(
+          () => vehicleController.editVehicle(vehicle2, newconsumo, newnombre),
+          throwsA(isA<NotValidVehicleException>()));
 
+      await vehicleController.deleteVehicle(vehicle2);
+      await signInAndDeleteUser(email, password);
     });
-
   });
-  
-  }
+}
