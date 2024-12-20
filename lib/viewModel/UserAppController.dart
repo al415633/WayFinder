@@ -24,6 +24,7 @@ class UserAppController {
     }
     return _instance!;
   }
+  
 
   bool isValidEmail(String email) {
     final emailRegex =

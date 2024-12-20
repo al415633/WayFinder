@@ -31,6 +31,11 @@ class RouteController {
     return _instance!;
   }
 
+  static void destroyInstance() {
+    _instance = null;
+  }
+
+
   Future<Set<Routes>> getRouteList() async {
     return routeList;
   }

@@ -11,7 +11,7 @@ import 'package:firebase_auth_platform_interface/firebase_auth_platform_interfac
 import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
-import 'package:WayFinder/model/transportMode.dart' as _i9;
+import 'package:WayFinder/model/enum/transportMode.dart' as _i9;
 import 'package:WayFinder/model/UserApp.dart' as _i8;
 import 'package:WayFinder/model/vehicle.dart' as _i10;
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i7;

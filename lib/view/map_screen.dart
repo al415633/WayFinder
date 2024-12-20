@@ -10,7 +10,9 @@ import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/view/addRouteDialog.dart';
 import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
+import 'package:WayFinder/view/login.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
+import 'package:WayFinder/view/showConfirmationDialog.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -18,6 +20,7 @@ import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -55,6 +58,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    /*
+    locationController.clearList();
+    routeController.clearList();
+    vehicleController.clearList();
+    */
     _fetchLocations();
     _fetchRoutes();
     _fetchVehicles();
@@ -105,7 +113,7 @@ class _MapScreenState extends State<MapScreen> {
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () {
-                      userAppController?.logOut();
+                      _logOut();
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => MiApp()),
                         (Route<dynamic> route) => false,
@@ -149,8 +157,7 @@ class _MapScreenState extends State<MapScreen> {
                     panelWidth),
               if (_topMenuSelection == TopMenuSelection.settings)
                 _buildSettingsSidePanel(
-                    TopMenuSelection.settings.name,
-                    panelWidth),
+                    TopMenuSelection.settings.name, panelWidth),
             ],
           );
         },
@@ -307,9 +314,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildSettingsSidePanel(
-      String title,
-      double panelWidth) {
+  Widget _buildSettingsSidePanel(String title, double panelWidth) {
     return Positioned(
       left: 0,
       top: 0,
@@ -317,18 +322,20 @@ class _MapScreenState extends State<MapScreen> {
       child: Container(
         width: panelWidth,
         color: Colors.white,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        child: SingleChildScrollView(
+          // Permite desplazamiento vertical
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  title,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
               ),
-            ),
-            ListTile(
-              title: Text('Seleccionar medio de transporte por defecto'),
-              /*onTap: () {
+              ListTile(
+                title: Text('Seleccionar medio de transporte por defecto'),
+                /*onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -336,10 +343,10 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 );
               },*/
-            ),
-            ListTile(
-              title: Text('Seleccionar tipo de ruta por defecto'),
-              /*onTap: () {
+              ),
+              ListTile(
+                title: Text('Seleccionar tipo de ruta por defecto'),
+                /*onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -347,19 +354,67 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 );
               },*/
-            ),
-            ListTile(
-              title: Text('Borrar cuenta y datos relacionados'),
-              /*onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return DeleteDialog();
-                  },
-                );
-              },*/
-            ),
-          ],
+              ),
+              const SizedBox(height: 20), // Espacio adicional
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Fondo rojo
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8, horizontal: 16), // Ajusta el padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(8.0), // Bordes redondeados
+                  ),
+                  minimumSize: Size(150, 40), // Ajusta el tamaño mínimo
+                ),
+                onPressed: () {
+                  showConfirmationDialog(
+                    context: context,
+                    title: 'Confirmación',
+                    question:
+                        '¿Estás seguro de que deseas eliminar tu cuenta y todos los datos relacionados?',
+                    onConfirm: (bool confirmed) {
+                      if (confirmed) {
+                        // Llama al controlador para eliminar la cuenta
+                        UserAppController userAppController =
+                            UserAppController.getInstance();
+                        userAppController.deleteAccount();
+
+                        // Muestra un mensaje de éxito o redirige
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Cuenta eliminada con éxito.'),
+                          ),
+                        );
+
+                        // Opcionalmente, navega a otra pantalla o cierra sesión
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => MiApp(), // Página inicial
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
+                      } else {
+                        // Acción cancelada
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Acción cancelada.'),
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+                child: const Text(
+                  'Eliminar cuenta',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16), // Texto blanco y tamaño de fuente
+                ),
+              ),
+              const SizedBox(height: 16), // Espacio final
+            ],
+          ),
         ),
       ),
     );
@@ -608,5 +663,22 @@ class _MapScreenState extends State<MapScreen> {
         SnackBar(content: Text('Error al cargar vehículos: $e')),
       );
     }
+  }
+
+  void _logOut() async {
+    UserAppController userAppController = UserAppController.getInstance();
+    RouteController routeController =
+        RouteController.getInstance(FirestoreAdapterRoute());
+    VehicleController vehicleController =
+        VehicleController.getInstance(FirestoreAdapterVehiculo());
+    LocationController locationController =
+        LocationController.getInstance(FirestoreAdapterLocation());
+
+    // Limpia los estados y destruye las instancias
+    userAppController.logOut();
+    //UserAppController.destroyInstance();
+    RouteController.destroyInstance();
+    VehicleController.destroyInstance();
+    LocationController.destroyInstance();
   }
 }
