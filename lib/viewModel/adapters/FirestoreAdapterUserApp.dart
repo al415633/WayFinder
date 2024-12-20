@@ -95,6 +95,8 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       User? user = userCredential.user;
       UserApp usuario = UserApp(user!.uid, user.displayName ?? '', email);
       usuario.setUser = user;
+      print(user.email);
+      print(user.uid);
       return usuario;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -117,6 +119,92 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       return true;
     } catch (e) {
       throw UserNotAuthenticatedException();
+    }
+  }
+
+
+  Future<void> _deleteSubCollections(String userId) async {
+    // Lista de nombres de colecciones asociadas al usuario
+    final List<String> subCollectionNames = ['LocationList', 'RouteList', 'VehicleList']; // Actualiza con tus nombres de colecciones
+
+    for (String collectionName in subCollectionNames) {
+      QuerySnapshot subCollectionSnapshot = await db
+          .collection(_collectionName) // Colección principal (usuarios)
+          .doc(userId)
+          .collection(collectionName)
+          .get();
+
+      for (QueryDocumentSnapshot doc in subCollectionSnapshot.docs) {
+        await doc.reference.delete();
+      }
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    User? currentUser = auth.currentUser;
+
+    if (currentUser == null) {
+      throw UserNotAuthenticatedException();
+    }
+
+    try {
+      // Eliminar subcolecciones asociadas al usuario
+      await _deleteSubCollections(currentUser.uid);
+
+      // Eliminar el documento principal del usuario
+      await db.collection(_collectionName).doc(currentUser.uid).delete();
+
+      // Eliminar la cuenta de Firebase Authentication
+      await currentUser.delete();
+    } catch (e) {
+      if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
+        throw UserNotAuthenticatedException();
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> deleteAccountForEmail(String email) async {
+    var querySnapshot = await db
+        .collection(_collectionName)
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw UserNotExistException();
+    }
+
+    // Documento del usuario encontrado
+    var userDoc = querySnapshot.docs.first;
+
+    // Eliminar subcolecciones asociadas
+    await _deleteSubCollections(userDoc.id);
+
+    // Eliminar el documento principal del usuario
+    await db.collection(_collectionName).doc(userDoc.id).delete();
+  }
+
+  @override
+  Future<bool> checkIfUserExists(String email) async {
+    try {
+      // Verificar si el email ya está registrado en Firebase Authentication
+      var methods = await auth.fetchSignInMethodsForEmail(email);
+      if (methods.isNotEmpty) {
+        return true;
+      }
+
+      // Verificar si el email existe en la colección de Firestore
+      var querySnapshot = await db
+          .collection(_collectionName)
+          .where('email', isEqualTo: email)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      rethrow;
     }
   }
 
