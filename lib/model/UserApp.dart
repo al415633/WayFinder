@@ -1,5 +1,4 @@
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -12,9 +11,7 @@ class UserApp {
   late User? user;
   
   // Por defeto que se ponga a A Pie  el modo de transporte y que se pueda cambiar
-  late TransportMode defaultTransportMode = TransportMode.aPie;
-  // Por defeto que se ponga a corta el modo de ruta y que se pueda cambiar
-  late RouteMode defaultRouteMode = RouteMode.corta;
+  TransportMode defaultTransportMode = TransportMode.noSeleccionado;
   //Para si elige en coche
   late Vehicle? vehicledefault;
 
@@ -37,6 +34,9 @@ class UserApp {
   String get getName => name;
   String get getEmail => email;
   User? get getUser => user;
+
+
+
 
 
   // Setters

@@ -1,6 +1,6 @@
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 
 abstract class DbAdapterUserApp {
@@ -9,4 +9,5 @@ abstract class DbAdapterUserApp {
   Future<bool> logOut();
   void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle);
   void setRouteModeDefault(RouteMode routeMode);
-}
+    Future<UserApp?> getActualUser();
+    Future<void> getDefaults(UserApp? userApp);}

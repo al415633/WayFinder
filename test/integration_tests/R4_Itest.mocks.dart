@@ -12,10 +12,10 @@ import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:latlong2/latlong.dart' as _i12;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
+import 'package:WayFinder/model/enum/routeMode.dart' as _i11;
+import 'package:WayFinder/model/enum/transportMode.dart' as _i10;
 import 'package:WayFinder/model/location.dart' as _i9;
 import 'package:WayFinder/model/route.dart' as _i8;
-import 'package:WayFinder/model/routeMode.dart' as _i11;
-import 'package:WayFinder/model/transportMode.dart' as _i10;
 import 'package:WayFinder/model/UserApp.dart' as _i14;
 import 'package:WayFinder/model/vehicle.dart' as _i15;
 import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i16;
@@ -920,6 +920,26 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  _i5.Future<_i14.UserApp?> getActualUser() => (super.noSuchMethod(
+        Invocation.method(
+          #getActualUser,
+          [],
+        ),
+        returnValue: _i5.Future<_i14.UserApp?>.value(),
+        returnValueForMissingStub: _i5.Future<_i14.UserApp?>.value(),
+      ) as _i5.Future<_i14.UserApp?>);
+
+  @override
+  _i5.Future<void> getDefaults(_i14.UserApp? userApp) => (super.noSuchMethod(
+        Invocation.method(
+          #getDefaults,
+          [userApp],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }
 
 /// A class which mocks [DbAdapterLocation].

@@ -11,8 +11,8 @@ import 'package:firebase_auth_platform_interface/firebase_auth_platform_interfac
 import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
-import 'package:WayFinder/model/routeMode.dart' as _i11;
-import 'package:WayFinder/model/transportMode.dart' as _i9;
+import 'package:WayFinder/model/enum/routeMode.dart' as _i11;
+import 'package:WayFinder/model/enum/transportMode.dart' as _i9;
 import 'package:WayFinder/model/UserApp.dart' as _i8;
 import 'package:WayFinder/model/vehicle.dart' as _i10;
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i7;
@@ -674,4 +674,23 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i7.DbAdapterUserApp {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  _i5.Future<_i8.UserApp?> getActualUser() => (super.noSuchMethod(
+        Invocation.method(
+          #getActualUser,
+          [],
+        ),
+        returnValue: _i5.Future<_i8.UserApp?>.value(),
+      ) as _i5.Future<_i8.UserApp?>);
+
+  @override
+  _i5.Future<void> getDefaults(_i8.UserApp? userApp) => (super.noSuchMethod(
+        Invocation.method(
+          #getDefaults,
+          [userApp],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }
