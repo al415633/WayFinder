@@ -1,11 +1,12 @@
 import 'package:WayFinder/main.dart';
+import 'package:WayFinder/model/enum/topMenuSelection.dart';
 import 'package:WayFinder/model/favItem.dart';
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/routeMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/view/addRouteDialog.dart';
 import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
@@ -29,13 +30,12 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  TopMenuSelection _topMenuSelection = TopMenuSelection.noSeleccionado;
+
   List listOfPoints = [];
   List<LatLng> points = [];
   TransportMode transportMode = TransportMode.coche; // por defecto
   LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
-  bool showInterestPlaces = false;
-  bool showRoutes = false;
-  bool showVehicles = false;
   bool isSelectingLocation =
       false; // Nuevo estado para habilitar la selección en el mapa
   String? locationName;
@@ -78,17 +78,17 @@ class _MapScreenState extends State<MapScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildTopButton(
-                          'Lugares de interés', transportMode == 'locations',
-                          () {
-                        _onModeChanged('locations');
+                      _buildTopButton(TopMenuSelection.locations.name,
+                          _topMenuSelection == TopMenuSelection.locations, () {
+                        _onTopMenuSelectionChanged(TopMenuSelection.locations);
                       }),
-                      _buildTopButton('Rutas', transportMode == 'routes', () {
-                        _onModeChanged('routes');
+                      _buildTopButton(TopMenuSelection.routes.name,
+                          _topMenuSelection == TopMenuSelection.routes, () {
+                        _onTopMenuSelectionChanged(TopMenuSelection.routes);
                       }),
-                      _buildTopButton('Vehículos', transportMode == 'vehicles',
-                          () {
-                        _onModeChanged('vehicles');
+                      _buildTopButton(TopMenuSelection.vehicles.name,
+                          _topMenuSelection == TopMenuSelection.vehicles, () {
+                        _onTopMenuSelectionChanged(TopMenuSelection.vehicles);
                       }),
                     ],
                   ),
@@ -99,7 +99,7 @@ class _MapScreenState extends State<MapScreen> {
                   IconButton(
                     icon: const Icon(Icons.settings, color: Colors.white),
                     onPressed: () {
-                      _onModeChanged('settings');
+                      _onTopMenuSelectionChanged(TopMenuSelection.settings);
                     },
                   ),
                   IconButton(
@@ -125,27 +125,31 @@ class _MapScreenState extends State<MapScreen> {
           return Stack(
             children: [
               _buildFlutterMap(),
-              if (showInterestPlaces)
+              if (_topMenuSelection == TopMenuSelection.locations)
                 _buildSidePanel(
-                    'Lugares de interés',
+                    TopMenuSelection.locations.name,
                     locations,
                     (item) => _buildLocationItem(item as Location),
                     () => showAddLocationDialog(context, _onLocationSelected),
                     panelWidth),
-              if (showRoutes)
+              if (_topMenuSelection == TopMenuSelection.routes)
                 _buildSidePanel(
-                    'Rutas',
+                    TopMenuSelection.routes.name,
                     routes,
                     (item) => _buildRouteItem(item as Routes),
                     () => showAddRouteDialog(
                         context, locations, vehicles, _onRouteSelected),
                     panelWidth),
-              if (showVehicles)
+              if (_topMenuSelection == TopMenuSelection.vehicles)
                 _buildSidePanel(
-                    'Vehículos',
+                    TopMenuSelection.vehicles.name,
                     vehicles,
                     (item) => _buildVehicleItem(item as Vehicle),
                     () => showAddVehicleDialog(context, _onVehicleSelected),
+                    panelWidth),
+              if (_topMenuSelection == TopMenuSelection.settings)
+                _buildSettingsSidePanel(
+                    TopMenuSelection.settings.name,
                     panelWidth),
             ],
           );
@@ -303,26 +307,67 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  void _onModeChanged(String mode) {
+  Widget _buildSettingsSidePanel(
+      String title,
+      double panelWidth) {
+    return Positioned(
+      left: 0,
+      top: 0,
+      bottom: 0,
+      child: Container(
+        width: panelWidth,
+        color: Colors.white,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ),
+            ListTile(
+              title: Text('Seleccionar medio de transporte por defecto'),
+              /*onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DefaultTransportDialog();
+                  },
+                );
+              },*/
+            ),
+            ListTile(
+              title: Text('Seleccionar tipo de ruta por defecto'),
+              /*onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DefaultRouteDialog();
+                  },
+                );
+              },*/
+            ),
+            ListTile(
+              title: Text('Borrar cuenta y datos relacionados'),
+              /*onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DeleteDialog();
+                  },
+                );
+              },*/
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onTopMenuSelectionChanged(TopMenuSelection menuSelection) {
     setState(() {
-      //transportMode = mode;
-      if (mode == 'locations') {
-        showInterestPlaces = true; // Muestra el panel lateral
-        showRoutes = false; // Muestra el panel lateral de rutas
-        showVehicles = false;
-      } else if (mode == 'routes') {
-        showRoutes = true; // Muestra el panel lateral de rutas
-        showInterestPlaces = false; // Oculta el panel lateral de lugares
-        showVehicles = false;
-      } else if (mode == 'vehicles') {
-        showRoutes = false;
-        showInterestPlaces = false;
-        showVehicles = true;
-      } else {
-        showInterestPlaces = false; // Oculta ambos paneles
-        showRoutes = false;
-        showVehicles = false;
-      }
+      _topMenuSelection = menuSelection;
     });
   }
 

@@ -1,7 +1,7 @@
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:latlong2/latlong.dart';
 
 abstract class DbAdapterRoute {

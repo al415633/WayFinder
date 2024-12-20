@@ -1,5 +1,5 @@
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 
 abstract class DbAdapterUserApp {

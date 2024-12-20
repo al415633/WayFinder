@@ -1,8 +1,6 @@
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/VehicleController.dart';
-import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
@@ -20,8 +18,6 @@ void showAddRouteDialog(
   TransportMode transportModeInput = TransportMode.coche; // Default value
   RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
   Vehicle? selectedVehicle;
-  VehicleController vehicleController =
-      VehicleController.getInstance(FirestoreAdapterVehiculo());
 
   // Mensajes de error
   String errorMessage = '';
