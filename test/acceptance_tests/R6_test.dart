@@ -140,6 +140,7 @@ void main() {
       expect(locationList.contains(location), true);
     });
 
+    // No se puede hacer test inválido en aceptación --> hecho en integración
 
   });
 }
