@@ -1,6 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';

@@ -1,24 +1,15 @@
-import 'package:WayFinder/exceptions/APIRoutesExcpetion.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
-import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
-import 'dart:convert';
-import 'package:WayFinder/APIs/apiConection.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
-import 'dart:math';
 
 class RouteController {
   // Propiedades

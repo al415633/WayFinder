@@ -1,9 +1,8 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 

@@ -1,8 +1,6 @@
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/viewModel/RouteController.dart';
-import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:flutter/material.dart';
-import 'package:WayFinder/model/routeMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 
 void showCarSelectionDialog(
@@ -11,8 +9,6 @@ void showCarSelectionDialog(
   Routes route, // Lista de vehículos pasados al diálogo
   Function(RouteMode, Vehicle) onSelectionConfirmed,
 ) {
-  FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
-
   // Variables locales para la selección
   RouteMode selectedRouteMode = RouteMode.noSeleccionado; // Default
   Vehicle? selectedVehicle;

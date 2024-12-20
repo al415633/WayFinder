@@ -1,4 +1,4 @@
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

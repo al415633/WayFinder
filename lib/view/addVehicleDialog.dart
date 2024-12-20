@@ -1,4 +1,4 @@
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:flutter/material.dart';
 
 void showAddVehicleDialog(BuildContext context, Function(String, FuelType, double, String) onVehicleSelected) {
