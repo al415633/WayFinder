@@ -1,4 +1,5 @@
 import 'package:WayFinder/main.dart';
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/topMenuSelection.dart';
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
@@ -10,6 +11,7 @@ import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/view/addRouteDialog.dart';
 import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
+import 'package:WayFinder/view/defaultTransportDialog.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
@@ -18,12 +20,14 @@ import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final UserApp? userApp;
+  const MapScreen({super.key, this.userApp});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -51,13 +55,17 @@ class _MapScreenState extends State<MapScreen> {
   List<Vehicle> vehicles = [];
   UserAppController? userAppController = UserAppController.getInstance();
   late double cost;
+  UserApp? userApp;
 
   @override
   void initState() {
     super.initState();
+    userApp = widget.userApp;
+    userAppController?.getDefaults(userApp);
     _fetchLocations();
     _fetchRoutes();
     _fetchVehicles();
+    
   }
 
   @override
@@ -138,7 +146,7 @@ class _MapScreenState extends State<MapScreen> {
                     routes,
                     (item) => _buildRouteItem(item as Routes),
                     () => showAddRouteDialog(
-                        context, locations, vehicles, _onRouteSelected),
+                        context, locations, vehicles, userApp, _onRouteSelected),
                     panelWidth),
               if (_topMenuSelection == TopMenuSelection.vehicles)
                 _buildSidePanel(
@@ -149,8 +157,7 @@ class _MapScreenState extends State<MapScreen> {
                     panelWidth),
               if (_topMenuSelection == TopMenuSelection.settings)
                 _buildSettingsSidePanel(
-                    TopMenuSelection.settings.name,
-                    panelWidth),
+                    TopMenuSelection.settings.name, panelWidth),
             ],
           );
         },
@@ -268,6 +275,20 @@ class _MapScreenState extends State<MapScreen> {
     _showRoutes(route);
   }
 
+  Future<void> onDefaultTransportSelected(
+      TransportMode transportMode, Vehicle? vehicle) async {
+    try {
+
+      userAppController?.setTransportModeDefault(
+            userApp, transportMode, vehicle);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error al seleccionar transporte por defecto: $e')),
+      );
+    }
+  }
+
   Widget _buildSidePanel(
       String title,
       List items,
@@ -307,9 +328,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildSettingsSidePanel(
-      String title,
-      double panelWidth) {
+  Widget _buildSettingsSidePanel(String title, double panelWidth) {
     return Positioned(
       left: 0,
       top: 0,
@@ -326,38 +345,30 @@ class _MapScreenState extends State<MapScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            ListTile(
-              title: Text('Seleccionar medio de transporte por defecto'),
-              /*onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return DefaultTransportDialog();
-                  },
-                );
-              },*/
-            ),
-            ListTile(
-              title: Text('Seleccionar tipo de ruta por defecto'),
-              /*onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return DefaultRouteDialog();
-                  },
-                );
-              },*/
-            ),
-            ListTile(
-              title: Text('Borrar cuenta y datos relacionados'),
-              /*onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return DeleteDialog();
-                  },
-                );
-              },*/
+            Expanded(
+              child: ListView(
+                children: [
+                  ElevatedButton(
+                    child: const Text('Seleccionar transporte por defecto'),
+                    onPressed: () {
+                      showDefalutTransportDialog(
+                          context, vehicles, userApp, onDefaultTransportSelected);
+                    },
+                  ),
+                  ElevatedButton(
+                    child: const Text('Seleccionar tipo de ruta por defecto'),
+                    onPressed: () {
+                      //vueltra función de llamada al dialog
+                    },
+                  ),
+                  ElevatedButton(
+                    child: const Text('Borrar cuenta y datos relacionados'),
+                    onPressed: () {
+                      //vueltra función de llamada al dialog
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),

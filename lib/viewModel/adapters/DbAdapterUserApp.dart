@@ -7,4 +7,5 @@ abstract class DbAdapterUserApp {
   Future<UserApp?> logInCredenciales(String email, String password);
   Future<bool> logOut();
   void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle);
-}
+    Future<UserApp?> getActualUser();
+    Future<void> getDefaults(UserApp? userApp);}
