@@ -356,8 +356,7 @@ void main() {
       expect(vehicle1.getConsumption(), equals(55));
       expect(vehicle1.getName(), equals("Coche Cambiado"));
 
-   //   await vehicleController.deleteVehicle(vehicle1);
-     // await signInAndDeleteUser(email, password);
+      await signInAndDeleteUser(email, password);
     });
 
     test(
@@ -393,5 +392,6 @@ void main() {
       await vehicleController.deleteVehicle(vehicle2);
       await signInAndDeleteUser(email, password);
     });
+    
   });
 }
