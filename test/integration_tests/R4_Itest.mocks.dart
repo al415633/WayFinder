@@ -12,17 +12,17 @@ import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:latlong2/latlong.dart' as _i12;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
+import 'package:WayFinder/model/enum/routeMode.dart' as _i11;
+import 'package:WayFinder/model/enum/transportMode.dart' as _i10;
 import 'package:WayFinder/model/location.dart' as _i9;
 import 'package:WayFinder/model/route.dart' as _i8;
-import 'package:WayFinder/model/routeMode.dart' as _i11;
-import 'package:WayFinder/model/transportMode.dart' as _i10;
 import 'package:WayFinder/model/UserApp.dart' as _i14;
-import 'package:WayFinder/model/vehicle.dart' as _i17;
-import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i15;
+import 'package:WayFinder/model/vehicle.dart' as _i15;
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i16;
 import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart' as _i7;
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i13;
 import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart' as _i18;
-import 'package:WayFinder/viewModel/ElectricCarPrice.dart' as _i16;
+import 'package:WayFinder/viewModel/ElectricCarPrice.dart' as _i17;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -895,12 +895,28 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
         returnValue: _i5.Future<bool>.value(false),
         returnValueForMissingStub: _i5.Future<bool>.value(false),
       ) as _i5.Future<bool>);
+
+  @override
+  void setTransportModeDefault(
+    _i10.TransportMode? transportMode,
+    _i15.Vehicle? vehicle,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setTransportModeDefault,
+          [
+            transportMode,
+            vehicle,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [DbAdapterLocation].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDbAdapterLocation extends _i1.Mock implements _i15.DbAdapterLocation {
+class MockDbAdapterLocation extends _i1.Mock implements _i16.DbAdapterLocation {
   @override
   _i5.Future<bool> createLocationFromCoord(_i9.Location? location) =>
       (super.noSuchMethod(
@@ -969,11 +985,11 @@ class MockDbAdapterLocation extends _i1.Mock implements _i15.DbAdapterLocation {
 /// A class which mocks [Electriccarprice].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockElectriccarprice extends _i1.Mock implements _i16.Electriccarprice {
+class MockElectriccarprice extends _i1.Mock implements _i17.Electriccarprice {
   @override
   _i5.Future<double> calculatePrice(
     _i8.Routes? route,
-    _i17.Vehicle? vehiculo,
+    _i15.Vehicle? vehiculo,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1045,7 +1061,7 @@ class MockElectriccarprice extends _i1.Mock implements _i16.Electriccarprice {
 /// See the documentation for Mockito's code generation for more information.
 class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
   @override
-  _i5.Future<bool> createVehicle(_i17.Vehicle? vehicle) => (super.noSuchMethod(
+  _i5.Future<bool> createVehicle(_i15.Vehicle? vehicle) => (super.noSuchMethod(
         Invocation.method(
           #createVehicle,
           [vehicle],
@@ -1055,18 +1071,18 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<Set<_i17.Vehicle>> getVehicleList() => (super.noSuchMethod(
+  _i5.Future<Set<_i15.Vehicle>> getVehicleList() => (super.noSuchMethod(
         Invocation.method(
           #getVehicleList,
           [],
         ),
-        returnValue: _i5.Future<Set<_i17.Vehicle>>.value(<_i17.Vehicle>{}),
+        returnValue: _i5.Future<Set<_i15.Vehicle>>.value(<_i15.Vehicle>{}),
         returnValueForMissingStub:
-            _i5.Future<Set<_i17.Vehicle>>.value(<_i17.Vehicle>{}),
-      ) as _i5.Future<Set<_i17.Vehicle>>);
+            _i5.Future<Set<_i15.Vehicle>>.value(<_i15.Vehicle>{}),
+      ) as _i5.Future<Set<_i15.Vehicle>>);
 
   @override
-  _i5.Future<bool> deleteVehicle(_i17.Vehicle? vehicle) => (super.noSuchMethod(
+  _i5.Future<bool> deleteVehicle(_i15.Vehicle? vehicle) => (super.noSuchMethod(
         Invocation.method(
           #deleteVehicle,
           [vehicle],
@@ -1076,7 +1092,7 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
       ) as _i5.Future<bool>);
 
   @override
-  void addFav(_i17.Vehicle? vehicle) => super.noSuchMethod(
+  void addFav(_i15.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #addFav,
           [vehicle],
@@ -1085,7 +1101,7 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
       );
 
   @override
-  void removeFav(_i17.Vehicle? vehicle) => super.noSuchMethod(
+  void removeFav(_i15.Vehicle? vehicle) => super.noSuchMethod(
         Invocation.method(
           #removeFav,
           [vehicle],

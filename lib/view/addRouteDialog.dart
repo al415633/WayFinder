@@ -1,30 +1,30 @@
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/main.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/VehicleController.dart';
-import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
-void showAddRouteDialog(
+Future<void> showAddRouteDialog(
     BuildContext context,
     List<Location> locations,
     List<Vehicle> vehicles,
+    UserApp? userApp,
     Function(String, Location, Location, TransportMode, RouteMode, Vehicle?,
             bool)
-        onRouteSelected) {
+        onRouteSelected) async {
   // Variables para los datos de la ruta
   String routeNameInput = '';
   Location? startLocationInput;
   Location? endLocationInput;
-  TransportMode transportModeInput = TransportMode.coche; // Default value
+  TransportMode transportModeInput = userAppController.getTransportModeDefault(userApp);// Default value
   RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
   Vehicle? selectedVehicle;
-  VehicleController vehicleController =
-      VehicleController.getInstance(FirestoreAdapterVehiculo());
 
   // Mensajes de error
   String errorMessage = '';
+
 
   generateRoute(bool saveRoute) {
     if (routeNameInput.isEmpty ||
@@ -38,7 +38,7 @@ void showAddRouteDialog(
     }
   }
 
-  showDialog(
+  showDialog (
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
@@ -120,7 +120,7 @@ void showAddRouteDialog(
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
                       ? (DropdownButton<Vehicle>(
-                          value: selectedVehicle,
+                          value: userAppController.getVehicleDefault(userApp),
                           items: vehicles.map((vehicle) {
                             return DropdownMenuItem<Vehicle>(
                               value: vehicle,
