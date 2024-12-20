@@ -10,4 +10,5 @@ abstract class DbAdapterUserApp {
   Future<void> deleteAccountForEmail(String email);
   Future<bool> logOut();
   void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle);
-}
+    Future<UserApp?> getActualUser();
+    Future<void> getDefaults(UserApp? userApp);}

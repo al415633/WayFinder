@@ -1,6 +1,7 @@
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
@@ -18,15 +19,16 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   User? _currentUser;
 
   FirestoreAdapterUserApp({String collectionName = "production"})
-      : _collectionName = collectionName{
-  _initializeAuthListener();
-}
+      : _collectionName = collectionName {
+    _initializeAuthListener();
+  }
 
-void _initializeAuthListener() {
-  FirebaseAuth.instance.authStateChanges().listen((User? user) {
-    _currentUser = user; // Actualizar el usuario actual
-  });
-}
+  void _initializeAuthListener() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      _currentUser = user; // Actualizar el usuario actual
+    });
+  }
+
   @override
   Future<UserApp?> createUser(String email, String password) async {
     var existingUser = await auth.fetchSignInMethodsForEmail(email);
@@ -61,6 +63,23 @@ void _initializeAuthListener() {
       return UserApp(user.uid, '', email);
     } else {
       throw ConnectionBBDDException();
+    }
+  }
+
+  @override
+  Future<UserApp?> getActualUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      var userDoc = await db.collection(_collectionName).doc(user.uid).get();
+      if (userDoc.exists) {
+        var data = userDoc.data();
+        return UserApp(user.uid, data?['displayName'] ?? '', user.email ?? '');
+      } else {
+        throw UserNotExistException();
+      }
+    } else {
+      throw UserNotAuthenticatedException();
     }
   }
 
@@ -190,7 +209,6 @@ void _initializeAuthListener() {
 
   @override
   void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle) {
-
     if (_currentUser == null) {
       throw UserNotAuthenticatedException();
     }
@@ -207,6 +225,44 @@ void _initializeAuthListener() {
       });
     } else {
       throw MissingInformationRouteException();
+    }
+  }
+
+  @override
+  Future<void> getDefaults(UserApp? userApp) async {
+    _currentUser = FirebaseAuth.instance.currentUser;
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+
+    if (user == null) {
+      throw NotAuthenticatedUserException();
+    }
+
+    try {
+      final userDoc =
+          await db.collection(_collectionName).doc(_currentUser?.uid).get();
+
+      if (userDoc.exists) {
+        var data = userDoc.data();
+        if (data != null) {
+          var defaultTransportMode = data['defaultTransportMode'];
+          var vehicleData = data['vehicleDefault'];
+          Vehicle? vehicle;
+          userApp!.setDefaultTransportMode = TransportMode.values
+              .firstWhere((element) => element.name == defaultTransportMode);
+              userApp.setVehicleDefault = null;
+          if (vehicleData != null) {
+            vehicle = Vehicle.fromMap(vehicleData);
+            userApp.setVehicleDefault = vehicle;
+          }
+
+          // Aquí puedes hacer algo con userApp si es necesario
+        }
+      } else {
+        throw UserNotExistException();
+      }
+    } catch (e) {
+      throw ConnectionBBDDException();
     }
   }
 }

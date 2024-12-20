@@ -11,7 +11,7 @@ class UserApp {
   late User? user;
   
   // Por defeto que se ponga a A Pie  el modo de transporte y que se pueda cambiar
-  late TransportMode defaultTransportMode = TransportMode.aPie;
+  TransportMode defaultTransportMode = TransportMode.noSeleccionado;
   //Para si elige en coche
   late Vehicle? vehicledefault;
 
@@ -31,6 +31,9 @@ class UserApp {
   String get getName => name;
   String get getEmail => email;
   User? get getUser => user;
+
+
+
 
 
   // Setters
