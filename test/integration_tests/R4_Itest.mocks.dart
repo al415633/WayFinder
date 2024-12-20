@@ -1092,4 +1092,22 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  void editVehicle(
+    _i17.Vehicle? vehicle,
+    double? consumption,
+    String? name,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #editVehicle,
+          [
+            vehicle,
+            consumption,
+            name,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

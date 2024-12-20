@@ -339,6 +339,8 @@ void main() {
 
       vehicleController = VehicleController(
           FirestoreAdapterVehiculo(collectionName: "testCollection"));
+      
+      
       String matricula = "9087DKR";
       double consumo = 24.3;
       FuelType combustible = FuelType.gasolina;
