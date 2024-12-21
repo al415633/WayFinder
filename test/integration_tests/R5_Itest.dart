@@ -4,6 +4,7 @@ import 'package:WayFinder/model/coordinate.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
@@ -25,55 +26,40 @@ void main() {
 
   group('R5: Gestión de preferencias', () {
     late MockDbAdapterVehicle mockVehicleAdapter;
+    late MockDbAdapterUserApp mockDbAdapterUserApp;
+    late MockDbAdapterLocation mockDbAdapterLocation;
+    late UserAppController userAppController;
+
+    setUp(() {
+      mockVehicleAdapter = MockDbAdapterVehicle();
+      mockDbAdapterUserApp = MockDbAdapterUserApp();
+      mockDbAdapterLocation = MockDbAdapterLocation();
+      userAppController = UserAppController(mockDbAdapterUserApp);
+    });
 
     test('H20-E1V - Marcar como favorito un lugar', () async {
-      // Configurar los mocks y el controlador dentro del test
-      final mockAuth = MockFirebaseAuth();
-      final mockDbAdapterUserApp = MockDbAdapterUserApp();
-      final userAppController = UserAppController(mockDbAdapterUserApp);
-      final mockDbAdapterLocation = MockDbAdapterLocation();
+      final double lat = 39.98567;
+      final double long = -0.04935;
+      final String alias = "prueba 1";
+      final String toponym = "Caja Rural, Castellón de la Plana, VC, España";
 
-      final double lath20e1 = 39.98567;
-      final double longh20e1 = -0.04935;
-      final String aliash20e1 = "prueba 1";
-      final String topoh20e1 = "Caja Rural, Castellón de la Plana, VC, España";
+      Location loc = Location(Coordinate(lat, long), toponym, alias);
 
-      Location loc =
-          Location(Coordinate(lath20e1, longh20e1), topoh20e1, aliash20e1);
-      loc.addFav;
-
-      // Configurar el stub de `getLocationList`
       when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-        (_) async => {
-          loc,
-        },
+        (_) async => {loc},
       );
 
-      // Crear la instancia del controlador
       final locationController = LocationController(mockDbAdapterLocation);
 
-      // GIVEN
-      String emailh20e1 = "Pruebah20e1@gmail.com";
-      String passwordh20e1 = "Aaaaa,.8";
-      String nameh20e1 = "Pruebah20e1";
+      String email = "Pruebah20e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah20e1";
 
-      // Simular la creación del usuario
-      when(userAppController.repository.createUser(emailh20e1, passwordh20e1))
-          .thenAnswer((_) async => UserApp("id", nameh20e1, emailh20e1));
+      when(userAppController.repository.createUser(email, password))
+          .thenAnswer((_) async => UserApp("id", name, email));
 
-      UserApp? newUserApp = await userAppController.createUser(
-          emailh20e1, passwordh20e1, nameh20e1);
+      UserApp? newUserApp = await userAppController.createUser(email, password, name);
 
-      // WHEN
-
-      // Simular la creación de un lugar
-      when(mockDbAdapterLocation.createLocationFromCoord(any))
-          .thenAnswer((_) async => true);
-
-      locationController.createLocationFromCoord(
-          lath20e1, longh20e1, aliash20e1);
-
-      // Simular que guardamos el lugar en favoritos
       when(mockDbAdapterLocation.addFav(loc)).thenAnswer((_) async {
         loc.fav = true;
         return true;
@@ -81,181 +67,95 @@ void main() {
 
       locationController.addFav(loc);
 
-      // THEN
-      final Set<Location> location =
-          await mockDbAdapterLocation.getLocationList();
+      final Set<Location> locations = await mockDbAdapterLocation.getLocationList();
+      final locationList = locations.toList();
+      final firstLocation = locationList[0];
 
-      // Convertir el set a una lista para acceder al primer elemento
-      final locationListh5e1 = location.toList();
-
-      // Acceder al primer objeto en la lista
-      final firstLocationh5e1 = locationListh5e1[0];
-
-      // Verificar que los valores del primer lugar son los esperados
-      expect(firstLocationh5e1.getCoordinate().getLat,
-          equals(lath20e1)); // Verifica la latitud
-      expect(firstLocationh5e1.getCoordinate().getLong,
-          equals(longh20e1)); // Verifica la longitud
-      expect(firstLocationh5e1.getToponym(),
-          equals(topoh20e1)); // Verifica el topónimo
-      expect(firstLocationh5e1.getAlias(),
-          equals(aliash20e1)); // Verifica el alias
-      expect(firstLocationh5e1.getFav(), equals(true)); // Verifica el alias
+      expect(firstLocation.getCoordinate().getLat, equals(lat));
+      expect(firstLocation.getCoordinate().getLong, equals(long));
+      expect(firstLocation.getToponym(), equals(toponym));
+      expect(firstLocation.getAlias(), equals(alias));
+      expect(firstLocation.getFav(), equals(true));
     });
 
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
-      // Configurar los mocks y el controlador dentro del test
-      final mockAuth = MockFirebaseAuth();
-      final mockDbAdapterUserApp = MockDbAdapterUserApp();
-      final userAppController = UserAppController(mockDbAdapterUserApp);
-      final mockDbAdapterLocation = MockDbAdapterLocation();
+      final double lat = 39.98567;
+      final double long = -0.04935;
+      final String alias = "prueba 1";
+      final String toponym = "Caja Rural, Castellón de la Plana, VC, España";
 
-      final double lath5e1 = 39.98567;
-      final double longh5e1 = -0.04935;
-      final String aliash5e1 = "prueba 1";
-      final String topoh5e1 = "Caja Rural, Castellón de la Plana, VC, España";
+      Location loc = Location(Coordinate(lat, long), toponym, alias);
 
-      Location loca =
-          Location(Coordinate(lath5e1, longh5e1), topoh5e1, aliash5e1);
-      loca.addFav;
+      when(mockDbAdapterLocation.addFav(any)).thenThrow(Exception());
 
-      // Configurar el stub de `getLocationList`
-      when(mockDbAdapterLocation.getLocationList()).thenAnswer(
-        (_) async => {
-          loca,
-        },
-      );
-
-      // Crear la instancia del controlador
       final locationController = LocationController(mockDbAdapterLocation);
 
-      // GIVEN
-      String emailh20e1 = "Pruebah20e1@gmail.com";
-      String passwordh20e1 = "Aaaaa,.8";
-      String nameh20e1 = "Pruebah20e1";
-
-      // Simular la creación del usuario
-      when(userAppController.repository.createUser(emailh20e1, passwordh20e1))
-          .thenAnswer((_) async => UserApp("id", nameh20e1, emailh20e1));
-
-      UserApp? newUserApp = await userAppController.createUser(
-          emailh20e1, passwordh20e1, nameh20e1);
-
-      // WHEN
-      // Simular que guardamos el lugar en favoritos
-      when(mockDbAdapterLocation.addFav(any)).thenThrow(
-        Exception(),
-      );
-
-      Location location =
-          Location(Coordinate(lath5e1, longh5e1), topoh5e1, "sdg resgw");
-
-      // THEN
       expect(
-        () => locationController.addFav(location),
+        () => locationController.addFav(loc),
         throwsA(isA<Exception>()),
       );
     });
 
-    test(
-        'H21-E1V - Como usuario quiero establecer un modo de transporte por defecto',
-        () async {
-      // Configurar los mocks y el controlador dentro del test
-      final mockVehicleAdapter = MockDbAdapterVehicle();
-
-      when(mockVehicleAdapter.getVehicleList())
-          .thenAnswer((_) async => <Vehicle>{});
-
+    test('H21-E1V - Establecer un modo de transporte por defecto', () async {
+      when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => <Vehicle>{});
       final vehicleController = VehicleController(mockVehicleAdapter);
 
-      final mockAuth = MockFirebaseAuth();
-      final mockDbAdapterUserApp = MockDbAdapterUserApp();
-      final userAppController = UserAppController(mockDbAdapterUserApp);
+      String email = "Pruebah21e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah21e1";
 
-      // GIVEN
-      String emailh21e1 = "Pruebah21e1@gmail.com";
-      String passwordh21e1 = "Aaaaa,.8";
-      String nameh21e1 = "Pruebah21e1";
+      when(userAppController.repository.createUser(email, password))
+          .thenAnswer((_) async => UserApp("id", name, email));
 
-      // Simular la creación del usuario
-      when(userAppController.repository.createUser(emailh21e1, passwordh21e1))
-          .thenAnswer((_) async => UserApp("id", nameh21e1, emailh21e1));
+      UserApp? newUserApp = await userAppController.createUser(email, password, name);
 
-      UserApp? newUserApp = await userAppController.createUser(
-          emailh21e1, passwordh21e1, nameh21e1);
-
-      final String namec = "Coche Quique";
+      final String vehicleName = "Coche Quique";
       final double consumption = 24.3;
       final String numberPlate = "DKR9087";
       final FuelType fuelType = FuelType.electrico;
 
-      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
+      final vehicle = Vehicle(fuelType, consumption, numberPlate, vehicleName);
 
       when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
 
-      await vehicleController.createVehicle(
-          numberPlate, consumption, fuelType, namec);
+      await vehicleController.createVehicle(numberPlate, consumption, fuelType, vehicleName);
 
-      when(userAppController.setTransportModeDefault(
-              newUserApp, TransportMode.bicicleta, null))
-          .thenAnswer(
-        (_) async => newUserApp?.defaultTransportMode = TransportMode.bicicleta,
-      );
-
-      // WHEN
-
-      when(mockDbAdapterUserApp.setTransportModeDefault(
-              TransportMode.coche, vehicleMock))
+      when(mockDbAdapterUserApp.setTransportModeDefault(TransportMode.coche, vehicle))
           .thenAnswer((_) async => true);
 
-      userAppController.setTransportModeDefault(
-          newUserApp, TransportMode.coche, vehicleMock);
+      userAppController.setTransportModeDefault(newUserApp, TransportMode.coche, vehicle);
 
-      // THEN
-      expect(
-          newUserApp?.getDefaultTransportMode,
-          equals(TransportMode
-              .coche)); // Verifica que se ponga el RouteMode por defecto que queremos
+      expect(newUserApp?.getDefaultTransportMode, equals(TransportMode.coche));
     });
 
+    test('H22-E1V - Establecer un modo de ruta por defecto', () async {
+      String email = "Pruebah22e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah22e1";
 
-     test(
-        'H21-EI3 No se puede establecer un modo de transporte por defecto si no hay usuario registrado',
-        () async {
-      // Configurar los mocks y el controlador dentro del test
-      final mockVehicleAdapter = MockDbAdapterVehicle();
+      when(userAppController.repository.createUser(email, password))
+          .thenAnswer((_) async => UserApp("id", name, email));
 
-      when(mockVehicleAdapter.getVehicleList())
-          .thenAnswer((_) async => <Vehicle>{});
+      UserApp? newUserApp = await userAppController.createUser(email, password, name);
 
-      final vehicleController = VehicleController(mockVehicleAdapter);
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.rapida))
+          .thenAnswer((_) async => true);
 
-      final mockAuth = MockFirebaseAuth();
-      final mockDbAdapterUserApp = MockDbAdapterUserApp();
-      final userAppController = UserAppController(mockDbAdapterUserApp);
+      userAppController.setRouteModeDefault(newUserApp, RouteMode.rapida);
 
-      // GIVEN
+      expect(newUserApp?.getDefaultRouteMode, equals(RouteMode.rapida));
+    });
 
+    test('H22-EI4 - No se puede establecer un modo de ruta por defecto sin usuario registrado', () async {
       UserApp? newUserApp = null;
 
-      final String namec = "Coche Quique";
-      final double consumption = 24.3;
-      final String numberPlate = "DKR9087";
-      final FuelType fuelType = FuelType.electrico;
-
-      final vehicleMock = Vehicle(fuelType, consumption, numberPlate, namec);
-
-      // WHEN
-
-    when(mockDbAdapterUserApp.setTransportModeDefault(
-              TransportMode.bicicleta, null))
+      when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta))
           .thenThrow(UserNotAuthenticatedException());
 
-      // THEN
-       expect(
-          () async => userAppController.setTransportModeDefault(
-              newUserApp, TransportMode.bicicleta, null),
-          throwsA(isA<UserNotAuthenticatedException>()));
+      expect(
+        () => userAppController.setRouteModeDefault(newUserApp, RouteMode.corta),
+        throwsA(isA<UserNotAuthenticatedException>()),
+      );
     });
   });
 }

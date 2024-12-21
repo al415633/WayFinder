@@ -6,9 +6,12 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:WayFinder/model/location.dart' as _i6;
+import 'package:WayFinder/model/enum/routeMode.dart' as _i7;
+import 'package:WayFinder/model/enum/transportMode.dart' as _i5;
+import 'package:WayFinder/model/location.dart' as _i9;
 import 'package:WayFinder/model/UserApp.dart' as _i4;
-import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i5;
+import 'package:WayFinder/model/vehicle.dart' as _i6;
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart' as _i8;
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart' as _i2;
 
 // ignore_for_file: type=lint
@@ -72,18 +75,62 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i2.DbAdapterUserApp {
         ),
         returnValue: _i3.Future<bool>.value(false),
       ) as _i3.Future<bool>);
+
+  @override
+  void setTransportModeDefault(
+    _i5.TransportMode? transportMode,
+    _i6.Vehicle? vehicle,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setTransportModeDefault,
+          [
+            transportMode,
+            vehicle,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setRouteModeDefault(_i7.RouteMode? routeMode) => super.noSuchMethod(
+        Invocation.method(
+          #setRouteModeDefault,
+          [routeMode],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i3.Future<_i4.UserApp?> getActualUser() => (super.noSuchMethod(
+        Invocation.method(
+          #getActualUser,
+          [],
+        ),
+        returnValue: _i3.Future<_i4.UserApp?>.value(),
+      ) as _i3.Future<_i4.UserApp?>);
+
+  @override
+  _i3.Future<void> getDefaults(_i4.UserApp? userApp) => (super.noSuchMethod(
+        Invocation.method(
+          #getDefaults,
+          [userApp],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 }
 
 /// A class which mocks [DbAdapterLocation].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDbAdapterLocation extends _i1.Mock implements _i5.DbAdapterLocation {
+class MockDbAdapterLocation extends _i1.Mock implements _i8.DbAdapterLocation {
   MockDbAdapterLocation() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<bool> createLocationFromCoord(_i6.Location? location) =>
+  _i3.Future<bool> createLocationFromCoord(_i9.Location? location) =>
       (super.noSuchMethod(
         Invocation.method(
           #createLocationFromCoord,
@@ -93,7 +140,7 @@ class MockDbAdapterLocation extends _i1.Mock implements _i5.DbAdapterLocation {
       ) as _i3.Future<bool>);
 
   @override
-  _i3.Future<bool> createLocationFromTopo(_i6.Location? location) =>
+  _i3.Future<bool> createLocationFromTopo(_i9.Location? location) =>
       (super.noSuchMethod(
         Invocation.method(
           #createLocationFromTopo,
@@ -103,7 +150,7 @@ class MockDbAdapterLocation extends _i1.Mock implements _i5.DbAdapterLocation {
       ) as _i3.Future<bool>);
 
   @override
-  _i3.Future<bool> deleteLocation(_i6.Location? location) =>
+  _i3.Future<bool> deleteLocation(_i9.Location? location) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteLocation,
@@ -113,16 +160,16 @@ class MockDbAdapterLocation extends _i1.Mock implements _i5.DbAdapterLocation {
       ) as _i3.Future<bool>);
 
   @override
-  _i3.Future<Set<_i6.Location>> getLocationList() => (super.noSuchMethod(
+  _i3.Future<Set<_i9.Location>> getLocationList() => (super.noSuchMethod(
         Invocation.method(
           #getLocationList,
           [],
         ),
-        returnValue: _i3.Future<Set<_i6.Location>>.value(<_i6.Location>{}),
-      ) as _i3.Future<Set<_i6.Location>>);
+        returnValue: _i3.Future<Set<_i9.Location>>.value(<_i9.Location>{}),
+      ) as _i3.Future<Set<_i9.Location>>);
 
   @override
-  _i3.Future<bool> addFav(_i6.Location? location) => (super.noSuchMethod(
+  _i3.Future<bool> addFav(_i9.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #addFav,
           [location],
@@ -131,7 +178,7 @@ class MockDbAdapterLocation extends _i1.Mock implements _i5.DbAdapterLocation {
       ) as _i3.Future<bool>);
 
   @override
-  _i3.Future<bool> removeFav(_i6.Location? location) => (super.noSuchMethod(
+  _i3.Future<bool> removeFav(_i9.Location? location) => (super.noSuchMethod(
         Invocation.method(
           #removeFav,
           [location],

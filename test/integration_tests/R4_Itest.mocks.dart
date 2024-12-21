@@ -941,6 +941,35 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  void setRouteModeDefault(_i11.RouteMode? routeMode) => super.noSuchMethod(
+        Invocation.method(
+          #setRouteModeDefault,
+          [routeMode],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i5.Future<_i14.UserApp?> getActualUser() => (super.noSuchMethod(
+        Invocation.method(
+          #getActualUser,
+          [],
+        ),
+        returnValue: _i5.Future<_i14.UserApp?>.value(),
+        returnValueForMissingStub: _i5.Future<_i14.UserApp?>.value(),
+      ) as _i5.Future<_i14.UserApp?>);
+
+  @override
+  _i5.Future<void> getDefaults(_i14.UserApp? userApp) => (super.noSuchMethod(
+        Invocation.method(
+          #getDefaults,
+          [userApp],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }
 
 /// A class which mocks [DbAdapterLocation].

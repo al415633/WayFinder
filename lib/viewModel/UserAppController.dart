@@ -4,6 +4,7 @@ import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
@@ -88,6 +89,23 @@ class UserAppController {
     return userApp.getVehicleDefault!;
   }
 
+
+
+  void setRouteModeDefault(UserApp? userApp, RouteMode routeMode) {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    repository.setRouteModeDefault(routeMode);
+    userApp.setDefaultRouteMode = routeMode;
+  }
+
+  RouteMode getRouteModeDefault(UserApp? userApp){
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp.getDefaultRouteMode;
+  }
+
   Future<UserApp?> logInCredenciales(String email, String password) async {
     if (!isValidEmail(email)) {
       throw NotValidEmailException();
@@ -132,8 +150,8 @@ class UserAppController {
     } catch (e) {
       rethrow;
     }
-}
-Future<void> getDefaults(UserApp? userApp) async {
-    return await repository.getDefaults(userApp);
   }
+  Future<void> getDefaults(UserApp? userApp) async {
+      return await repository.getDefaults(userApp);
+    }
 }

@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 
@@ -10,5 +11,6 @@ abstract class DbAdapterUserApp {
   Future<void> deleteAccountForEmail(String email);
   Future<bool> logOut();
   void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle);
+  void setRouteModeDefault(RouteMode routeMode);
     Future<UserApp?> getActualUser();
     Future<void> getDefaults(UserApp? userApp);}

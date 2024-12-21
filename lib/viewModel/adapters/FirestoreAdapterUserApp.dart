@@ -6,6 +6,7 @@ import 'package:WayFinder/exceptions/UserAlreadyExistsException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
@@ -229,40 +230,55 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   }
 
   @override
-  Future<void> getDefaults(UserApp? userApp) async {
-    _currentUser = FirebaseAuth.instance.currentUser;
-    final auth = FirebaseAuth.instance;
-    final user = auth.currentUser;
-
-    if (user == null) {
-      throw NotAuthenticatedUserException();
+  void setRouteModeDefault(RouteMode routeMode) {
+    if (_currentUser == null) {
+      throw UserNotAuthenticatedException();
     }
 
-    try {
-      final userDoc =
-          await db.collection(_collectionName).doc(_currentUser?.uid).get();
+    db.collection(_collectionName).doc(_currentUser?.uid).update({
+      'defaultRouteMode': routeMode.name,
+    });
+  }
 
-      if (userDoc.exists) {
-        var data = userDoc.data();
-        if (data != null) {
-          var defaultTransportMode = data['defaultTransportMode'];
-          var vehicleData = data['vehicleDefault'];
-          Vehicle? vehicle;
-          userApp!.setDefaultTransportMode = TransportMode.values
-              .firstWhere((element) => element.name == defaultTransportMode);
-              userApp.setVehicleDefault = null;
-          if (vehicleData != null) {
-            vehicle = Vehicle.fromMap(vehicleData);
-            userApp.setVehicleDefault = vehicle;
-          }
+    @override
+    Future<void> getDefaults(UserApp? userApp) async {
+      _currentUser = FirebaseAuth.instance.currentUser;
+      final auth = FirebaseAuth.instance;
+      final user = auth.currentUser;
 
-          // Aquí puedes hacer algo con userApp si es necesario
-        }
-      } else {
-        throw UserNotExistException();
+      if (user == null) {
+        throw NotAuthenticatedUserException();
       }
-    } catch (e) {
-      throw ConnectionBBDDException();
+
+      try {
+        final userDoc =
+            await db.collection(_collectionName).doc(_currentUser?.uid).get();
+
+        if (userDoc.exists) {
+          var data = userDoc.data();
+          if (data != null) {
+            var defaultTransportMode = data['defaultTransportMode'];
+            var vehicleData = data['vehicleDefault'];
+            var defaultRouteMode = data['defaultRouteMode'];
+            userApp?.setDefaultRouteMode = RouteMode.values
+                .firstWhere((element) => element.name == defaultRouteMode);
+            Vehicle? vehicle;
+            userApp!.setDefaultTransportMode = TransportMode.values
+                .firstWhere((element) => element.name == defaultTransportMode);
+            userApp.setVehicleDefault = null;
+
+            if (vehicleData != null) {
+              vehicle = Vehicle.fromMap(vehicleData);
+              userApp.setVehicleDefault = vehicle;
+            }
+
+            // Aquí puedes hacer algo con userApp si es necesario
+          }
+        } else {
+          throw UserNotExistException();
+        }
+      } catch (e) {
+        throw ConnectionBBDDException();
+      }
     }
   }
-}
