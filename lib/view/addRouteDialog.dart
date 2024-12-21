@@ -21,7 +21,7 @@ Future<void> showAddRouteDialog(
   Location? endLocationInput;
   TransportMode transportModeInput = userAppController.getTransportModeDefault(userApp);// Default value
   RouteMode routeModeInput = userAppController.getRouteModeDefault(userApp); // Default value
-  Vehicle? selectedVehicle;
+  Vehicle? selectedVehicle = userAppController.getVehicleDefault(userApp); // Default value
 
   // Mensajes de error
   String errorMessage = '';
@@ -119,13 +119,22 @@ Future<void> showAddRouteDialog(
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
                       ? (DropdownButton<Vehicle>(
-                          value: userAppController.getVehicleDefault(userApp),
-                          items: vehicles.map((vehicle) {
-                            return DropdownMenuItem<Vehicle>(
-                              value: vehicle,
-                              child: Text(vehicle.name),
-                            );
-                          }).toList(),
+                          value: selectedVehicle,
+                          items: [
+                            DropdownMenuItem<Vehicle>(
+                              value: null,
+                              child: Text(
+                                'Selecciona un vehículo',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            ...vehicles.map((vehicle) {
+                              return DropdownMenuItem<Vehicle>(
+                                value: vehicle,
+                                child: Text(vehicle.name),
+                              );
+                            }).toList(),
+                          ],
                           onChanged: (value) {
                             setDialogState(() {
                               selectedVehicle = value;

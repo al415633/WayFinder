@@ -15,7 +15,7 @@ class UserApp {
   TransportMode defaultTransportMode = TransportMode.noSeleccionado;
   RouteMode defaultRouteMode = RouteMode.noSeleccionado;
   //Para si elige en coche
-  late Vehicle? vehicledefault;
+  Vehicle? vehicledefault;
 
   TransportMode get getDefaultTransportMode => defaultTransportMode;
   RouteMode get getDefaultRouteMode => defaultRouteMode;

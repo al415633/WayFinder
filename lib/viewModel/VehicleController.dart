@@ -1,6 +1,8 @@
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
 
 class VehicleController {
@@ -88,6 +90,20 @@ class VehicleController {
         // Agregar el nuevo vehiculo al Set
         currentSet.remove(vehicle);
         vehicleList = Future.value(currentSet);
+      
+
+        UserAppController userAppController = UserAppController.getInstance();
+
+        // Verificar si el vehículo eliminado es el predeterminado
+        UserApp? userApp = await userAppController.getActualUser();
+        if (userApp != null &&
+            userApp.getVehicleDefault != null &&
+            userApp.getVehicleDefault!.getNumberPlate() == vehicle.getNumberPlate()) {
+          // Establecer el vehículo predeterminado en null
+          userApp.setVehicleDefault = null;      
+          
+        }
+
       }
 
       return success;

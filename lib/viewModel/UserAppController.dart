@@ -82,11 +82,11 @@ class UserAppController {
     return userApp.getDefaultTransportMode;
   }
 
-    Vehicle getVehicleDefault(UserApp? userApp){
+  Vehicle? getVehicleDefault(UserApp? userApp){
     if (userApp == null) {
       throw UserNotAuthenticatedException();
     }
-    return userApp.getVehicleDefault!;
+    return userApp.getVehicleDefault;
   }
 
 

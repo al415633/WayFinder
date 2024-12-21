@@ -100,6 +100,20 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
       // Eliminar el primer documento encontrado
       await querySnapshot.docs.first.reference.delete();
 
+      // Verificar si el vehículo eliminado era el predeterminado
+      var userDocRef = db.collection(_collectionName).doc(user.uid);
+      var userDoc = await userDocRef.get();
+
+      if (userDoc.exists) {
+        var userData = userDoc.data();
+        if (userData != null &&
+            userData['vehicleDefault'] != null &&
+            userData['vehicleDefault']['numberPlate'] == vehicle.getNumberPlate()) {
+          // Actualizar el vehículo predeterminado a null
+          await userDocRef.update({'vehicleDefault': null});
+        }
+      }
+
       return true;
     } catch (e) {
       throw ConnectionBBDDException();

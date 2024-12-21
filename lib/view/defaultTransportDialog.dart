@@ -4,10 +4,14 @@ import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showDefalutTransportDialog(BuildContext context, List<Vehicle> vehicles, UserApp? userApp,
+Future<void> showDefalutTransportDialog(
+    BuildContext context,
+    List<Vehicle> vehicles,
+    UserApp? userApp,
     Function(TransportMode, Vehicle?) onDefaultTransportSelected) async {
-  TransportMode transportModeInput = userAppController.getTransportModeDefault(userApp);
-  Vehicle? selectedVehicle;
+  TransportMode transportModeInput =
+      userAppController.getTransportModeDefault(userApp);
+  Vehicle? selectedVehicle = userAppController.getVehicleDefault(userApp);
 
   // Mensajes de error
   String errorMessage = '';
@@ -39,13 +43,22 @@ Future<void> showDefalutTransportDialog(BuildContext context, List<Vehicle> vehi
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
                       ? (DropdownButton<Vehicle>(
-                          value: userAppController.getVehicleDefault(userApp),
-                          items: vehicles.map((vehicle) {
-                            return DropdownMenuItem<Vehicle>(
-                              value: vehicle,
-                              child: Text(vehicle.name),
-                            );
-                          }).toList(),
+                          value: selectedVehicle,
+                          items: [
+                            DropdownMenuItem<Vehicle>(
+                              value: null,
+                              child: Text(
+                                'Selecciona un vehículo',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            ...vehicles.map((vehicle) {
+                              return DropdownMenuItem<Vehicle>(
+                                value: vehicle,
+                                child: Text(vehicle.name),
+                              );
+                            }).toList(),
+                          ],
                           onChanged: (value) {
                             setDialogState(() {
                               selectedVehicle = value;
