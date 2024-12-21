@@ -42,6 +42,7 @@ class _MapScreenState extends State<MapScreen> {
   List listOfPoints = [];
   List<LatLng> points = [];
   TransportMode transportMode = TransportMode.coche; // por defecto
+  RouteMode routeMode = RouteMode.corta; // por defecto
   LatLng initialPoint = LatLng(39.98567, -0.04935); // por defecto
   bool isSelectingLocation =
       false; // Nuevo estado para habilitar la selección en el mapa
@@ -70,6 +71,7 @@ class _MapScreenState extends State<MapScreen> {
     */
     userApp = widget.userApp;
     userAppController?.getDefaults(userApp);
+    routeMode = userApp!.getDefaultRouteMode; 
     _fetchLocations();
     _fetchRoutes();
     _fetchVehicles();

@@ -4,8 +4,9 @@ import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showDefaultRouteDialog(
-    BuildContext context, UserApp? userApp, Function(RouteMode) onDefaultRouteSelected) async {
+  BuildContext context, UserApp? userApp, Function(RouteMode) onDefaultRouteSelected) async {
   RouteMode routeModeInput = userAppController.getRouteModeDefault(userApp);
+  print("primera ruta: $routeModeInput");
 
   showDialog(
     context: context,
@@ -42,6 +43,7 @@ Future<void> showDefaultRouteDialog(
               ),
               ElevatedButton(
                 onPressed: () {
+                  print(routeModeInput);
                   onDefaultRouteSelected(routeModeInput);
                   Navigator.of(context).pop();
                 },

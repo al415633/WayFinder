@@ -150,8 +150,8 @@ class UserAppController {
     } catch (e) {
       rethrow;
     }
-}
-Future<void> getDefaults(UserApp? userApp) async {
-    return await repository.getDefaults(userApp);
   }
+  Future<void> getDefaults(UserApp? userApp) async {
+      return await repository.getDefaults(userApp);
+    }
 }
