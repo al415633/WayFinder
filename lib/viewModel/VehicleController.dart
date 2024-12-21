@@ -89,7 +89,11 @@ class VehicleController {
         final currentSet = await vehicleList;
         // Agregar el nuevo vehiculo al Set
         currentSet.remove(vehicle);
+        print("Vehicle deleted: ${vehicle.numberPlate}");
         vehicleList = Future.value(currentSet);
+        currentSet.forEach((vehicle) {
+          print(vehicle.name);
+        });
       
 
         UserAppController userAppController = UserAppController.getInstance();

@@ -525,12 +525,14 @@ class _MapScreenState extends State<MapScreen> {
               print('Eliminar ${location.getAlias()}');
             },
           ),
+          /*
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
               print('Editar ${location.getAlias()}');
             },
           ),
+          */
         ],
       ),
     );

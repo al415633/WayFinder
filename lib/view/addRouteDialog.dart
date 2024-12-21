@@ -119,7 +119,7 @@ Future<void> showAddRouteDialog(
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
                       ? (DropdownButton<Vehicle>(
-                          value: selectedVehicle,
+                          value: userAppController.getVehicleDefault(userApp),
                           items: [
                             DropdownMenuItem<Vehicle>(
                               value: null,
@@ -177,22 +177,34 @@ Future<void> showAddRouteDialog(
             ),
             actions: [
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  generateRoute(true);
-                },
-                child: const Text('Guardar y generar ruta'),
+              onPressed: () async {
+                if (transportModeInput == TransportMode.coche && selectedVehicle == null) {
+                setDialogState(() {
+                  errorMessage = 'Por favor, seleccione un vehículo.';
+                });
+                } else {
+                generateRoute(true);
+                }
+              },
+              child: const Text('Guardar y generar ruta'),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  generateRoute(false);
-                },
-                child: const Text('Generar ruta'),
+              onPressed: () async {
+                if (transportModeInput == TransportMode.coche && selectedVehicle == null) {
+                setDialogState(() {
+                  errorMessage = 'Por favor, seleccione un vehículo.';
+                });
+                } else {
+                generateRoute(false);
+                }
+              },
+              child: const Text('Generar ruta'),
               ),
             ],
           );
