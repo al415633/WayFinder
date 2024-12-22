@@ -5,7 +5,6 @@ import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class FirestoreAdapterVehiculo implements DbAdapterVehicle {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -133,13 +132,12 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
     if (querySnapshot.docs.isEmpty) {
       throw ConnectionBBDDException();
     }
-    try{
+    try {
       // Actualizar el campo 'fav' a true en el primer documento encontrado
       await querySnapshot.docs.first.reference.update({"fav": true});
-    }catch(e){ 
+    } catch (e) {
       throw Exception("Error al añadir a favoritos en la base de datos: $e");
     }
-
   }
 
   @override
@@ -158,7 +156,30 @@ class FirestoreAdapterVehiculo implements DbAdapterVehicle {
 
     // Actualizar el campo 'fav' a true en el primer documento encontrado
     await querySnapshot.docs.first.reference.update({"fav": false});
+  }
 
+  @override
+  void editVehicle(Vehicle vehicle, double consumption, String nombre) async {
+    final auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+
+    if (user == null) {
+      throw NotAuthenticatedUserException();
+    }
+
+    final querySnapshot = await db
+        .collection(_collectionName)
+        .doc(_currentUser?.uid)
+        .collection("VehicleList")
+        .where("numberPlate", isEqualTo: vehicle.numberPlate)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      throw ConnectionBBDDException();
+    }
+    // Actualizar el campo 'fav' a true en el primer documento encontrado
+    await querySnapshot.docs.first.reference.update({"consumption": consumption});
+    // Actualizar el campo 'fav' a true en el primer documento encontrado
+    await querySnapshot.docs.first.reference.update({"name": nombre});
   }
 }
-

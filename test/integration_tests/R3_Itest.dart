@@ -1,6 +1,7 @@
 // precio_luz_service_acceptance_test.dart
-
 import 'package:WayFinder/model/enum/fuelType.dart';
+import 'package:WayFinder/exceptions/NotValidEmailException.dart';
+import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';
@@ -68,8 +69,8 @@ void main() {
 
       // Verificar que los valores del primer lugar son los esperados
       expect(firstPlace.getConsumption(), equals(24.3)); // Verifica consumo
-      expect(
-          firstPlace.getFuelType(), equals(FuelType.gasolina)); // Verifica combustible
+      expect(firstPlace.getFuelType(),
+          equals(FuelType.gasolina)); // Verifica combustible
       expect(
           firstPlace.getNumberPlate(), equals("DKR9087")); // Verifica matricula
       expect(firstPlace.getName(), equals("Coche Quique")); // Verifica nombre
@@ -225,5 +226,73 @@ void main() {
       verify(mockVehicleAdapter.getVehicleList()).called(1);
       verify(mockVehicleAdapter.deleteVehicle(any)).called(1);
     });
+
+    test('H12-E1V - Se debe de poder cambiar los datos del vehiculo', () async {
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah12e11@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah12e11";
+
+      //WHEN
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      FuelType combustible = FuelType.gasolina;
+      String nombre = "Coche Quique";
+
+      final vehicleMock = Vehicle(combustible, consumo, matricula, nombre);
+
+      double newconsumo = 55.0;
+      String newnombre = "Coche Cambiado";
+
+      when(mockVehicleAdapter.editVehicle(vehicleMock, newconsumo, newnombre))
+          .thenAnswer((_) async => vehicleMock);
+
+      await vehicleController.editVehicle(vehicleMock, newconsumo, newnombre);
+      //THEN
+      expect(vehicleMock.getConsumption(), equals(55));
+      expect(vehicleMock.getName(), equals("Coche Cambiado"));
+
+      // Verificar interacciones con el mock
+      verify(mockVehicleAdapter.editVehicle(vehicleMock, newconsumo, newnombre))
+          .called(1);
+    });
+
+    test(
+        'H12-E3V -No se debe poder cambiar un vehiculo si los datos no son válidos',
+        () async {
+      //GIVEN
+
+      //Loguear usuario
+      String email = "Pruebah12e11@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah12e11";
+
+      //WHEN
+      String matricula = "9087DKR";
+      double consumo = 24.3;
+      FuelType combustible = FuelType.gasolina;
+      String nombre = "Coche Quique";
+
+      final vehicleMock = Vehicle(combustible, consumo, matricula, nombre);
+
+      double newconsumo = 55.0;
+      String newnombre = "Coche Cambiado";
+
+ 
+  when(mockVehicleAdapter.editVehicle(vehicleMock, newconsumo, newnombre)).thenThrow(
+       NotValidVehicleException(),
+      );
+    Future<void> action() async {
+      await vehicleController.editVehicle(vehicleMock, newconsumo, newnombre);
+      }
+
+
+      // THEN
+      expect(action(), throwsA(isA<NotValidVehicleException>()));
+      verify(mockVehicleAdapter.editVehicle(vehicleMock, newconsumo, newnombre)).called(1);
+    });
+    
   });
 }

@@ -771,6 +771,24 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i7.DbAdapterVehicle {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  void editVehicle(
+    _i8.Vehicle? vehicle,
+    double? consumption,
+    String? name,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #editVehicle,
+          [
+            vehicle,
+            consumption,
+            name,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [DbAdapterUserApp].

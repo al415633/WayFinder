@@ -44,7 +44,7 @@ class VehicleController {
     }
 
     // Validar consumo
-    if (!threeDecimalPlacesMax(consumption)) {
+    if (!threeDecimalPlacesMax(consumption) || consumption <= 0) {
       throw NotValidVehicleException();
     }
 
@@ -76,6 +76,25 @@ class VehicleController {
       currentSet.add(vehicle);
       vehicleList = Future.value(currentSet);
     }
+
+    // Devolver el vehículo creado
+    return vehicle;
+  }
+
+  Future<Vehicle> editVehicle(
+      Vehicle vehicle, double newConsumo, String newNombre) async {
+    // Validar consumo
+
+    //cambiar los datos proporcionados	
+          // Validar consumo
+    if (!threeDecimalPlacesMax(newConsumo) || newConsumo <= 0) {
+      throw NotValidVehicleException();
+    }
+
+      vehicle.setConsumption(newConsumo);
+      vehicle.setName(newNombre);
+      _dbAdapter.editVehicle(vehicle, newConsumo, newNombre);
+
 
     // Devolver el vehículo creado
     return vehicle;

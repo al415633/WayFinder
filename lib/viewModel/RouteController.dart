@@ -321,7 +321,7 @@ class RouteController {
       Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
           newTransportMode, newRouteMode, vehicle);
 
-      await calculateCostKCal(route);
+      calculateCostKCal(route);
       return route;
 
 

@@ -1,4 +1,5 @@
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
