@@ -90,11 +90,9 @@ class VehicleController {
     if (!threeDecimalPlacesMax(newConsumo) || newConsumo <= 0) {
       throw NotValidVehicleException();
     }
-
       vehicle.setConsumption(newConsumo);
       vehicle.setName(newNombre);
       _dbAdapter.editVehicle(vehicle, newConsumo, newNombre);
-
 
     // Devolver el vehículo creado
     return vehicle;
