@@ -2,7 +2,7 @@
 
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/UserApp.dart';
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/model/vehicle.dart';

@@ -1,5 +1,5 @@
 import 'package:WayFinder/model/favItem.dart';
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/viewModel/DieselCarPrice.dart';
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
 import 'package:WayFinder/viewModel/GasolineCarPrice.dart';

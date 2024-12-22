@@ -1,5 +1,6 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
+import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
@@ -56,7 +57,7 @@ void main() {
       String password = "Abbbbaa,.8";
       String name = "PruebaH1E1";
 
-      when(userAppController.repository.createUser(email, password))
+      when(mockDbAdapterUserApp.createUser(email, password))
       .thenAnswer((_) async => UserApp("id", name, email));
       // WHEN
       UserApp? newUserApp = await userAppController.createUser(email, password, name);
@@ -94,7 +95,7 @@ void main() {
       String password = "Aaaaa,.8";
       String name="Pruebah2e2";
 
-      when(userAppController.repository.logInCredenciales(email, password))
+      when(mockDbAdapterUserApp.logInCredenciales(email, password))
       .thenAnswer((_) async => UserApp("id", name, email));
 
 
@@ -104,7 +105,7 @@ void main() {
       // THEN
       expect(userApp, isNotNull);
       expect(userApp?.email, equals(email));
-      verify(userAppController.repository.logInCredenciales(email, password)).called(1);
+      verify(mockDbAdapterUserApp.logInCredenciales(email, password)).called(1);
       
 
     });
@@ -117,10 +118,10 @@ void main() {
       String name="Pruebah2e3";
       String wrongPassword = "aaaaaaaaaa";
 
-      when(userAppController.repository.logInCredenciales(email, password))
+      when(mockDbAdapterUserApp.logInCredenciales(email, password))
       .thenAnswer((_) async => UserApp("id", name, email));
 
-      when(userAppController.repository.logInCredenciales(email, wrongPassword)).thenThrow(IncorrectPasswordException());
+      when(mockDbAdapterUserApp.logInCredenciales(email, wrongPassword)).thenThrow(IncorrectPasswordException());
       // WHEN
       Future<void> action() async {
         await userAppController.logInCredenciales(email, "aaaaaaaaaa");
@@ -128,7 +129,7 @@ void main() {
 
       // THEN
       expect(action(), throwsA(isA<IncorrectPasswordException>()));
-      verifyNever(userAppController.repository.logInCredenciales(email, password));
+      verifyNever(mockDbAdapterUserApp.logInCredenciales(email, password));
       
     });
 
@@ -142,8 +143,8 @@ void main() {
       String name="Pruebah3e1";
 
 
-      when(userAppController.repository.logOut()).thenAnswer((_) async => true);
-      when(userAppController.repository.logInCredenciales(email, password))
+      when(mockDbAdapterUserApp.logOut()).thenAnswer((_) async => true);
+      when(mockDbAdapterUserApp.logInCredenciales(email, password))
       .thenAnswer((_) async => UserApp("id", name, email));
 
       userApp = await userAppController.logInCredenciales(email, password);
@@ -155,8 +156,8 @@ void main() {
       // THEN
       expect(userApp, isNotNull);
       expect(closedSession, isTrue);
-      verify(userAppController.repository.logInCredenciales(email, password)).called(1);
-      verify(userAppController.repository.logOut()).called(1);
+      verify(mockDbAdapterUserApp.logInCredenciales(email, password)).called(1);
+      verify(mockDbAdapterUserApp.logOut()).called(1);
 
     });
 
@@ -167,7 +168,7 @@ void main() {
       String password = "Aaaaacccccc,.8";
       String name = "pruebah3e2";
 
-      when(userAppController.repository.logOut()).thenThrow(UserNotAuthenticatedException());
+      when(mockDbAdapterUserApp.logOut()).thenThrow(UserNotAuthenticatedException());
 
       //Pero no logeado
 
@@ -178,11 +179,64 @@ void main() {
 
  
        expect(() async => await action(), throwsA(isA<UserNotAuthenticatedException>()));
-       verify(userAppController.repository.logOut()).called(1);
-       verifyNever(userAppController.repository.logInCredenciales(email, password));
+       verify(mockDbAdapterUserApp.logOut()).called(1);
+       verifyNever(mockDbAdapterUserApp.logInCredenciales(email, password));
 
 
 
     });
+
+    test('H4-E1V - Eliminar cuenta de usuario', () async {
+
+
+      // GIVEN
+
+      String email = "Pruebae4e1@gmail.com";
+      String password = "Aaaaa,.8";
+      String name="Pruebah4e1";
+
+
+      when(mockDbAdapterUserApp.deleteAccount()).thenAnswer((_) async => {});
+      when(mockDbAdapterUserApp.checkIfUserExists(email)).thenAnswer((_) async => false);
+      when(mockDbAdapterUserApp.logInCredenciales(email, password))
+      .thenAnswer((_) async => UserApp("id", name, email));
+
+      userApp = await userAppController.logInCredenciales(email, password);
+
+
+      // WHEN
+      await userAppController.deleteAccount();
+
+      // THEN
+      bool userExists = await userAppController.checkIfUserExists(email);
+      expect(userExists, isFalse);
+
+    });
+
+    test('H4-E3I - Eliminar cuenta de usuario no registrada', () async {
+      // GIVEN
+ 
+      String email = "pruebah4e3@gmail.com";
+      String password = "Aaaaacccccc,.8";
+      String name = "pruebah4e3";
+
+      when(mockDbAdapterUserApp.deleteAccountForEmail(email)).thenThrow(UserNotExistException());
+
+      when(mockDbAdapterUserApp.checkIfUserExists(email)).thenAnswer((_) async => false);
+
+      //Pero no logeado
+
+      // WHEN
+       Future<void> action() async {
+          await userAppController.deleteAccountForEmail(email); 
+        }
+
+      // THEN
+       expect(() async => await action(), throwsA(isA<Exception>()));
+
+
+    });
+
+
   });
 }

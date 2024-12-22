@@ -2,8 +2,8 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart';
@@ -30,6 +30,11 @@ class RouteController {
     _instance ??= RouteController(repository);
     return _instance!;
   }
+
+  static void destroyInstance() {
+    _instance = null;
+  }
+
 
   Future<Set<Routes>> getRouteList() async {
     return routeList;

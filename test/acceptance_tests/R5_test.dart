@@ -1,6 +1,10 @@
 // precio_luz_service_acceptance_test.dart
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/location.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
@@ -149,11 +153,8 @@ void main() {
 
       // THEN
       final locationList = locations.toList();
-      print(locationList.toString());
-      print(locationList[0].toString());
-      final Location primerLugar = locationList[0];
 
-      print(primerLugar.getFav());
+      final Location primerLugar = locationList[0];
 
       expect(primerLugar.getFav(),
           equals(true)); // Verifica que el lugar se haya marcado como favorito
@@ -190,12 +191,83 @@ void main() {
     });
     */
 
-    test('H21-EV', () async {});
+    test(
+        'H21-EV1 Como usuario quiero establecer un modo de transporte por defecto',
+        () async {
+      // GIVEN
+      String email =
+          "Pruebah21e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah21e1";
 
-    test('H21-EI', () async {});
+      UserApp? userApp =
+          await userAppController.createUser(email, password, name);
+      userApp = await userAppController.logInCredenciales(email, password);
 
-    test('H22-EV', () async {});
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
 
-    test('H22-EI', () async {});
+      // WHEN
+      userAppController.setTransportModeDefault(
+          userApp!, TransportMode.bicicleta, null);
+      //THEN
+      expect(userApp?.getDefaultTransportMode, TransportMode.bicicleta);
+
+      await signInAndDeleteUser(email, password);
+    });
+
+    test(
+        'H21-EI3 No se puede establecer un modo de transporte por defecto si no hay usuario registrado',
+        () async {
+      // GIVEN
+      userApp = null;
+
+      //WHEN Y THEN
+      expect(
+          () => userAppController.setTransportModeDefault(
+              userApp, TransportMode.bicicleta, null),
+          throwsA(isA<UserNotAuthenticatedException>()));
+    });
+
+    test(
+        'H22-EV1 Como usuario quiero establecer un modo de ruta por defecto',
+        () async {
+      // GIVEN
+      String email =
+          "Pruebah22e1${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+      String password = "Aaaaa,.8";
+      String name = "Pruebah22e1";
+
+      UserApp? userApp =
+          await userAppController.createUser(email, password, name);
+      userApp = await userAppController.logInCredenciales(email, password);
+
+      adapterLocation =
+          FirestoreAdapterLocation(collectionName: "testCollection");
+      locationController = LocationController(adapterLocation);
+
+      // WHEN
+      userAppController.setRouteModeDefault(
+          userApp!, RouteMode.corta);
+      //THEN
+      expect(userApp?.getDefaultRouteMode, RouteMode.corta);
+
+      await signInAndDeleteUser(email, password);
+    });
+
+    test(
+        'H22-EI4 No se puede establecer un modo de ruta por defecto si no hay usuario registrado',
+        () async {
+      // GIVEN
+      userApp = null;
+
+      //WHEN Y THEN
+      expect(
+          () => userAppController.setRouteModeDefault(
+              userApp, RouteMode.corta),
+          throwsA(isA<UserNotAuthenticatedException>()));
+    });
+
   });
 }
