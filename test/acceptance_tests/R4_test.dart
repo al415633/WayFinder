@@ -401,6 +401,7 @@ void main() {
 
       userApp = await userAppController.logInCredenciales(email, password);
 
+
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       routeController = RouteController(adapterRoute);
 

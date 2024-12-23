@@ -952,16 +952,6 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i13.DbAdapterUserApp {
       );
 
   @override
-  _i5.Future<_i14.UserApp?> getActualUser() => (super.noSuchMethod(
-        Invocation.method(
-          #getActualUser,
-          [],
-        ),
-        returnValue: _i5.Future<_i14.UserApp?>.value(),
-        returnValueForMissingStub: _i5.Future<_i14.UserApp?>.value(),
-      ) as _i5.Future<_i14.UserApp?>);
-
-  @override
   _i5.Future<void> getDefaults(_i14.UserApp? userApp) => (super.noSuchMethod(
         Invocation.method(
           #getDefaults,
@@ -1170,7 +1160,7 @@ class MockDbAdapterVehicle extends _i1.Mock implements _i18.DbAdapterVehicle {
 
   @override
   void editVehicle(
-    _i17.Vehicle? vehicle,
+    _i15.Vehicle? vehicle,
     double? consumption,
     String? name,
   ) =>

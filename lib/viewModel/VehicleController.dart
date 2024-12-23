@@ -5,6 +5,7 @@ import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';
 
 class VehicleController {
   // Propiedades
@@ -108,33 +109,21 @@ class VehicleController {
     try {
       bool success = await _dbAdapter.deleteVehicle(vehicle);
       if (success) {
-        print(vehicle);
         final currentSet = await vehicleList;
-        print("1");
         // Agregar el nuevo vehiculo al Set
         currentSet.remove(vehicle);
-                print("2");
 
         vehicleList = Future.value(currentSet);
-                print("3");
-
-      
       
       // Verificar si el vehículo eliminado es el predeterminado 
-        UserAppController userAppController = UserAppController.getInstance();
-                print("4");
+        UserAppController userAppController = UserAppController.getInstance(FirestoreAdapterUserApp());
 
         Vehicle? vehicleDefault = userAppController.getVehicleDefault(UserAppController.userAppActual());
-                print("5");
 
         if(vehicleDefault!=null && vehicle == vehicleDefault){
-           print("entro");
           userAppController.setTransportModeDefault(UserAppController.userAppActual(), TransportMode.noSeleccionado, null);
-                  print("entro1");
-
         }
       }
-print(vehicleList);
       return success;
     } catch (e) {
       throw Exception("Error al borrar el vehiculo: $e");

@@ -1,5 +1,6 @@
 // precio_luz_service_acceptance_test.dart
 
+import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
@@ -93,6 +94,7 @@ void main() {
       await userCredential.user!.delete();
       return null;
     }
+
 
     test('H9-E1V - Crear vehiculo', () async {
       //GIVEN
@@ -253,6 +255,7 @@ void main() {
       await signInAndDeleteUser(emailh10e2v, passwordh10e2v);
     });
 
+
 //Eliminar vehiculo
     test('H11-E1V - Eliminar vehículo', () async {
       //GIVEN
@@ -294,26 +297,33 @@ void main() {
      
     });
 
+
     test('H11-E4I - Eliminar vehículo inválido, usuario no registrado',
         () async {
-      //GIVEN
-    
-      vehicleController = VehicleController(
-          FirestoreAdapterVehiculo(collectionName: "testCollection"));
 
-      //WHEN
-      String matricula = "9087DKR";
-      double consumo = 24.3;
-      FuelType combustible = FuelType.gasolina;
-      String nombre = "Coche Quique";
-      Vehicle vehicle1 = await vehicleController.createVehicle(
-          matricula, consumo, combustible, nombre);
+      Future<void> action() async {
+      
+          //GIVEN
+        
+          vehicleController = VehicleController(
+              FirestoreAdapterVehiculo(collectionName: "testCollection"));
+
+          //WHEN
+          String matricula = "9087DKR";
+          double consumo = 24.3;
+          FuelType combustible = FuelType.gasolina;
+          String nombre = "Coche Quique";
+          Vehicle vehicle1 = await vehicleController.createVehicle(
+              matricula, consumo, combustible, nombre);
+          await vehicleController.deleteVehicle(vehicle1);
+
+      }
 
 
       //THEN
       expect(
-        () async => await vehicleController.deleteVehicle(vehicle1),
-        throwsA(isA<Exception>()),
+        () async => action(),
+        throwsA(isA<NotAuthenticatedUserException>()),
       );
     });
 
@@ -383,6 +393,7 @@ void main() {
 
       await signInAndDeleteUser(email, password);
     });
+
     
   });
 }

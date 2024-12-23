@@ -895,16 +895,6 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i9.DbAdapterUserApp {
       );
 
   @override
-  _i5.Future<_i10.UserApp?> getActualUser() => (super.noSuchMethod(
-        Invocation.method(
-          #getActualUser,
-          [],
-        ),
-        returnValue: _i5.Future<_i10.UserApp?>.value(),
-        returnValueForMissingStub: _i5.Future<_i10.UserApp?>.value(),
-      ) as _i5.Future<_i10.UserApp?>);
-
-  @override
   _i5.Future<void> getDefaults(_i10.UserApp? userApp) => (super.noSuchMethod(
         Invocation.method(
           #getDefaults,

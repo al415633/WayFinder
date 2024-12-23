@@ -68,6 +68,35 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i2.DbAdapterUserApp {
       ) as _i3.Future<_i4.UserApp?>);
 
   @override
+  _i3.Future<void> deleteAccount() => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAccount,
+          [],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<bool> checkIfUserExists(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #checkIfUserExists,
+          [email],
+        ),
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
+
+  @override
+  _i3.Future<void> deleteAccountForEmail(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAccountForEmail,
+          [email],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
   _i3.Future<bool> logOut() => (super.noSuchMethod(
         Invocation.method(
           #logOut,
@@ -100,15 +129,6 @@ class MockDbAdapterUserApp extends _i1.Mock implements _i2.DbAdapterUserApp {
         ),
         returnValueForMissingStub: null,
       );
-
-  @override
-  _i3.Future<_i4.UserApp?> getActualUser() => (super.noSuchMethod(
-        Invocation.method(
-          #getActualUser,
-          [],
-        ),
-        returnValue: _i3.Future<_i4.UserApp?>.value(),
-      ) as _i3.Future<_i4.UserApp?>);
 
   @override
   _i3.Future<void> getDefaults(_i4.UserApp? userApp) => (super.noSuchMethod(
