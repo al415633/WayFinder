@@ -15,7 +15,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
 
-
 class FirestoreAdapterRoute implements DbAdapterRoute {
   final String _collectionName;
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -45,7 +44,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
       throw NotAuthenticatedUserException();
     }
 
-    try {      final querySnapshot = await db
+    try {
+      final querySnapshot = await db
           .collection(_collectionName)
           .doc(_currentUser?.uid)
           .collection("RouteList")
@@ -157,8 +157,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
   @override
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
       TransportMode transportMode, RouteMode? routeMode) async {
-   
-    if (routeMode == RouteMode.noSeleccionado ) {
+    if (routeMode == RouteMode.noSeleccionado) {
       throw MissingInformationRouteException();
     }
     LatLng initialPoint =
@@ -185,7 +184,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
         return 'fastest'; // Valor por defecto
     }
   }
-
 
   @override
   Future<Map<String, dynamic>> getPoints(
@@ -244,10 +242,4 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     double mod = pow(10.0, decimalPlaces).toDouble();
     return ((value * mod).round().toDouble() / mod);
   }
-
-
-
-   
 }
-
-
