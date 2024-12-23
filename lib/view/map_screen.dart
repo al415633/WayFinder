@@ -13,7 +13,6 @@ import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
 import 'package:WayFinder/view/defaultRouteDialog.dart';
 import 'package:WayFinder/view/editVehicleDialog.dart';
-import 'package:WayFinder/view/login.dart';
 import 'package:WayFinder/view/defaultTransportDialog.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
 import 'package:WayFinder/view/showConfirmationDialog.dart';
@@ -24,7 +23,6 @@ import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -72,7 +70,7 @@ class _MapScreenState extends State<MapScreen> {
     */
     userApp = widget.userApp;
     userAppController?.getDefaults(userApp);
-    routeMode = userApp!.getDefaultRouteMode; 
+    routeMode = userApp!.getDefaultRouteMode;
     _fetchLocations();
     _fetchRoutes();
     _fetchVehicles();
@@ -251,8 +249,8 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-    Future<bool> _onVehicleEdited(Vehicle vehicle, String name,
-      double consumption) async {
+  Future<bool> _onVehicleEdited(
+      Vehicle vehicle, String name, double consumption) async {
     try {
       vehicle = await vehicleController.editVehicle(vehicle, consumption, name);
       _fetchVehicles(); // Actualizar la lista de vehículos
@@ -462,6 +460,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _onTopMenuSelectionChanged(TopMenuSelection menuSelection) {
     setState(() {
+      _fetchVehicles();
       _topMenuSelection = menuSelection;
     });
   }
@@ -634,7 +633,9 @@ class _MapScreenState extends State<MapScreen> {
             icon: const Icon(Icons.delete),
             onPressed: () async {
               await vehicleController.deleteVehicle(vehicle);
-              _fetchVehicles();
+              userAppController?.getDefaults(userApp);
+              vehicles = await _fetchVehicles();
+              print(vehicles);
               print('Eliminar $vehicle');
             },
           ),
@@ -693,10 +694,15 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  void _fetchVehicles() async {
+  Future<List<Vehicle>> _fetchVehicles() async {
     try {
-      final fetchedVehicles =
-          await vehicleController.getVehicleList(); // Obtener la lista de rutas
+      final fetchedVehicles = await vehicleController
+          .getVehicleList(); // Obtener la lista de vehicles
+      //pendiente de borrar
+      print("fetch vehicles");
+      fetchedVehicles.forEach((vehicle) {
+        print(vehicle.name);
+      });
       setState(() {
         vehicles = fetchedVehicles
             .toList(); // Convertir a lista y actualizar el estado
@@ -707,6 +713,7 @@ class _MapScreenState extends State<MapScreen> {
         SnackBar(content: Text('Error al cargar vehículos: $e')),
       );
     }
+    return vehicles;
   }
 
   void _logOut() async {

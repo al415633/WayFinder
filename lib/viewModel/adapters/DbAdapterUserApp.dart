@@ -12,5 +12,4 @@ abstract class DbAdapterUserApp {
   Future<bool> logOut();
   void setTransportModeDefault(TransportMode transportMode, Vehicle? vehicle);
   void setRouteModeDefault(RouteMode routeMode);
-    Future<UserApp?> getActualUser();
     Future<void> getDefaults(UserApp? userApp);}

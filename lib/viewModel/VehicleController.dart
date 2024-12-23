@@ -1,6 +1,7 @@
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
@@ -9,6 +10,7 @@ class VehicleController {
   // Propiedades
   late Future<Set<Vehicle>> vehicleList;
   final DbAdapterVehicle _dbAdapter;
+  late UserApp? userApp;
 
   VehicleController(this._dbAdapter) {
     vehicleList =
@@ -98,6 +100,10 @@ class VehicleController {
     return vehicle;
   }
 
+  void establishUserApp(UserApp userApp) async {
+    userApp = userApp;
+  }
+
   Future<bool> deleteVehicle(Vehicle vehicle) async {
     try {
       bool success = await _dbAdapter.deleteVehicle(vehicle);
@@ -106,30 +112,19 @@ class VehicleController {
         final currentSet = await vehicleList;
         // Agregar el nuevo vehiculo al Set
         currentSet.remove(vehicle);
-        print("Vehicle deleted: ${vehicle.numberPlate}");
         vehicleList = Future.value(currentSet);
-        currentSet.forEach((vehicle) {
-          print(vehicle.name);
-        });
       
-
+      // Verificar si el vehículo eliminado es el predeterminado 
         UserAppController userAppController = UserAppController.getInstance();
-
-        // Verificar si el vehículo eliminado es el predeterminado
-        UserApp? userApp = await userAppController.getActualUser();
-        if (userApp != null &&
-            userApp.getVehicleDefault != null &&
-            userApp.getVehicleDefault!.getNumberPlate() == vehicle.getNumberPlate()) {
-          // Establecer el vehículo predeterminado en null
-          userApp.setVehicleDefault = null;      
-          
+        Vehicle? vehicleDefault = userAppController.getVehicleDefault(UserAppController.userAppActual());
+        if(vehicleDefault == vehicle){
+          userAppController.setTransportModeDefault(UserAppController.userAppActual(), TransportMode.noSeleccionado, null);
         }
-
       }
 
       return success;
     } catch (e) {
-      throw Exception("Error al crear el vehiculo: $e");
+      throw Exception("Error al borrar el vehiculo: $e");
     }
   }
 

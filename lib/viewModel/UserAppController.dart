@@ -11,6 +11,7 @@ import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserAppController {
+  static late UserApp? userApp;
   // Propiedad privada
   final DbAdapterUserApp repository;
 
@@ -56,13 +57,9 @@ class UserAppController {
     }
 
     //CONECION AL REPOSITORIO
-    UserApp? user = await repository.createUser(email, password);
-    user?.setName = name;
-    return user;
-  }
-
-  Future<UserApp?> getActualUser() async {
-    return await repository.getActualUser();
+    userApp = await repository.createUser(email, password);
+    userApp?.setName = name;
+    return userApp;
   }
 
   void setTransportModeDefault(
@@ -114,7 +111,8 @@ class UserAppController {
     if (!isValidPassword(password)) {
       throw IncorrectPasswordException();
     }
-    return await repository.logInCredenciales(email, password);
+    userApp =  await repository.logInCredenciales(email, password);
+    return userApp;
   }
 
   Future<bool> logOut() async {
@@ -151,6 +149,14 @@ class UserAppController {
       rethrow;
     }
   }
+
+  static UserApp userAppActual() {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp!;
+  }
+
   Future<void> getDefaults(UserApp? userApp) async {
       return await repository.getDefaults(userApp);
     }

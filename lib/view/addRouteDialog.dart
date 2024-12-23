@@ -118,29 +118,21 @@ Future<void> showAddRouteDialog(
                 ),
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
-                      ? (DropdownButton<Vehicle>(
-                          value: userAppController.getVehicleDefault(userApp),
-                          items: [
-                            DropdownMenuItem<Vehicle>(
-                              value: null,
-                              child: Text(
-                                'Selecciona un vehículo',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                            ...vehicles.map((vehicle) {
-                              return DropdownMenuItem<Vehicle>(
-                                value: vehicle,
-                                child: Text(vehicle.name),
-                              );
-                            }).toList(),
-                          ],
+                      ? DropdownButton<Vehicle>(
+                          value: selectedVehicle,
+                          hint: const Text('Selecciona un vehículo'),
+                          items: vehicles.map((vehicle) {
+                            return DropdownMenuItem<Vehicle>(
+                              value: vehicle,
+                              child: Text(vehicle.name),
+                            );
+                          }).toList(),
                           onChanged: (value) {
                             setDialogState(() {
                               selectedVehicle = value;
                             });
                           },
-                        ))
+                        )
                       : Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(

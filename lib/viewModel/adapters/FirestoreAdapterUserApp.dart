@@ -68,23 +68,6 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
   }
 
   @override
-  Future<UserApp?> getActualUser() async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      var userDoc = await db.collection(_collectionName).doc(user.uid).get();
-      if (userDoc.exists) {
-        var data = userDoc.data();
-        return UserApp(user.uid, data?['displayName'] ?? '', user.email ?? '');
-      } else {
-        throw UserNotExistException();
-      }
-    } else {
-      throw UserNotAuthenticatedException();
-    }
-  }
-
-  @override
   Future<UserApp?> logInCredenciales(String email, String password) async {
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
@@ -215,7 +198,7 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
     }
 
     if (transportMode == TransportMode.bicicleta ||
-        transportMode == TransportMode.aPie) {
+        transportMode == TransportMode.aPie || transportMode == TransportMode.noSeleccionado) {
       db.collection(_collectionName).doc(_currentUser?.uid).update({
         'defaultTransportMode': transportMode.name,
       });
@@ -251,8 +234,7 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       }
 
       try {
-        final userDoc =
-            await db.collection(_collectionName).doc(_currentUser?.uid).get();
+        final userDoc = await db.collection(_collectionName).doc(_currentUser?.uid).get();
 
         if (userDoc.exists) {
           var data = userDoc.data();
@@ -273,6 +255,7 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
             }
 
             // Aquí puedes hacer algo con userApp si es necesario
+
           }
         } else {
           throw UserNotExistException();
