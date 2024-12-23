@@ -107,21 +107,34 @@ class VehicleController {
   Future<bool> deleteVehicle(Vehicle vehicle) async {
     try {
       bool success = await _dbAdapter.deleteVehicle(vehicle);
-
       if (success) {
+        print(vehicle);
         final currentSet = await vehicleList;
+        print("1");
         // Agregar el nuevo vehiculo al Set
         currentSet.remove(vehicle);
+                print("2");
+
         vehicleList = Future.value(currentSet);
+                print("3");
+
+      
       
       // Verificar si el vehículo eliminado es el predeterminado 
         UserAppController userAppController = UserAppController.getInstance();
+                print("4");
+
         Vehicle? vehicleDefault = userAppController.getVehicleDefault(UserAppController.userAppActual());
-        if(vehicleDefault == vehicle){
+                print("5");
+
+        if(vehicleDefault!=null && vehicle == vehicleDefault){
+           print("entro");
           userAppController.setTransportModeDefault(UserAppController.userAppActual(), TransportMode.noSeleccionado, null);
+                  print("entro1");
+
         }
       }
-
+print(vehicleList);
       return success;
     } catch (e) {
       throw Exception("Error al borrar el vehiculo: $e");

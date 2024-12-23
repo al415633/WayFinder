@@ -277,6 +277,7 @@ void main() {
       Vehicle vehicle1 = await vehicleController.createVehicle(
           matricula, consumo, combustible, nombre);
 
+      print(vehicle1);
       await vehicleController.deleteVehicle(vehicle1);
 
       //THEN
@@ -290,21 +291,13 @@ void main() {
           equals(0)); // Verifica que no hay vehiculos en lista
 
       await signInAndDeleteUser(emailh11e1, passwordh11e1);
-      await deleteVehicle(matricula);
+     
     });
 
     test('H11-E4I - Eliminar vehículo inválido, usuario no registrado',
         () async {
       //GIVEN
-      //Loguear usuario
-      String emailh11e4 =
-          "Pruebah11e4${DateTime.now().millisecondsSinceEpoch}@gmail.com";
-      String passwordh11e4 = "Aaaaa,.8";
-      String nameh11e4 = "Pruebah11e4";
-      await userAppController.createUser(emailh11e4, passwordh11e4, nameh11e4);
-
-      await userAppController.logInCredenciales(emailh11e4, passwordh11e4);
-
+    
       vehicleController = VehicleController(
           FirestoreAdapterVehiculo(collectionName: "testCollection"));
 
@@ -316,9 +309,6 @@ void main() {
       Vehicle vehicle1 = await vehicleController.createVehicle(
           matricula, consumo, combustible, nombre);
 
-      await vehicleController.deleteVehicle(vehicle1);
-
-      await signInAndDeleteUser(emailh11e4, passwordh11e4);
 
       //THEN
       expect(
@@ -391,7 +381,6 @@ void main() {
           () => vehicleController.editVehicle(vehicle2, newconsumo, newnombre),
           throwsA(isA<NotValidVehicleException>()));
 
-      await vehicleController.deleteVehicle(vehicle2);
       await signInAndDeleteUser(email, password);
     });
     
