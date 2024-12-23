@@ -110,29 +110,65 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.settings, color: Colors.white),
-                    onPressed: () {
-                      _onTopMenuSelectionChanged(TopMenuSelection.settings);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                    onPressed: () {
-                      vehicles = [];
-                      locations = [];
-                      routes = [];
-                      _logOut();
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => MiApp()),
-                        (Route<dynamic> route) => false,
-                      );
-                    },
-                  ),
-                ],
-              ),
+             Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    _onTopMenuSelectionChanged(TopMenuSelection.settings);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () {
+                    // Mostrar el cuadro de diálogo de confirmación
+                    showConfirmationDialog(
+                      context: context,
+                      title: 'Confirmación',
+                      question: '¿Estás seguro de que quieres cerrar sesión?',
+                      onConfirm: (bool confirmed) async {
+                        if (confirmed) {
+                          try {
+                            // Limpiar listas y cerrar sesión
+                            vehicles = [];
+                            locations = [];
+                            routes = [];
+                            _logOut(); // Llama a la función para cerrar sesión
+
+                            // Redirigir a la pantalla principal
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => MiApp()),
+                              (Route<dynamic> route) => false,
+                            );
+
+                            // Mostrar mensaje de éxito
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Sesión cerrada con éxito.'),
+                              ),
+                            );
+                          } catch (e) {
+                            // Mostrar mensaje de error si ocurre algún problema
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error al cerrar sesión: $e'),
+                              ),
+                            );
+                          }
+                        } else {
+                          // Acción cancelada
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Acción cancelada.'),
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
             ],
           ),
         ),
@@ -518,13 +554,13 @@ class _MapScreenState extends State<MapScreen> {
             } else {
               locationController.addFav(location);
             }
-            _fetchLocations();
-            print(location.toponym
-                .toString()); // Actualizar la lista de ubicaciones
+            _fetchLocations(); // Actualizar la lista de ubicaciones
+            print(location.toponym.toString());
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text('Error al cambiar el estado de favorito: $e')),
+                content: Text('Error al cambiar el estado de favorito: $e'),
+              ),
             );
           }
         },
@@ -536,10 +572,40 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async {
-              await locationController.deleteLocation(location);
-              _fetchLocations();
-              print('Eliminar ${location.getAlias()}');
+            onPressed: () {
+              // Mostrar el cuadro de diálogo de confirmación
+              showConfirmationDialog(
+                context: context,
+                title: 'Confirmación',
+                question: '¿Estás seguro de que deseas eliminar este lugar?',
+                onConfirm: (bool confirmed) async {
+                  if (confirmed) {
+                    try {
+                      // Eliminar el lugar
+                      await locationController.deleteLocation(location);
+                      _fetchLocations(); // Actualizar la lista de ubicaciones
+                      print('Eliminar ${location.getAlias()}');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Lugar eliminado con éxito.'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error al eliminar el lugar: $e'),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Acción cancelada.'),
+                      ),
+                    );
+                  }
+                },
+              );
             },
           ),
         ],
@@ -561,11 +627,12 @@ class _MapScreenState extends State<MapScreen> {
             } else {
               routeController.addFav(route);
             }
-            _fetchRoutes();
+            _fetchRoutes(); // Actualizar la lista de rutas
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text('Error al cambiar el estado de favorito: $e')),
+                content: Text('Error al cambiar el estado de favorito: $e'),
+              ),
             );
           }
         },
@@ -578,24 +645,55 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async {
-              await routeController.deleteRoute(route);
-              _fetchRoutes();
-              print('Eliminar ruta');
+            onPressed: () {
+              // Mostrar el cuadro de diálogo de confirmación
+              showConfirmationDialog(
+                context: context,
+                title: 'Confirmación',
+                question: '¿Estás seguro de que deseas eliminar esta ruta?',
+                onConfirm: (bool confirmed) async {
+                  if (confirmed) {
+                    try {
+                      // Eliminar la ruta
+                      await routeController.deleteRoute(route);
+                      _fetchRoutes(); // Actualizar la lista de rutas
+                      print('Eliminar ruta ${route.name}');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Ruta eliminada con éxito.'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error al eliminar la ruta: $e'),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Acción cancelada.'),
+                      ),
+                    );
+                  }
+                },
+              );
             },
           ),
           IconButton(
             icon: const Icon(Icons.route_outlined),
             onPressed: () {
               _showRoutes(
-                  route); //Si se selecciona te lleva a la pantalla de la ruta
-              print('Mostrar ruta $route.name');
+                  route); // Si se selecciona, muestra la pantalla de la ruta
+              print('Mostrar ruta ${route.name}');
             },
           ),
         ],
       ),
     );
   }
+
 
   Widget _buildVehicleItem(Vehicle vehicle) {
     return ListTile(
@@ -611,11 +709,12 @@ class _MapScreenState extends State<MapScreen> {
             } else {
               vehicleController.addFav(vehicle);
             }
-            _fetchVehicles(); // Actualizar la lista de coches
+            _fetchVehicles(); // Actualizar la lista de vehículos
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text('Error al cambiar el estado de favorito: $e')),
+                content: Text('Error al cambiar el estado de favorito: $e'),
+              ),
             );
           }
         },
@@ -626,12 +725,42 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async {
-              await vehicleController.deleteVehicle(vehicle);
-              userAppController?.getDefaults(userApp);
-              vehicles = await _fetchVehicles();
-              print(vehicles);
-              print('Eliminar $vehicle');
+            onPressed: () {
+              // Mostrar el cuadro de diálogo de confirmación
+              showConfirmationDialog(
+                context: context,
+                title: 'Confirmación',
+                question: '¿Estás seguro de que deseas eliminar este vehículo?',
+                onConfirm: (bool confirmed) async {
+                  if (confirmed) {
+                    try {
+                      // Eliminar el vehículo
+                      await vehicleController.deleteVehicle(vehicle);
+                      userAppController?.getDefaults(userApp);
+                      vehicles = await _fetchVehicles(); // Actualizar la lista
+                      print(vehicles);
+                      print('Eliminar $vehicle');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Vehículo eliminado con éxito.'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error al eliminar el vehículo: $e'),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Acción cancelada.'),
+                      ),
+                    );
+                  }
+                },
+              );
             },
           ),
           IconButton(
@@ -646,6 +775,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+
 
   void _fetchLocations() async {
     try {
