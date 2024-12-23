@@ -121,6 +121,9 @@ class _MapScreenState extends State<MapScreen> {
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () {
+                      vehicles = [];
+                      locations = [];
+                      routes = [];
                       _logOut();
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => MiApp()),

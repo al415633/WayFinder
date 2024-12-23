@@ -6,8 +6,15 @@ import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
+import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/RouteController.dart';
+import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserAppController {
