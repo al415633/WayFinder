@@ -12,6 +12,7 @@ import 'package:WayFinder/view/addRouteDialog.dart';
 import 'package:WayFinder/view/addVehicleDialog.dart';
 import 'package:WayFinder/view/addLocationDialog.dart';
 import 'package:WayFinder/view/defaultRouteDialog.dart';
+import 'package:WayFinder/view/editVehicleDialog.dart';
 import 'package:WayFinder/view/login.dart';
 import 'package:WayFinder/view/defaultTransportDialog.dart';
 import 'package:WayFinder/view/routeMapScreen.dart';
@@ -243,6 +244,20 @@ class _MapScreenState extends State<MapScreen> {
       _fetchVehicles(); // Actualizar la lista de vehículos
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Vehículo guardado exitosamente.')),
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+    Future<bool> _onVehicleEdited(Vehicle vehicle, String name,
+      double consumption) async {
+    try {
+      vehicle = await vehicleController.editVehicle(vehicle, consumption, name);
+      _fetchVehicles(); // Actualizar la lista de vehículos
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vehículo editado exitosamente.')),
       );
       return true;
     } catch (e) {
@@ -626,6 +641,8 @@ class _MapScreenState extends State<MapScreen> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
+              showEditVehicleDialog(context, vehicle, _onVehicleEdited);
+              _fetchVehicles();
               print('Editar $vehicle');
             },
           ),
