@@ -1,7 +1,8 @@
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
-import 'package:WayFinder/viewModel/PetrolCarPrice.dart';
+import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
+import 'package:WayFinder/viewModel/DieselCarPrice.dart';
 import 'package:WayFinder/viewModel/Price.dart';
 
 class Vehicle implements FavItem {
@@ -62,11 +63,14 @@ class Vehicle implements FavItem {
   void setFuelType(FuelType fuelType) {
     this.fuelType = fuelType;
     switch (fuelType) {
-      case FuelType.gasolina || FuelType.diesel:
-        price = Petrolcarprice();
+      case FuelType.gasolina:
+        price = Gasolinecarprice();
         break;
       case FuelType.electrico:
         price = Electriccarprice();
+        break;
+      case FuelType.diesel:
+        price = Dieselcarprice();
         break;
     }
   }
