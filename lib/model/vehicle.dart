@@ -1,8 +1,7 @@
 import 'package:WayFinder/model/favItem.dart';
 import 'package:WayFinder/model/enum/fuelType.dart';
-import 'package:WayFinder/viewModel/DieselCarPrice.dart';
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
-import 'package:WayFinder/viewModel/GasolineCarPrice.dart';
+import 'package:WayFinder/viewModel/PetrolCarPrice.dart';
 import 'package:WayFinder/viewModel/Price.dart';
 
 class Vehicle implements FavItem {
@@ -24,19 +23,7 @@ class Vehicle implements FavItem {
     this.numberPlate = numberPlate;
     this.name = name;
 
-    /*Esto es lo que está mal. Luego a la hora de llamar al método calculatePrice() en PriceProxy, 
-    no se puede llamar, siempre devuelve null*/
-    switch (fuelType) {
-      case FuelType.gasolina:
-        price = Gasolinecarprice();
-        break;
-      case FuelType.electrico:
-        price = Electriccarprice();
-        break;
-      case FuelType.diesel:
-        price = Dieselcarprice();
-        break;
-    }
+    setFuelType(fuelType);
   }
 
   void setPriceStrategy(Price priceStrategy) {
@@ -75,14 +62,11 @@ class Vehicle implements FavItem {
   void setFuelType(FuelType fuelType) {
     this.fuelType = fuelType;
     switch (fuelType) {
-      case FuelType.gasolina:
-        price = Gasolinecarprice();
+      case FuelType.gasolina || FuelType.diesel:
+        price = Petrolcarprice();
         break;
       case FuelType.electrico:
         price = Electriccarprice();
-        break;
-      case FuelType.diesel:
-        price = Dieselcarprice();
         break;
     }
   }
@@ -125,17 +109,9 @@ class Vehicle implements FavItem {
 
     // Asignación de propiedades con valores del mapa
     fuelType = FuelType.values.firstWhere((e) => e.name == mapa['fueltype']);
-    switch (fuelType) {
-      case FuelType.gasolina:
-        price = Gasolinecarprice();
-        break;
-      case FuelType.electrico:
-        price = Electriccarprice();
-        break;
-      case FuelType.diesel:
-        price = Dieselcarprice();
-        break;
-    }
+
+    setFuelType(fuelType);
+
     consumption = mapa['consumption']?.toDouble() ??
         0.0; // Asegúrate de convertir a `double`
     numberPlate =

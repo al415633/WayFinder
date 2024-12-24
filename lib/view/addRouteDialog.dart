@@ -3,7 +3,6 @@ import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 

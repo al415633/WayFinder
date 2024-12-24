@@ -843,13 +843,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _logOut() async {
     UserAppController userAppController = UserAppController.getInstance();
-    RouteController routeController =
-        RouteController.getInstance(FirestoreAdapterRoute());
-    VehicleController vehicleController =
-        VehicleController.getInstance(FirestoreAdapterVehiculo());
-    LocationController locationController =
-        LocationController.getInstance(FirestoreAdapterLocation());
-
     // Limpia los estados y destruye las instancias
     userAppController.logOut();
     //UserAppController.destroyInstance();

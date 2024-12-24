@@ -12,10 +12,7 @@ Future<void> showDefalutTransportDialog(
   TransportMode transportModeInput =
       userAppController.getTransportModeDefault(userApp);
   Vehicle? selectedVehicle = userAppController.getVehicleDefault(userApp);
-
-  // Mensajes de error
-  String errorMessage = '';
-
+  
   showDialog(
     context: context,
     builder: (BuildContext context) {
