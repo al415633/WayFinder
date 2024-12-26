@@ -58,7 +58,8 @@ void main() {
       when(userAppController.repository.createUser(email, password))
           .thenAnswer((_) async => UserApp("id", name, email));
 
-      UserApp? newUserApp = await userAppController.createUser(email, password, name);
+      UserApp? newUserApp =
+          await userAppController.createUser(email, password, name);
 
       when(mockDbAdapterLocation.addFav(loc)).thenAnswer((_) async {
         loc.fav = true;
@@ -67,7 +68,8 @@ void main() {
 
       locationController.addFav(loc);
 
-      final Set<Location> locations = await mockDbAdapterLocation.getLocationList();
+      final Set<Location> locations =
+          await mockDbAdapterLocation.getLocationList();
       final locationList = locations.toList();
       final firstLocation = locationList[0];
 
@@ -78,6 +80,9 @@ void main() {
       expect(firstLocation.getFav(), equals(true));
     });
 
+    //No se puede probar en aceptación ya que no se puede crear un lugar inválido
+//Menos aún marcarlo como favorito
+/*
     test('H20-E2I - Marcar como favorito un lugar inválido', () async {
       final double lat = 39.98567;
       final double long = -0.04935;
@@ -95,9 +100,11 @@ void main() {
         throwsA(isA<Exception>()),
       );
     });
+    */
 
     test('H21-E1V - Establecer un modo de transporte por defecto', () async {
-      when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => <Vehicle>{});
+      when(mockVehicleAdapter.getVehicleList())
+          .thenAnswer((_) async => <Vehicle>{});
       final vehicleController = VehicleController(mockVehicleAdapter);
 
       String email = "Pruebah21e1@gmail.com";
@@ -107,7 +114,8 @@ void main() {
       when(userAppController.repository.createUser(email, password))
           .thenAnswer((_) async => UserApp("id", name, email));
 
-      UserApp? newUserApp = await userAppController.createUser(email, password, name);
+      UserApp? newUserApp =
+          await userAppController.createUser(email, password, name);
 
       final String vehicleName = "Coche Quique";
       final double consumption = 24.3;
@@ -118,12 +126,15 @@ void main() {
 
       when(mockVehicleAdapter.createVehicle(any)).thenAnswer((_) async => true);
 
-      await vehicleController.createVehicle(numberPlate, consumption, fuelType, vehicleName);
+      await vehicleController.createVehicle(
+          numberPlate, consumption, fuelType, vehicleName);
 
-      when(mockDbAdapterUserApp.setTransportModeDefault(TransportMode.coche, vehicle))
+      when(mockDbAdapterUserApp.setTransportModeDefault(
+              TransportMode.coche, vehicle))
           .thenAnswer((_) async => true);
 
-      userAppController.setTransportModeDefault(newUserApp, TransportMode.coche, vehicle);
+      userAppController.setTransportModeDefault(
+          newUserApp, TransportMode.coche, vehicle);
 
       expect(newUserApp?.getDefaultTransportMode, equals(TransportMode.coche));
     });
@@ -136,7 +147,8 @@ void main() {
       when(userAppController.repository.createUser(email, password))
           .thenAnswer((_) async => UserApp("id", name, email));
 
-      UserApp? newUserApp = await userAppController.createUser(email, password, name);
+      UserApp? newUserApp =
+          await userAppController.createUser(email, password, name);
 
       when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.rapida))
           .thenAnswer((_) async => true);
@@ -146,14 +158,17 @@ void main() {
       expect(newUserApp?.getDefaultRouteMode, equals(RouteMode.rapida));
     });
 
-    test('H22-EI4 - No se puede establecer un modo de ruta por defecto sin usuario registrado', () async {
+    test(
+        'H22-EI4 - No se puede establecer un modo de ruta por defecto sin usuario registrado',
+        () async {
       UserApp? newUserApp = null;
 
       when(mockDbAdapterUserApp.setRouteModeDefault(RouteMode.corta))
           .thenThrow(UserNotAuthenticatedException());
 
       expect(
-        () => userAppController.setRouteModeDefault(newUserApp, RouteMode.corta),
+        () =>
+            userAppController.setRouteModeDefault(newUserApp, RouteMode.corta),
         throwsA(isA<UserNotAuthenticatedException>()),
       );
     });

@@ -21,7 +21,6 @@ class ErrorPage extends StatelessWidget {
             ElevatedButton(
                 onPressed: () {
                   // Guardar registro en una base de datos
-                  print("Volver al inicio");
                   Navigator.pop(context); // Regresar a la pantalla anterior
                   //NAVIGATOR = TIENE UN HISTORIAL DE RUTAS QUE SE HAN VISITADO
                   //Navigator.push(context, route): Agrega una nueva ruta a la pila. Se utiliza para navegar a una nueva pantalla.

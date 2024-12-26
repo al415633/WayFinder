@@ -314,7 +314,6 @@ class _MapScreenState extends State<MapScreen> {
     try {
       route = await routeController.createRoute(
           name, start, end, transportMode, routeMode, vehicle);
-      print(vehicle);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al crear la ruta: $e')),
@@ -555,7 +554,6 @@ class _MapScreenState extends State<MapScreen> {
               locationController.addFav(location);
             }
             _fetchLocations(); // Actualizar la lista de ubicaciones
-            print(location.toponym.toString());
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -584,7 +582,6 @@ class _MapScreenState extends State<MapScreen> {
                       // Eliminar el lugar
                       await locationController.deleteLocation(location);
                       _fetchLocations(); // Actualizar la lista de ubicaciones
-                      print('Eliminar ${location.getAlias()}');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Lugar eliminado con éxito.'),
@@ -657,7 +654,6 @@ class _MapScreenState extends State<MapScreen> {
                       // Eliminar la ruta
                       await routeController.deleteRoute(route);
                       _fetchRoutes(); // Actualizar la lista de rutas
-                      print('Eliminar ruta ${route.name}');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Ruta eliminada con éxito.'),
@@ -686,7 +682,6 @@ class _MapScreenState extends State<MapScreen> {
             onPressed: () {
               _showRoutes(
                   route); // Si se selecciona, muestra la pantalla de la ruta
-              print('Mostrar ruta ${route.name}');
             },
           ),
         ],
@@ -738,8 +733,6 @@ class _MapScreenState extends State<MapScreen> {
                       await vehicleController.deleteVehicle(vehicle);
                       userAppController?.getDefaults(userApp);
                       vehicles = await _fetchVehicles(); // Actualizar la lista
-                      print(vehicles);
-                      print('Eliminar $vehicle');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Vehículo eliminado con éxito.'),
@@ -768,7 +761,6 @@ class _MapScreenState extends State<MapScreen> {
             onPressed: () {
               showEditVehicleDialog(context, vehicle, _onVehicleEdited);
               _fetchVehicles();
-              print('Editar $vehicle');
             },
           ),
         ],
@@ -824,10 +816,6 @@ class _MapScreenState extends State<MapScreen> {
       final fetchedVehicles = await vehicleController
           .getVehicleList(); // Obtener la lista de vehicles
       //pendiente de borrar
-      print("fetch vehicles");
-      fetchedVehicles.forEach((vehicle) {
-        print(vehicle.name);
-      });
       setState(() {
         vehicles = fetchedVehicles
             .toList(); // Convertir a lista y actualizar el estado

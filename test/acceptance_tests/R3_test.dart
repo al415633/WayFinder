@@ -280,7 +280,6 @@ void main() {
       Vehicle vehicle1 = await vehicleController.createVehicle(
           matricula, consumo, combustible, nombre);
 
-      print(vehicle1);
       await vehicleController.deleteVehicle(vehicle1);
 
       //THEN

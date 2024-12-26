@@ -72,11 +72,8 @@ class RouteController {
 
       List<LatLng> pointsShortest =
           pointsDataShortest['points'] as List<LatLng>;
-      //print(points);
       double distanceShortest = pointsDataShortest['distance'] as double;
-      //print("Distanciaaaa:$distance");
       double timeShortest = pointsDataShortest['duration'] as double;
-      //print("Tiempooooo $time");
       Routes routeShortest = Routes(
           name,
           start,
@@ -94,11 +91,8 @@ class RouteController {
           start, end, transportMode, RouteMode.rapida);
 
       List<LatLng> pointsFastest = pointsDataFastest['points'] as List<LatLng>;
-      //print(points);
       double distanceFastest = pointsDataFastest['distance'] as double;
-      //print("Distanciaaaa:$distance");
       double timeFastest = pointsDataFastest['duration'] as double;
-      //print("Tiempooooo $time");
 
       Routes routeFastest = Routes(
           name,
@@ -127,16 +121,12 @@ class RouteController {
         await repository.getRouteData(start, end, transportMode, routeMode!);
 
     List<LatLng> points = pointsData['points'] as List<LatLng>;
-    //print(points);
     double distance = pointsData['distance'] as double;
-    //print("Distanciaaaa:$distance");
     double time = pointsData['duration'] as double;
-    //print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
     if (vehicle != null) {
       double cost = await calculatePrice(route, vehicle);
-      print("cost $cost");
       route.setCost = cost;
     } else {
       route.setCalories = calculateCostKCal(route);
@@ -163,7 +153,6 @@ class RouteController {
   }
 
   Future<bool> saveRoute(Routes route) async {
-    print(route);
     try {
       bool success = await repository.saveRoute(route);
 
@@ -224,16 +213,11 @@ class RouteController {
       route.setCost = await calculatePrice(route, route.vehicle!);
     } else {
       routeController.calculateCostKCal(route);
-      print("OnTransportChanged: ${route.getCost}");
     }
   }
 
   Future<Routes> editRoute(Routes oldRoute, TransportMode newTransportMode,
       Vehicle? vehicle, RouteMode? newRouteMode) async {
-
-         print("en edit");
-    print(newTransportMode);
-              //Es en coche pero y economica
 
     if (vehicle != null && newRouteMode != null) {
       if (newRouteMode == RouteMode.economica) {
@@ -242,11 +226,8 @@ class RouteController {
 
         List<LatLng> pointsShortest =
             pointsDataShortest['points'] as List<LatLng>;
-        //print(points);
         double distanceShortest = pointsDataShortest['distance'] as double;
-        //print("Distanciaaaa:$distance");
         double timeShortest = pointsDataShortest['duration'] as double;
-        //print("Tiempooooo $time");
        
         Routes routeShortest = Routes(
             oldRoute.getName,
@@ -298,11 +279,8 @@ class RouteController {
           await repository.getRouteData(oldRoute.getStart, oldRoute.getEnd, newTransportMode, newRouteMode);
 
       List<LatLng> points = pointsData['points'] as List<LatLng>;
-      //print(points);
       double distance = pointsData['distance'] as double;
-      //print("Distanciaaaa:$distance");
       double time = pointsData['duration'] as double;
-      //print("Tiempooooo $time");
       Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
           newTransportMode, newRouteMode, vehicle);
       double cost = await calculatePrice(route, vehicle);

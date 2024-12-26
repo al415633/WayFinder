@@ -216,8 +216,8 @@ void main() {
 
       when(mockVehicleAdapter.deleteVehicle(any)).thenAnswer((_) async => true);
       when(mockVehicleAdapter.getVehicleList()).thenAnswer((_) async => {});
-
-      await vehicleController.deleteVehicle(vehicleMock);
+      await vehicleController.deleteVehicle(vehicleMock, skipDefaultCheck: true);
+      // Skipdefaultcheck es necesario porque sino el getInstance da error de Firebase
       final Set<Vehicle> vehicles2 = await vehicleController.getVehicleList();
       expect(vehicles2.isEmpty, true);
 

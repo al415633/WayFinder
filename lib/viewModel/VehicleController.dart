@@ -34,7 +34,6 @@ class VehicleController {
     _instance = null;
   }
 
-
   Future<Set<Vehicle>> getVehicleList() async {
     return vehicleList;
   }
@@ -88,14 +87,14 @@ class VehicleController {
       Vehicle vehicle, double newConsumo, String newNombre) async {
     // Validar consumo
 
-    //cambiar los datos proporcionados	
-          // Validar consumo
+    //cambiar los datos proporcionados
+    // Validar consumo
     if (!threeDecimalPlacesMax(newConsumo) || newConsumo <= 0) {
       throw NotValidVehicleException();
     }
-      vehicle.setConsumption(newConsumo);
-      vehicle.setName(newNombre);
-      _dbAdapter.editVehicle(vehicle, newConsumo, newNombre);
+    vehicle.setConsumption(newConsumo);
+    vehicle.setName(newNombre);
+    _dbAdapter.editVehicle(vehicle, newConsumo, newNombre);
 
     // Devolver el vehículo creado
     return vehicle;
@@ -105,7 +104,7 @@ class VehicleController {
     userApp = userApp;
   }
 
-  Future<bool> deleteVehicle(Vehicle vehicle) async {
+  Future<bool> deleteVehicle(Vehicle vehicle, {bool skipDefaultCheck = false}) async {
     try {
       bool success = await _dbAdapter.deleteVehicle(vehicle);
       if (success) {
@@ -114,14 +113,21 @@ class VehicleController {
         currentSet.remove(vehicle);
 
         vehicleList = Future.value(currentSet);
-      
-      // Verificar si el vehículo eliminado es el predeterminado 
-        UserAppController userAppController = UserAppController.getInstance(FirestoreAdapterUserApp());
 
-        Vehicle? vehicleDefault = userAppController.getVehicleDefault(UserAppController.userAppActual());
+        // Verificar si el vehículo eliminado es el predeterminado
+        if (!skipDefaultCheck) {
+          UserAppController userAppController =
+              UserAppController.getInstance(FirestoreAdapterUserApp());
 
-        if(vehicleDefault!=null && vehicle == vehicleDefault){
-          userAppController.setTransportModeDefault(UserAppController.userAppActual(), TransportMode.noSeleccionado, null);
+          Vehicle? vehicleDefault = userAppController
+              .getVehicleDefault(UserAppController.userAppActual());
+
+          if (vehicleDefault != null && vehicle == vehicleDefault) {
+            userAppController.setTransportModeDefault(
+                UserAppController.userAppActual(),
+                TransportMode.noSeleccionado,
+                null);
+          }
         }
       }
       return success;
