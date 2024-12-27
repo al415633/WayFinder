@@ -71,7 +71,11 @@ void showAddVehicleDialog(BuildContext context,
                 ),
                 TextField(
                   decoration:
-                      const InputDecoration(labelText: 'Consumo (L/100km)'),
+                        InputDecoration(
+                        labelText: fuelTypeInput == FuelType.electrico
+                          ? 'Consumo (KW/h)'
+                          : 'Consumo (L/100km)',
+                        ),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setDialogState(() {

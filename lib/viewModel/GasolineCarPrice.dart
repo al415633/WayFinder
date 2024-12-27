@@ -8,8 +8,6 @@ import 'package:WayFinder/viewModel/Price.dart';
 class Gasolinecarprice implements Price {
   @override
   Future<double> calculatePrice(Routes route, Vehicle vehiculo) async {
-    double distance = route.distance;
-    double consumption = vehiculo.consumption;
 
     double pricePerlitre = await GasoilGasolina.fetchPrice(route, FuelType.gasolina);
     if (pricePerlitre == -1) {

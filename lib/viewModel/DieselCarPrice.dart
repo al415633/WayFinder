@@ -7,9 +7,6 @@ import 'package:WayFinder/viewModel/Price.dart';
 class Dieselcarprice implements Price {
   @override
   Future<double> calculatePrice(Routes route, Vehicle vehiculo) async {
-    double distance = route.distance;
-    double consumption = vehiculo.consumption;
-
     double pricePerlitre = await GasoilGasolina.fetchPrice(route, FuelType.diesel);
     if (pricePerlitre == -1) {
       throw Exception('Error en el cálculo del precio del gasoil');

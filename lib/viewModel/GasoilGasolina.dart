@@ -1,7 +1,6 @@
 import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
-import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import "package:WayFinder/viewModel/municipios_map.dart";
 import 'dart:convert';
