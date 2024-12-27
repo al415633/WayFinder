@@ -4,6 +4,7 @@ import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
+import 'package:WayFinder/viewModel/municipios_map.dart';
 
 class PriceProxy {
   static PriceProxy? _instance;
@@ -23,30 +24,47 @@ class PriceProxy {
 
     final now = DateTime.now();
 
-    String toponym = route.getStart.getToponym();
-    String secondName = "";
-    if (toponym.split(",").length == 1) {
-      LocationController locationController =
-          LocationController(FirestoreAdapterLocation());
-      toponym = await locationController.CoordToToponym(
-          route.getStart.getCoordinate());
-    }
-    List<String> toponymParts = toponym.split(',');
-    if (toponymParts.length > 1) {
-      secondName = toponymParts[toponymParts.length -3 ].trim();
-      if (secondName.contains("/")) {
-        secondName = secondName.split("/")[0].trim();
+    if (coche.fuelType != FuelType.electrico) {
+      String toponym = route.getStart.getToponym();
+      String secondName = "";
+      if (toponym.split(",").length == 1) {
+        LocationController locationController =
+            LocationController(FirestoreAdapterLocation());
+        toponym = await locationController.CoordToToponym(
+            route.getStart.getCoordinate());
       }
-      if (secondName.contains("(")) {
-        secondName = secondName.split("\\(")[0].trim();
+      String? idMunicipio =
+          null; //Revisa con el que estará guardado en el mapa por GasoilGasolina
+      List<String> toponymParts = toponym.split(',');
+      int position = 0;
+      while (idMunicipio == null && position < toponymParts.length) {
+        String secondName = obtenerMunicipio(toponymParts, position);
+        idMunicipio = municipioMap[secondName];
+        position++;
       }
+
+      final cacheEntry = _priceCache[secondName]?.precio;
+      final lastCalculated = _priceCache[secondName]?.lastCalculated;
+
+      final updateInterval = 1;
+
+      if (cacheEntry != null) {
+        if (now.difference(lastCalculated!).inHours < updateInterval) {
+          return cacheEntry;
+        }
+      }
+
+      //Si no se ha devuelto con lo de antes(ha pasado el tiempo), se vuelve a calcular
+      double valor = await coche.price!.calculatePrice(route, coche);
+
+      _priceCache[secondName] = ValorFecha(valor, now);
+
+      return valor;
     }
 
-    final cacheEntry = _priceCache[secondName]?.precio;
-    final lastCalculated = _priceCache[secondName]?.lastCalculated;
-
-    //Si el lastCalculated es menor a 24 horas, se coge el precio de la luz/gasolina que ya hay en el mapa
-    if (coche.fuelType == FuelType.electrico) {
+    //Si el lastCalculated es menor a 24 horas, se coge el precio de la luz que ya hay en el mapa y sino se recalcula
+    else {
+      //(coche.fuelType == FuelType.electrico)
       if (now.difference(tiempoLuz!).inHours < 24) {
         return luzPrice;
       } else {
@@ -56,21 +74,20 @@ class PriceProxy {
         return luzPrice;
       }
     }
+  }
 
-    final updateInterval = 1;
-
-    if (cacheEntry != null) {
-      if (now.difference(lastCalculated!).inHours < updateInterval) {
-        return cacheEntry;
+  static String obtenerMunicipio(List<String> toponymParts, int position) {
+    String secondName = "";
+    if (toponymParts.length > 1) {
+      secondName = toponymParts[position].trim();
+      if (secondName.contains("/")) {
+        secondName = secondName.split("/")[0].trim();
+      }
+      if (secondName.contains("(")) {
+        secondName = secondName.split("\\(")[0].trim();
       }
     }
-
-    //Si no se ha devuelto con lo de antes(ha pasado el tiempo), se vuelve a calcular
-    double valor = await coche.price!.calculatePrice(route, coche);
-
-    _priceCache[secondName] = ValorFecha(valor, now);
-
-    return valor;
+    return secondName;
   }
 }
 

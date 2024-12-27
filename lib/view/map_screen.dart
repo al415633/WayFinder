@@ -369,24 +369,23 @@ class _MapScreenState extends State<MapScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
                 title,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
+            IconButton(
+              onPressed: () async {
+                onAddPressed();
+                _fetchRoutes();
+              },
+              icon: const Icon(Icons.add),
+            ),
             Expanded(
               child: ListView(
                 children: [
-                     IconButton(
-                    onPressed: () async{
-                      onAddPressed();
-                      _fetchRoutes();
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
                   ...items.map((item) => buildItem(item)),
-               
                 ],
               ),
             ),
@@ -612,7 +611,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildRouteItem(Routes route) {
-    return ListTile(
+    var listTile = ListTile(
       leading: IconButton(
         icon: Icon(
           route.getFav() ? Icons.star : Icons.star_border,
@@ -637,7 +636,9 @@ class _MapScreenState extends State<MapScreen> {
       ),
       title: Text(route.name),
       subtitle:
-          Text('${route.getStart.getAlias()} → ${route.getEnd.getAlias()}'),
+            Text('${route.getStart.getAlias()} → ${route.getEnd.getAlias()}\n' +
+              '${route.getTransportMode.name}' +
+              (route.getVehicle != null ? ', ${route.getVehicle?.name}' : '') + '\n'),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -688,6 +689,7 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
     );
+    return listTile;
   }
 
 
@@ -804,14 +806,19 @@ class _MapScreenState extends State<MapScreen> {
     ;
   }
 
-  void _showRoutes(Routes route) {
-    Navigator.push(
+  void _showRoutes(Routes route) async {
+    final menuSelection = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => RouteMapScreen(route: route),
       ),
     );
+
+    if (menuSelection == TopMenuSelection.routes) {
+      _fetchRoutes(); // Actualizar la lista de rutas si menuSelection es routes
+    }
   }
+
 
   Future<List<Vehicle>> _fetchVehicles() async {
     try {
