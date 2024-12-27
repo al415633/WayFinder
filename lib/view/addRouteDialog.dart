@@ -34,7 +34,7 @@ Future<void> showAddRouteDialog(
     } else {
       onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!,
           transportModeInput, routeModeInput, selectedVehicle, saveRoute);
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     }
   }
 
@@ -181,6 +181,7 @@ Future<void> showAddRouteDialog(
                 });
                 } else {
                 generateRoute(true);
+                Navigator.of(context).pop();
                 }
               },
               child: const Text('Guardar y generar ruta'),
@@ -193,6 +194,7 @@ Future<void> showAddRouteDialog(
                 });
                 } else {
                 generateRoute(false);
+                Navigator.of(context).pop();
                 }
               },
               child: const Text('Generar ruta'),

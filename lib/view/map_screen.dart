@@ -383,11 +383,12 @@ class _MapScreenState extends State<MapScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  ...items.map((item) => buildItem(item)),
-                  IconButton(
+                     IconButton(
                     onPressed: onAddPressed,
                     icon: const Icon(Icons.add),
                   ),
+                  ...items.map((item) => buildItem(item)),
+               
                 ],
               ),
             ),

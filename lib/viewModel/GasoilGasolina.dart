@@ -1,5 +1,8 @@
 import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/adapters/DBAdapterLocation.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import "package:WayFinder/viewModel/municipios_map.dart";
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -14,7 +17,13 @@ class GasoilGasolina {
         valor = "4";
       }
 
-      String toponym = route.start.toponym;
+      String toponym = route.getStart.getToponym();
+
+      if (toponym.split(",").length == 1){
+        LocationController locationController= LocationController(FirestoreAdapterLocation());
+        toponym = await locationController.CoordToToponym(route.getStart.getCoordinate());
+      }
+
       List<String> toponymParts = toponym.split(',');
       if (toponymParts.length > 1) {
         String secondName = toponymParts[1].trim();
