@@ -201,8 +201,9 @@ class RouteController {
     }
 
     double num = await PriceProxy.getPrice(route);
+    double precioFinal = num * vehiculo.getConsumption()/100 * route.getDistance;
 
-    return num;
+    return precioFinal;
   }
 
   void onTransportChanged(TransportMode newTransportMode, Routes route) async {

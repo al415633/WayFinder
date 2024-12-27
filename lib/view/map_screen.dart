@@ -63,11 +63,6 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    /*
-    locationController.clearList();
-    routeController.clearList();
-    vehicleController.clearList();
-    */
     userApp = widget.userApp;
     userAppController?.getDefaults(userApp);
     routeMode = userApp!.getDefaultRouteMode;
@@ -836,7 +831,10 @@ class _MapScreenState extends State<MapScreen> {
     userAppController.logOut();
     //UserAppController.destroyInstance();
     RouteController.destroyInstance();
+    routes = [];
     VehicleController.destroyInstance();
+    vehicles = [];
     LocationController.destroyInstance();
+    locations = [];
   }
 }

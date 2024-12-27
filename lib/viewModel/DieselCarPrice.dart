@@ -15,8 +15,7 @@ class Dieselcarprice implements Price {
       throw Exception('Error en el cálculo del precio del gasoil');
     }
 
-    double totalCost = pricePerlitre * consumption / 100 * distance;
-    return totalCost;
+    return pricePerlitre;
   }
 
  

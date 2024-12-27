@@ -16,8 +16,7 @@ class Gasolinecarprice implements Price {
       throw Exception('Error en el cálculo del precio de la gasolina');
     }
 
-    double totalCost = pricePerlitre * consumption / 100 * distance;
-    return totalCost;
+    return pricePerlitre;
   }
 
  

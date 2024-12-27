@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 
 class PriceProxy {
   static PriceProxy? _instance;
@@ -11,43 +13,47 @@ class PriceProxy {
     return _instance!;
   }
 
-  static final Map<String, ValorFecha> _priceCache = {}; //CAMBIAR DE RUTA A SITIO DE INICIO
+  static final Map<String, ValorFecha> _priceCache =
+      {}; //CAMBIAR DE RUTA A SITIO DE INICIO
   static double luzPrice = 0;
   static DateTime? tiempoLuz = DateTime(1900, 1, 1);
-  
+
   static Future<double> getPrice(Routes route) async {
     Vehicle coche = route.vehicle!;
 
     final now = DateTime.now();
 
-
-      String toponym = route.start.toponym;
-      String secondName="";
-      List<String> toponymParts = toponym.split(',');
-      if (toponymParts.length > 1) {
-        String secondName = toponymParts[1].trim();
-        if (secondName.contains("/")) {
-          secondName = secondName.split("/")[0].trim();
-        }
-        if (secondName.contains("(")) {
-          secondName = secondName.split("\\(")[0].trim();
-        }
+    String toponym = route.getStart.getToponym();
+    String secondName = "";
+    if (toponym.split(",").length == 1) {
+      LocationController locationController =
+          LocationController(FirestoreAdapterLocation());
+      toponym = await locationController.CoordToToponym(
+          route.getStart.getCoordinate());
+    }
+    List<String> toponymParts = toponym.split(',');
+    if (toponymParts.length > 1) {
+      secondName = toponymParts[toponymParts.length -3 ].trim();
+      if (secondName.contains("/")) {
+        secondName = secondName.split("/")[0].trim();
       }
+      if (secondName.contains("(")) {
+        secondName = secondName.split("\\(")[0].trim();
+      }
+    }
 
     final cacheEntry = _priceCache[secondName]?.precio;
     final lastCalculated = _priceCache[secondName]?.lastCalculated;
 
-  //Si el lastCalculated es menor a 24 horas, se coge el precio de la luz/gasolina que ya hay en el mapa
+    //Si el lastCalculated es menor a 24 horas, se coge el precio de la luz/gasolina que ya hay en el mapa
     if (coche.fuelType == FuelType.electrico) {
       if (now.difference(tiempoLuz!).inHours < 24) {
-  
-        
         return luzPrice;
       } else {
         luzPrice = (await coche.price!.calculatePrice(route, coche));
         tiempoLuz = now;
 
-        return luzPrice; 
+        return luzPrice;
       }
     }
 
@@ -58,10 +64,9 @@ class PriceProxy {
         return cacheEntry;
       }
     }
-    
-  //Si no se ha devuelto con lo de antes(ha pasado el tiempo), se vuelve a calcular
-    double valor =
-        await coche.price!.calculatePrice(route, coche);
+
+    //Si no se ha devuelto con lo de antes(ha pasado el tiempo), se vuelve a calcular
+    double valor = await coche.price!.calculatePrice(route, coche);
 
     _priceCache[secondName] = ValorFecha(valor, now);
 

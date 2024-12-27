@@ -59,7 +59,7 @@ Future<http.Response> postWalkRoute(LatLng startPoint, LatLng endPoint, String r
 
 
 getCoordinatesLocation(String topo){
-  return Uri.parse('$urlToponym?api_key=$apiKey&text=$topo&size=1');
+  return Uri.parse('$urlToponym?api_key=$apiKey&text=$topo&boundary.country=ES&size=1');
 } 
 
 

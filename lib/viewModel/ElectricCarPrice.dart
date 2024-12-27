@@ -15,9 +15,7 @@ class Electriccarprice implements Price{
 
     double pricePerKWh =  convertMWhToKWh(await fetchElectricityPrice());
 
-    double costPerKm = pricePerKWh * consumption/100 * distance;
-
-    return costPerKm;
+    return pricePerKWh;;
   }
 
 double convertMWhToKWh(double pricePerMWh) {

@@ -23,10 +23,10 @@ class GasoilGasolina {
         LocationController locationController= LocationController(FirestoreAdapterLocation());
         toponym = await locationController.CoordToToponym(route.getStart.getCoordinate());
       }
-
+      String secondName = "";
       List<String> toponymParts = toponym.split(',');
       if (toponymParts.length > 1) {
-        String secondName = toponymParts[1].trim();
+        secondName = toponymParts[toponymParts.length - 3].trim();
         if (secondName.contains("/")) {
           secondName = secondName.split("/")[0].trim();
         }
