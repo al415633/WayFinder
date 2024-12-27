@@ -158,7 +158,6 @@ class RouteController {
 
       if (success) {
         final currentSet = await routeList;
-
         // Agregar el nuevo Location al Set
         currentSet.add(route);
         routeList = Future.value(currentSet);
@@ -166,7 +165,7 @@ class RouteController {
 
       return success;
     } catch (e) {
-      throw Exception("Error al crear la ruta: $e");
+      throw Exception("Error al guardar la ruta: $e");
     }
   }
 

@@ -379,7 +379,10 @@ class _MapScreenState extends State<MapScreen> {
               child: ListView(
                 children: [
                      IconButton(
-                    onPressed: onAddPressed,
+                    onPressed: () async{
+                      onAddPressed();
+                      _fetchRoutes();
+                    },
                     icon: const Icon(Icons.add),
                   ),
                   ...items.map((item) => buildItem(item)),
@@ -495,6 +498,8 @@ class _MapScreenState extends State<MapScreen> {
   void _onTopMenuSelectionChanged(TopMenuSelection menuSelection) {
     setState(() {
       _fetchVehicles();
+      _fetchLocations();
+      _fetchRoutes();
       _topMenuSelection = menuSelection;
     });
   }
@@ -796,6 +801,7 @@ class _MapScreenState extends State<MapScreen> {
         SnackBar(content: Text('Error al cargar rutas: $e')),
       );
     }
+    ;
   }
 
   void _showRoutes(Routes route) {

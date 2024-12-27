@@ -34,7 +34,6 @@ Future<void> showAddRouteDialog(
     } else {
       onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!,
           transportModeInput, routeModeInput, selectedVehicle, saveRoute);
-      //Navigator.of(context).pop();
     }
   }
 

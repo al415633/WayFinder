@@ -3,6 +3,7 @@ import 'package:WayFinder/model/route.dart';
 import 'package:WayFinder/model/enum/routeMode.dart';
 import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
@@ -160,7 +161,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       Text(
                           'Distancia: ${distance < 1 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km'}'),
                       Text(
-                          'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
+                            'Tiempo estimado: ${estimatedTime ~/ 1} horas y ${(estimatedTime % 1 * 60).toStringAsFixed(0)} minutos'),
+                           //'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
                       if (transportMode == TransportMode.aPie ||
                           transportMode == TransportMode.bicicleta)
                         Text(
