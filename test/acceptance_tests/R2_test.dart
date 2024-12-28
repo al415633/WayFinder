@@ -319,6 +319,8 @@ void main() {
       await deleteLocation(alias2);
     });
 
+
+    // Hecha en integración por errores de Firebase
     test('H7-E3I - Listar lugares inválida porque no hay usuario autenticado',
         () async {
       //GIVEN

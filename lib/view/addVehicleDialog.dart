@@ -122,7 +122,6 @@ void showAddVehicleDialog(BuildContext context,
                       errorMessage = 'La matrícula no es válida.';
                     });
                   } else {
-                    // Llamar a la función para crear el vehículo
                     bool res = await onVehicleSelected(vehicleNameInput,
                         fuelTypeInput, consumptionInput, numberPlateInput);
                     if (!res) {

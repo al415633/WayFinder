@@ -89,7 +89,6 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
           .add(location.toMap());
       return true;
     } catch (e) {
-      print("Error al crear el lugar: $e");
       return false;
     }
   }
@@ -173,7 +172,6 @@ class FirestoreAdapterLocation implements DbAdapterLocation {
 
       return true;
     } catch (e) {
-      print("Error al eliminar de favoritos: $e");
       return false;
     }
   }

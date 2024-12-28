@@ -123,7 +123,6 @@ void showEditVehicleDialog(BuildContext context, Vehicle vehicle,
                       errorMessage = 'Por favor, completa todos los campos.';
                     });
                   } else {
-                    // Llamar a la función para crear el vehículo
                     bool res = await onVehicleEdited(
                         vehicle, vehicleNameInput, consumptionInput);
                     if (!res) {

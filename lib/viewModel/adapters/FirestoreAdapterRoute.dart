@@ -79,7 +79,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
           .add(route.toMap());
       return true;
     } catch (e) {
-      print("Error al guardar la ruta: $e");
       return false;
     }
   }

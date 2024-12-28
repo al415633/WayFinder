@@ -108,7 +108,7 @@ Future<void> showAddRouteDialog(
                       transportModeInput = value!;
                       if (transportModeInput == TransportMode.aPie ||
                           transportModeInput == TransportMode.bicicleta) {
-                        // Asigna un valor predeterminado válido para routeModeInput
+                        // Valor predeterminado válido para routeModeInput
                         routeModeInput = RouteMode.economica;
                       }
                     });

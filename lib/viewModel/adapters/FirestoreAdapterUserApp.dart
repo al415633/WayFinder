@@ -78,8 +78,6 @@ class FirestoreAdapterUserApp implements DbAdapterUserApp {
       User? user = userCredential.user;
       UserApp usuario = UserApp(user!.uid, user.displayName ?? '', email);
       usuario.setUser = user;
-      print(user.email);
-      print(user.uid);
       return usuario;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
