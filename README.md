@@ -105,10 +105,15 @@ Seguimos el formato de **Conventional Commits** para que todos los mensajes de c
 
 ```bash
 ├── lib
-│   ├── paginas     # Las diferentes tecnologías que hemos probado
-│   ├── titulos     # Carpeta con los títulos que hemos creado para unificar estilos
-│   └── main.dart   # Página principal en la que mostramos un menú con las diferentes páginas
+│   ├── model    
+│        └── enum  # Carpeta con las enumeraciones utilizadas
+│   ├── view     # Carpeta con las vistas/interfaces creadas
+│   ├── viewModel     # Carpeta con los controladores
+│        └── adapters  # Carpeta con los adaptadores, los que acceden a la base de datos
+│   └── main.dart   # Página principal en la que mostramos el login
 ├── test            # Carpeta referente a los tests
+│   ├── acceptance_tests    # Carpeta con los tests de aceptación
+│   └── integration_tests   # Carpeta con los tests de integración
 └── README.md
 ```
 

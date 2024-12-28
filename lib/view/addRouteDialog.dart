@@ -1,30 +1,30 @@
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/main.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/viewModel/VehicleController.dart';
-import 'package:WayFinder/viewModel/adapters/FirestoreAdapterVehiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/model/location.dart';
 
-void showAddRouteDialog(
+Future<void> showAddRouteDialog(
     BuildContext context,
     List<Location> locations,
     List<Vehicle> vehicles,
+    UserApp? userApp,
     Function(String, Location, Location, TransportMode, RouteMode, Vehicle?,
             bool)
-        onRouteSelected) {
+        onRouteSelected) async {
   // Variables para los datos de la ruta
   String routeNameInput = '';
   Location? startLocationInput;
   Location? endLocationInput;
-  TransportMode transportModeInput = TransportMode.coche; // Default value
-  RouteMode routeModeInput = RouteMode.noSeleccionado; // Default value
-  Vehicle? selectedVehicle;
-  VehicleController vehicleController =
-      VehicleController.getInstance(FirestoreAdapterVehiculo());
+  TransportMode transportModeInput = userAppController.getTransportModeDefault(userApp);// Default value
+  RouteMode routeModeInput = userAppController.getRouteModeDefault(userApp); // Default value
+  Vehicle? selectedVehicle = userAppController.getVehicleDefault(userApp); // Default value
 
   // Mensajes de error
   String errorMessage = '';
+
 
   generateRoute(bool saveRoute) {
     if (routeNameInput.isEmpty ||
@@ -34,11 +34,10 @@ void showAddRouteDialog(
     } else {
       onRouteSelected(routeNameInput, startLocationInput!, endLocationInput!,
           transportModeInput, routeModeInput, selectedVehicle, saveRoute);
-      Navigator.of(context).pop();
     }
   }
 
-  showDialog(
+  showDialog (
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
@@ -109,18 +108,17 @@ void showAddRouteDialog(
                       transportModeInput = value!;
                       if (transportModeInput == TransportMode.aPie ||
                           transportModeInput == TransportMode.bicicleta) {
-                        // Asigna un valor predeterminado válido para routeModeInput
+                        // Valor predeterminado válido para routeModeInput
                         routeModeInput = RouteMode.economica;
-                      } else {
-                        routeModeInput = RouteMode.noSeleccionado;
                       }
                     });
                   },
                 ),
                 if (transportModeInput == TransportMode.coche)
                   vehicles.isNotEmpty
-                      ? (DropdownButton<Vehicle>(
+                      ? DropdownButton<Vehicle>(
                           value: selectedVehicle,
+                          hint: const Text('Selecciona un vehículo'),
                           items: vehicles.map((vehicle) {
                             return DropdownMenuItem<Vehicle>(
                               value: vehicle,
@@ -132,7 +130,7 @@ void showAddRouteDialog(
                               selectedVehicle = value;
                             });
                           },
-                        ))
+                        )
                       : Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
@@ -169,22 +167,36 @@ void showAddRouteDialog(
             ),
             actions: [
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  generateRoute(true);
-                },
-                child: const Text('Guardar y generar ruta'),
+              onPressed: () async {
+                if (transportModeInput == TransportMode.coche && selectedVehicle == null) {
+                setDialogState(() {
+                  errorMessage = 'Por favor, seleccione un vehículo.';
+                });
+                } else {
+                generateRoute(true);
+                Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Guardar y generar ruta'),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  generateRoute(false);
-                },
-                child: const Text('Generar ruta'),
+              onPressed: () async {
+                if (transportModeInput == TransportMode.coche && selectedVehicle == null) {
+                setDialogState(() {
+                  errorMessage = 'Por favor, seleccione un vehículo.';
+                });
+                } else {
+                generateRoute(false);
+                Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Generar ruta'),
               ),
             ],
           );

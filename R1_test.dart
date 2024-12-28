@@ -1,5 +1,6 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
+import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';

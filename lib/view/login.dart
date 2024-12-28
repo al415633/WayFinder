@@ -1,3 +1,4 @@
+import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/view/createUserView.dart';
 import 'package:flutter/material.dart';
 import 'package:WayFinder/view/errorPage.dart';
@@ -154,13 +155,13 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       UserAppController? userAppController = UserAppController.getInstance();
-      await userAppController.logInCredenciales(email, password);
+      UserApp? userApp = await userAppController.logInCredenciales(email, password);
       _usuarioController.clear();
       _passwordController.clear();
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MapScreen()),
+        MaterialPageRoute(builder: (context) => MapScreen(userApp: userApp)),
       );
     } on Exception {
       Navigator.push(

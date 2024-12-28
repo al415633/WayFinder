@@ -1,5 +1,7 @@
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/route.dart';
+import 'package:WayFinder/viewModel/LocationController.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import "package:WayFinder/viewModel/municipios_map.dart";
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -14,18 +16,22 @@ class GasoilGasolina {
         valor = "4";
       }
 
-      String toponym = route.start.toponym;
-      List<String> toponymParts = toponym.split(',');
-      if (toponymParts.length > 1) {
-        String secondName = toponymParts[1].trim();
-        if (secondName.contains("/")) {
-          secondName = secondName.split("/")[0].trim();
-        }
-        if (secondName.contains("(")) {
-          secondName = secondName.split("\\(")[0].trim();
-        }
-        String? idMunicipio = municipioMap[secondName];
+      String toponym = route.getStart.getToponym();
 
+      if (toponym.split(",").length == 1){
+        LocationController locationController= LocationController(FirestoreAdapterLocation());
+        toponym = await locationController.CoordToToponym(route.getStart.getCoordinate());
+      }
+
+      String? idMunicipio = null;
+      List<String> toponymParts = toponym.split(',');
+      int position = 0;
+      while (idMunicipio == null && position < toponymParts.length) {
+        String secondName = obtenerMunicipio(toponymParts, position);
+        idMunicipio = municipioMap[secondName];
+        position++;
+      }
+      if (idMunicipio != null) {
         final response = await http.get(
           Uri.parse(
               'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/FiltroMunicipioProducto/05-12-2024/$idMunicipio/$valor'),
@@ -51,5 +57,18 @@ class GasoilGasolina {
     } catch (e) {
       return -1;
     }
+  }
+  static String obtenerMunicipio(List<String> toponymParts, int position) {
+    String secondName = "";
+    if (toponymParts.length > 1) {
+      secondName = toponymParts[position].trim();
+      if (secondName.contains("/")) {
+        secondName = secondName.split("/")[0].trim();
+      }
+      if (secondName.contains("(")) {
+        secondName = secondName.split("\\(")[0].trim();
+      }
+    }
+    return secondName;
   }
 }

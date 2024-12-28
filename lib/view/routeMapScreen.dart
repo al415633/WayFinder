@@ -1,8 +1,8 @@
+import 'package:WayFinder/model/enum/topMenuSelection.dart';
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
-import 'package:WayFinder/view/map_screen.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
 import 'package:WayFinder/viewModel/VehicleController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
@@ -28,9 +28,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   late List<LatLng> points;
   late TransportMode transportMode;
   late RouteMode routeMode;
-  bool showInterestPlaces = false;
-  bool showRoutes = true;
-  bool showVehicles = false;
   double distance = 0.0;
   double estimatedTime = 0.0;
   FirestoreAdapterRoute routeAdapter = FirestoreAdapterRoute();
@@ -60,9 +57,6 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   }
 
   void _onTransportChanged(TransportMode newTransportMode) async {
-    
-    late RouteMode selectedRouteMode;
-    late Vehicle selectedCar;
     RouteController routeController = RouteController.getInstance(routeAdapter);
 
     if ((transportMode == TransportMode.aPie ||
@@ -75,10 +69,9 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
         context,
         vehicleList,
         route,
-        (selectedRouteMode, selectedCar) async {
+        (RouteMode selectedRouteMode, Vehicle selectedCar) async {
           Routes newroute = await routeController.editRoute(
               route, newTransportMode, selectedCar, selectedRouteMode);
-          
 
           setState(() {
             route = newroute;
@@ -95,8 +88,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     } else {
       Routes newroute =
           await routeController.editRoute(route, newTransportMode, null, null);
-      setState(()  {
-        route=newroute;
+      setState(() {
+        route = newroute;
         routeController.onTransportChanged(newTransportMode, route);
         transportMode = newTransportMode;
 
@@ -105,25 +98,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     }
   }
 
-  void _onModeChanged(String mode) {
-    setState(() {
-      showInterestPlaces = false;
-      showRoutes = false;
-      showVehicles = false;
-      if (mode == 'routes') {
-        showRoutes = true;
-      } else if (mode == 'locations') {
-        showInterestPlaces = true;
-      } else if (mode == 'vehicles') {
-        showVehicles = true;
-      }
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MapScreen(),
-        ),
-      );
-    });
+  void _onTopMenuSelectionChanged(TopMenuSelection menuSelection) {
+    Navigator.pop(context, menuSelection);
   }
 
   @override
@@ -142,14 +118,14 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
               children: [
                 Row(
                   children: [
-                    _buildTopButton('Lugares de interés', () {
-                      _onModeChanged('locations');
+                    _buildTopButton(TopMenuSelection.locations.name, () {
+                      _onTopMenuSelectionChanged(TopMenuSelection.locations);
                     }),
-                    _buildTopButton('Rutas', () {
-                      _onModeChanged('routes');
+                    _buildTopButton(TopMenuSelection.routes.name, () {
+                      _onTopMenuSelectionChanged(TopMenuSelection.routes);
                     }),
-                    _buildTopButton('Vehículos', () {
-                      _onModeChanged('vehicles');
+                    _buildTopButton(TopMenuSelection.vehicles.name, () {
+                      _onTopMenuSelectionChanged(TopMenuSelection.vehicles);
                     }),
                   ],
                 ),
@@ -184,7 +160,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       Text(
                           'Distancia: ${distance < 1 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km'}'),
                       Text(
-                          'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
+                            'Tiempo estimado: ${estimatedTime ~/ 1} horas y ${(estimatedTime % 1 * 60).toStringAsFixed(0)} minutos'),
+                           //'Tiempo estimado: ${estimatedTime < 1 ? '${(estimatedTime * 60).toStringAsFixed(0)} minutos' : '${estimatedTime.toStringAsFixed(2)} horas'}'),
                       if (transportMode == TransportMode.aPie ||
                           transportMode == TransportMode.bicicleta)
                         Text(

@@ -1,12 +1,17 @@
 import 'package:WayFinder/exceptions/NotValidVehicleException.dart';
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
+import 'package:WayFinder/viewModel/UserAppController.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterVehicle.dart';
+import 'package:WayFinder/viewModel/adapters/FirestoreAdapterUserApp.dart';
 
 class VehicleController {
   // Propiedades
   late Future<Set<Vehicle>> vehicleList;
   final DbAdapterVehicle _dbAdapter;
+  late UserApp? userApp;
 
   VehicleController(this._dbAdapter) {
     vehicleList =
@@ -25,6 +30,10 @@ class VehicleController {
     return _instance!;
   }
 
+  static void destroyInstance() {
+    _instance = null;
+  }
+
   Future<Set<Vehicle>> getVehicleList() async {
     return vehicleList;
   }
@@ -37,7 +46,7 @@ class VehicleController {
     }
 
     // Validar consumo
-    if (!threeDecimalPlacesMax(consumption)) {
+    if (!threeDecimalPlacesMax(consumption) || consumption <= 0) {
       throw NotValidVehicleException();
     }
 
@@ -74,20 +83,56 @@ class VehicleController {
     return vehicle;
   }
 
-  Future<bool> deleteVehicle(Vehicle vehicle) async {
+  Future<Vehicle> editVehicle(
+      Vehicle vehicle, double newConsumo, String newNombre) async {
+    // Validar consumo
+
+    //cambiar los datos proporcionados
+    // Validar consumo
+    if (!threeDecimalPlacesMax(newConsumo) || newConsumo <= 0) {
+      throw NotValidVehicleException();
+    }
+    vehicle.setConsumption(newConsumo);
+    vehicle.setName(newNombre);
+    _dbAdapter.editVehicle(vehicle, newConsumo, newNombre);
+
+    // Devolver el vehículo creado
+    return vehicle;
+  }
+
+  void establishUserApp(UserApp userApp) async {
+    userApp = userApp;
+  }
+
+  Future<bool> deleteVehicle(Vehicle vehicle, {bool skipDefaultCheck = false}) async {
     try {
       bool success = await _dbAdapter.deleteVehicle(vehicle);
-
       if (success) {
         final currentSet = await vehicleList;
         // Agregar el nuevo vehiculo al Set
         currentSet.remove(vehicle);
-        vehicleList = Future.value(currentSet);
-      }
 
+        vehicleList = Future.value(currentSet);
+
+        // Verificar si el vehículo eliminado es el predeterminado
+        if (!skipDefaultCheck) {
+          UserAppController userAppController =
+              UserAppController.getInstance(FirestoreAdapterUserApp());
+
+          Vehicle? vehicleDefault = userAppController
+              .getVehicleDefault(UserAppController.userAppActual());
+
+          if (vehicleDefault != null && vehicle == vehicleDefault) {
+            userAppController.setTransportModeDefault(
+                UserAppController.userAppActual(),
+                TransportMode.noSeleccionado,
+                null);
+          }
+        }
+      }
       return success;
     } catch (e) {
-      throw Exception("Error al crear el vehiculo: $e");
+      throw Exception("Error al borrar el vehiculo: $e");
     }
   }
 

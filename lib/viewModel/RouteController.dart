@@ -1,24 +1,15 @@
-import 'package:WayFinder/exceptions/APIRoutesExcpetion.dart';
 import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/InvalidCalorieCalculationException.dart';
-import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
-import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
-import 'dart:convert';
-import 'package:WayFinder/APIs/apiConection.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/PriceProxy.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterRoute.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 import 'package:WayFinder/model/route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
-import 'dart:math';
 
 class RouteController {
   // Propiedades
@@ -38,6 +29,10 @@ class RouteController {
   static RouteController getInstance(DbAdapterRoute repository) {
     _instance ??= RouteController(repository);
     return _instance!;
+  }
+
+  static void destroyInstance() {
+    _instance = null;
   }
 
   Future<Set<Routes>> getRouteList() async {
@@ -76,11 +71,8 @@ class RouteController {
 
       List<LatLng> pointsShortest =
           pointsDataShortest['points'] as List<LatLng>;
-      //print(points);
       double distanceShortest = pointsDataShortest['distance'] as double;
-      //print("Distanciaaaa:$distance");
       double timeShortest = pointsDataShortest['duration'] as double;
-      //print("Tiempooooo $time");
       Routes routeShortest = Routes(
           name,
           start,
@@ -98,11 +90,8 @@ class RouteController {
           start, end, transportMode, RouteMode.rapida);
 
       List<LatLng> pointsFastest = pointsDataFastest['points'] as List<LatLng>;
-      //print(points);
       double distanceFastest = pointsDataFastest['distance'] as double;
-      //print("Distanciaaaa:$distance");
       double timeFastest = pointsDataFastest['duration'] as double;
-      //print("Tiempooooo $time");
 
       Routes routeFastest = Routes(
           name,
@@ -131,16 +120,12 @@ class RouteController {
         await repository.getRouteData(start, end, transportMode, routeMode!);
 
     List<LatLng> points = pointsData['points'] as List<LatLng>;
-    //print(points);
     double distance = pointsData['distance'] as double;
-    //print("Distanciaaaa:$distance");
     double time = pointsData['duration'] as double;
-    //print("Tiempooooo $time");
     Routes route = Routes(name, start, end, points, distance, time,
         transportMode, routeMode, vehicle);
     if (vehicle != null) {
       double cost = await calculatePrice(route, vehicle);
-      print("cost $cost");
       route.setCost = cost;
     } else {
       route.setCalories = calculateCostKCal(route);
@@ -167,13 +152,11 @@ class RouteController {
   }
 
   Future<bool> saveRoute(Routes route) async {
-    print(route);
     try {
       bool success = await repository.saveRoute(route);
 
       if (success) {
         final currentSet = await routeList;
-
         // Agregar el nuevo Location al Set
         currentSet.add(route);
         routeList = Future.value(currentSet);
@@ -181,7 +164,7 @@ class RouteController {
 
       return success;
     } catch (e) {
-      throw Exception("Error al crear la ruta: $e");
+      throw Exception("Error al guardar la ruta: $e");
     }
   }
 
@@ -216,8 +199,10 @@ class RouteController {
     }
 
     double num = await PriceProxy.getPrice(route);
+    double precioFinal =
+        num * vehiculo.getConsumption() / 100 * route.getDistance;
 
-    return num;
+    return precioFinal;
   }
 
   void onTransportChanged(TransportMode newTransportMode, Routes route) async {
@@ -228,30 +213,24 @@ class RouteController {
       route.setCost = await calculatePrice(route, route.vehicle!);
     } else {
       routeController.calculateCostKCal(route);
-      print("OnTransportChanged: ${route.getCost}");
     }
   }
 
   Future<Routes> editRoute(Routes oldRoute, TransportMode newTransportMode,
       Vehicle? vehicle, RouteMode? newRouteMode) async {
-
-         print("en edit");
-    print(newTransportMode);
-              //Es en coche pero y economica
-
     if (vehicle != null && newRouteMode != null) {
       if (newRouteMode == RouteMode.economica) {
         Map<String, dynamic> pointsDataShortest = await repository.getRouteData(
-            oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.corta);
+            oldRoute.getStart,
+            oldRoute.getEnd,
+            newTransportMode,
+            RouteMode.corta);
 
         List<LatLng> pointsShortest =
             pointsDataShortest['points'] as List<LatLng>;
-        //print(points);
         double distanceShortest = pointsDataShortest['distance'] as double;
-        //print("Distanciaaaa:$distance");
         double timeShortest = pointsDataShortest['duration'] as double;
-        //print("Tiempooooo $time");
-       
+
         Routes routeShortest = Routes(
             oldRoute.getName,
             oldRoute.getStart,
@@ -266,7 +245,10 @@ class RouteController {
         double precioShortest = await calculatePrice(routeShortest, vehicle);
 
         Map<String, dynamic> pointsDataFastest = await repository.getRouteData(
-            oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.rapida);
+            oldRoute.getStart,
+            oldRoute.getEnd,
+            newTransportMode,
+            RouteMode.rapida);
 
         List<LatLng> pointsFastest =
             pointsDataFastest['points'] as List<LatLng>;
@@ -298,37 +280,49 @@ class RouteController {
 
       //Es en coche pero no economica
 
-      Map<String, dynamic> pointsData =
-          await repository.getRouteData(oldRoute.getStart, oldRoute.getEnd, newTransportMode, newRouteMode);
+      Map<String, dynamic> pointsData = await repository.getRouteData(
+          oldRoute.getStart, oldRoute.getEnd, newTransportMode, newRouteMode);
 
       List<LatLng> points = pointsData['points'] as List<LatLng>;
-      //print(points);
       double distance = pointsData['distance'] as double;
-      //print("Distanciaaaa:$distance");
       double time = pointsData['duration'] as double;
-      //print("Tiempooooo $time");
-      Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
-          newTransportMode, newRouteMode, vehicle);
+      Routes route = Routes(
+          oldRoute.getName,
+          oldRoute.getStart,
+          oldRoute.getEnd,
+          points,
+          distance,
+          time,
+          newTransportMode,
+          newRouteMode,
+          vehicle);
       double cost = await calculatePrice(route, vehicle);
       route.setCost = cost;
-    
+
       return route;
-    }
-    else{
-      
-      Map<String, dynamic> pointsData =
-          await repository.getRouteData(oldRoute.getStart, oldRoute.getEnd, newTransportMode, RouteMode.rapida);
+    } else {
+      Map<String, dynamic> pointsData = await repository.getRouteData(
+          oldRoute.getStart,
+          oldRoute.getEnd,
+          newTransportMode,
+          RouteMode.rapida);
 
       List<LatLng> points = pointsData['points'] as List<LatLng>;
       double distance = pointsData['distance'] as double;
       double time = pointsData['duration'] as double;
-      Routes route = Routes(oldRoute.getName, oldRoute.getStart, oldRoute.getEnd, points, distance, time,
-          newTransportMode, newRouteMode, vehicle);
+      Routes route = Routes(
+          oldRoute.getName,
+          oldRoute.getStart,
+          oldRoute.getEnd,
+          points,
+          distance,
+          time,
+          newTransportMode,
+          newRouteMode,
+          vehicle);
 
-      await calculateCostKCal(route);
+      calculateCostKCal(route);
       return route;
-
-
     }
   }
 }

@@ -1,9 +1,15 @@
 import 'package:WayFinder/exceptions/IncorrectPasswordException.dart';
 import 'package:WayFinder/exceptions/NotValidEmailException.dart';
+import 'package:WayFinder/exceptions/UserNotAuthenticatedException.dart';
+import 'package:WayFinder/exceptions/UserNotExistsExcpetion.dart';
 import 'package:WayFinder/model/UserApp.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
+import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterUserApp.dart';
 
 class UserAppController {
+  static late UserApp? userApp;
   // Propiedad privada
   final DbAdapterUserApp repository;
 
@@ -19,6 +25,7 @@ class UserAppController {
     }
     return _instance!;
   }
+  
 
   bool isValidEmail(String email) {
     final emailRegex =
@@ -48,10 +55,50 @@ class UserAppController {
     }
 
     //CONECION AL REPOSITORIO
+    userApp = await repository.createUser(email, password);
+    userApp?.setName = name;
+    return userApp;
+  }
 
-    UserApp? user = await repository.createUser(email, password);
-    user?.setName = name;
-    return user;
+  void setTransportModeDefault(
+      UserApp? userApp, TransportMode transportMode, Vehicle? vehicle) {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    repository.setTransportModeDefault(transportMode, vehicle);
+    userApp.setDefaultTransportMode = transportMode;
+    userApp.setVehicleDefault = vehicle;
+  }
+
+  TransportMode getTransportModeDefault(UserApp? userApp){
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp.getDefaultTransportMode;
+  }
+
+  Vehicle? getVehicleDefault(UserApp? userApp){
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp.getVehicleDefault;
+  }
+
+
+
+  void setRouteModeDefault(UserApp? userApp, RouteMode routeMode) {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    repository.setRouteModeDefault(routeMode);
+    userApp.setDefaultRouteMode = routeMode;
+  }
+
+  RouteMode getRouteModeDefault(UserApp? userApp){
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp.getDefaultRouteMode;
   }
 
   Future<UserApp?> logInCredenciales(String email, String password) async {
@@ -62,13 +109,53 @@ class UserAppController {
     if (!isValidPassword(password)) {
       throw IncorrectPasswordException();
     }
-    return await repository.logInCredenciales(email, password);
+    userApp =  await repository.logInCredenciales(email, password);
+    return userApp;
   }
 
   Future<bool> logOut() async {
     return repository.logOut();
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      await repository.deleteAccount();
+    } catch (e) {
+      if (e is UserNotAuthenticatedException) {
+        throw UserNotAuthenticatedException();
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> deleteAccountForEmail(String email) async {
+    if (!(await checkIfUserExists(email))) {
+      throw UserNotExistException();
+    }
+    await repository.deleteAccountForEmail(email);
+  }
+
+  Future<bool> checkIfUserExists(String email) async {
+    if (!isValidEmail(email)) {
+      throw NotValidEmailException();
+    }
+
+    try {
+      return await repository.checkIfUserExists(email);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static UserApp userAppActual() {
+    if (userApp == null) {
+      throw UserNotAuthenticatedException();
+    }
+    return userApp!;
+  }
+
+  Future<void> getDefaults(UserApp? userApp) async {
+      return await repository.getDefaults(userApp);
+    }
 }
-
-
-

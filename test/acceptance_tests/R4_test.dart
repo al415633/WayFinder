@@ -4,11 +4,11 @@ import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/ElectricCarPrice.dart';
 
@@ -401,6 +401,7 @@ void main() {
 
       userApp = await userAppController.logInCredenciales(email, password);
 
+
       adapterRoute = FirestoreAdapterRoute(collectionName: "testCollection");
       routeController = RouteController(adapterRoute);
 
@@ -710,6 +711,7 @@ void main() {
       await deleteRoute(name1);
     });
 
+    //Hecha en integración por errores de Firebase
     test('H18-E3I - Listar rutas inválida, usuario no registrado', () async {
       /*
 

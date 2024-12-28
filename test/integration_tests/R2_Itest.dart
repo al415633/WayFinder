@@ -35,7 +35,7 @@ void main() {
       locationController = LocationController(mockDbAdapterLocation);
     });
 
-    test('H5-E1V - Crear lugar', () async {
+    test('H5-E1V - Crear lugar por coordenadas', () async {
       // Configurar los mocks y el controlador dentro del test
 
       final double lath5e1 = 39.98567;
@@ -135,7 +135,7 @@ void main() {
       expect(() async => await action(), throwsA(isA<Exception>()));
     });
 
-    test('H6-E1V - Crear lugar', () async {
+    test('H6-E1V - Crear lugar por topónimo', () async {
       // Configurar los mocks y el controlador dentro del test
 
       final double lath6e1 = 39.98567;

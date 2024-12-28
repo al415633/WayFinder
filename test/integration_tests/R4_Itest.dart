@@ -2,11 +2,11 @@ import 'package:WayFinder/exceptions/IncorrectCalculationException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/model/UserApp.dart';
 import 'package:WayFinder/model/coordinate.dart';
-import 'package:WayFinder/model/fuelType.dart';
+import 'package:WayFinder/model/enum/fuelType.dart';
 import 'package:WayFinder/model/location.dart';
 import 'package:WayFinder/model/route.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'package:WayFinder/model/vehicle.dart';
 import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/RouteController.dart';
@@ -46,7 +46,6 @@ void main() {
       final mockDbAdapterRoute = MockDbAdapterRoute();
       final routeController = RouteController(mockDbAdapterRoute);
 
-
       final double lat1 = 39.98567;
       final double long1 = -0.04935;
       final String apodo1 = "castellon";
@@ -80,7 +79,6 @@ void main() {
       // Simular la creación del usuario
       when(userAppController.repository.createUser(emailh16e1, passwordh16e1))
           .thenAnswer((_) async => UserApp("id", nameh16e1, emailh16e1));
-
 
       await userAppController.createUser(emailh16e1, passwordh16e1, nameh16e1);
       // WHEN
@@ -145,8 +143,6 @@ void main() {
       when(mockElectricCarPrice.calculatePrice(ruta, vehicle))
           .thenAnswer((_) async => 0.12);
 
-      //Se establece la estrategia mock, pero al hacer vehicleController.calculatePrice
-      //se sobreescribe y deja de ser la mockeada
       vehicle.setPriceStrategy(mockElectricCarPrice);
       ruta.vehicle = vehicle;
 
@@ -161,12 +157,12 @@ void main() {
 
       await userAppController.createUser(email, password, name);
 
-      //Da 0 porque se sobrescribe la strategy mockeada
       coste = await routeController.calculatePrice(ruta, vehicle);
 
       // THEN
       expect(coste, isNotNull);
-      expect(coste, equals(0.12));
+      // coste = num (0.12) * vehiculo.getConsumption() (24.3) / 100 * route.getDistance (11.17) = 0.3257172;
+      expect(coste, equals(0.3257172));
       verify(mockElectricCarPrice.calculatePrice(ruta, vehicle)).called(1);
     });
 
@@ -192,8 +188,7 @@ void main() {
 
       String name1 = "Ruta h14 e2";
 
-    
-Routes? ruta;
+      Routes? ruta;
 
       final String namec = "Coche Quique";
       final double consumption = 24.3;
@@ -206,13 +201,11 @@ Routes? ruta;
       when(mockElectricCarPrice.calculatePrice(null, any))
           .thenThrow(Incorrectcalculationexception());
 
-      
       // THEN
       expect(
         () async => await routeController.calculatePrice(ruta, vehicle),
         throwsA(isA<Incorrectcalculationexception>()),
       );
-
     });
 
     test('H16-E1V - Crear ruta habiendo elegido un tipo de ruta concreto',
@@ -305,8 +298,8 @@ Routes? ruta;
 
       String name1 = "ruta 1";
 
-      Routes ruta =
-          Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie, RouteMode.noSeleccionado, null);
+      Routes ruta = Routes(name1, ini, fin, [], 0, 0, TransportMode.aPie,
+          RouteMode.noSeleccionado, null);
 
       // GIVEN
       // no registramos usuario
@@ -314,15 +307,16 @@ Routes? ruta;
       // WHEN
 
       // Simular que guardamos de un lugar
-      when(mockDbAdapterRoute.getRouteData(ini, fin, TransportMode.aPie, RouteMode.noSeleccionado))
+      when(mockDbAdapterRoute.getRouteData(
+              ini, fin, TransportMode.aPie, RouteMode.noSeleccionado))
           .thenThrow(MissingInformationRouteException());
 
       // THEN
 
       Future<void> action() async {
         //await locationController.getLocationList();
-        await routeController.createRoute(
-            name1, ini, fin, TransportMode.aPie, RouteMode.noSeleccionado, null);
+        await routeController.createRoute(name1, ini, fin, TransportMode.aPie,
+            RouteMode.noSeleccionado, null);
       }
 
       // THEN

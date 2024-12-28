@@ -290,7 +290,7 @@ class _CreateUserViewState extends State<CreateUserView> {
       if (user != null) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MapScreen()),
+          MaterialPageRoute(builder: (context) => MapScreen(userApp: user,)),
         );
       }
     } on NotValidEmailException {

@@ -10,14 +10,9 @@ class Electriccarprice implements Price{
  
    @override
   Future<double> calculatePrice(Routes route, Vehicle vehiculo)  async {
-    double distance = route.distance;
-    double consumption = vehiculo.consumption;
-
     double pricePerKWh =  convertMWhToKWh(await fetchElectricityPrice());
 
-    double costPerKm = pricePerKWh * consumption/100 * distance;
-
-    return costPerKm;
+    return pricePerKWh;
   }
 
 double convertMWhToKWh(double pricePerMWh) {

@@ -3,8 +3,8 @@ import 'package:WayFinder/exceptions/ConnectionBBDDException.dart';
 import 'package:WayFinder/exceptions/MissingInformationRouteException.dart';
 import 'package:WayFinder/exceptions/NotAuthenticatedUserException.dart';
 import 'package:WayFinder/model/location.dart';
-import 'package:WayFinder/model/routeMode.dart';
-import 'package:WayFinder/model/transportMode.dart';
+import 'package:WayFinder/model/enum/routeMode.dart';
+import 'package:WayFinder/model/enum/transportMode.dart';
 import 'dart:convert';
 import 'package:WayFinder/APIs/apiConection.dart';
 import 'package:WayFinder/viewModel/adapters/DbAdapterRoute.dart';
@@ -14,7 +14,6 @@ import 'package:WayFinder/model/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math';
-
 
 class FirestoreAdapterRoute implements DbAdapterRoute {
   final String _collectionName;
@@ -46,7 +45,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     }
 
     try {
-      print("Llego aqui");
       final querySnapshot = await db
           .collection(_collectionName)
           .doc(_currentUser?.uid)
@@ -81,7 +79,6 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
           .add(route.toMap());
       return true;
     } catch (e) {
-      print("Error al guardar la ruta: $e");
       return false;
     }
   }
@@ -158,9 +155,8 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
 
   @override
   Future<Map<String, dynamic>> getRouteData(Location start, Location end,
-      TransportMode transportMode, RouteMode routeMode) async {
-   
-    if (routeMode == RouteMode.noSeleccionado ) {
+      TransportMode transportMode, RouteMode? routeMode) async {
+    if (routeMode == RouteMode.noSeleccionado) {
       throw MissingInformationRouteException();
     }
     LatLng initialPoint =
@@ -169,7 +165,7 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
         LatLng(end.getCoordinate().getLat, end.getCoordinate().getLong);
 
     Map<String, dynamic> pointsData =
-        await getPoints(initialPoint, destination, transportMode, routeMode);
+        await getPoints(initialPoint, destination, transportMode, routeMode!);
 
     return pointsData;
   }
@@ -246,4 +242,3 @@ class FirestoreAdapterRoute implements DbAdapterRoute {
     return ((value * mod).round().toDouble() / mod);
   }
 }
-
