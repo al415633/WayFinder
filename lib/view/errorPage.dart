@@ -30,7 +30,7 @@ class ErrorPage extends StatelessWidget {
                 child: const Row( // Usamos un Row para tener múltiples hijos en el botón
                   mainAxisAlignment: MainAxisAlignment.center, // Centra los hijos
                   children: [
-                    Text("Acepto todo"), 
+                    Text("Volver atrás"), 
                     SizedBox(width: 8), // Espacio entre el texto y el ícono
                     Icon(Icons.arrow_back_ios),
                   ],
