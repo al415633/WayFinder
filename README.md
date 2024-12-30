@@ -66,7 +66,8 @@ Seguimos el formato de **Conventional Commits** para que todos los mensajes de c
   - `refactor`: cambios que introducen modificaciones para optimizar el diseño de funcionalidades previamente implementadas.
   - `fix`:  cambios para arreglar bugs.
   - `chore`: cambios relacionados con la configuración del proyecto. Por ejemplo, añadir/modificar dependencias.
-
+  - `extra`: funcionalidades adicionales.
+  
 - **scope**: indica donde se producen los cambios . En nuestro caso lo vamos a usar para indicar a que iteración e historia pertenece el commit. Lo indicaremos de la siguiente forma: itnnhxx, donde nn será en número de iteración y xx el número de historia.
 
 - **description**: breve descripción de los cambios introducidos en el commit, en inglés. Intentad utilizar descripciones cortas y concisas, pero que aporten información .Si no sois capaces de describir los cambios que incluye el commit de forma concisa y breve es posible que necesitéis separar los cambios en varios commits.

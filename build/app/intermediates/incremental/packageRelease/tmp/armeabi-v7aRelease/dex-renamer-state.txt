@@ -1,0 +1,4 @@
+#Mon Dec 30 16:33:55 CET 2024
+base.0=C\:\\Users\\Miriam\\OneDrive\\Documentos\\GitHub\\WayFinder\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
