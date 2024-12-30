@@ -96,6 +96,7 @@ Future<void> showAddRouteDialog(
                   },
                 ),
                 DropdownButton<TransportMode>(
+                  hint: const Text('Modo de transporte'),
                   value: transportModeInput,
                   items: TransportMode.values.map((mode) {
                     return DropdownMenuItem<TransportMode>(

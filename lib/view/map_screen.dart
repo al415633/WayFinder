@@ -78,6 +78,7 @@ class _MapScreenState extends State<MapScreen> {
         backgroundColor: Color(0xFF99D2E5),
         elevation: 0,
         toolbarHeight: 70,
+        automaticallyImplyLeading: false,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
