@@ -4,6 +4,7 @@ import 'package:WayFinder/viewModel/LocationController.dart';
 import 'package:WayFinder/viewModel/adapters/FirestoreAdapterLocation.dart';
 import "package:WayFinder/viewModel/municipios_map.dart";
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class GasoilGasolina {
@@ -32,9 +33,10 @@ class GasoilGasolina {
         position++;
       }
       if (idMunicipio != null) {
+        String date = getFechaHoy();
         final response = await http.get(
           Uri.parse(
-              'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/FiltroMunicipioProducto/05-12-2024/$idMunicipio/$valor'),
+              'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/FiltroMunicipioProducto/$date/$idMunicipio/$valor'),
         );
 
         if (response.statusCode == 200) {
@@ -71,4 +73,9 @@ class GasoilGasolina {
     }
     return secondName;
   }
+  static String getFechaHoy() {
+  final ayer = DateTime.now().subtract(Duration(days: 1));
+  final formatter = DateFormat('dd-MM-yyyy');
+  return formatter.format(ayer);
+}
 }
